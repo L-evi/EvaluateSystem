@@ -1,11 +1,12 @@
 package com.project.evaluate.util;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
@@ -139,4 +140,23 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    /**
+     * @param token Jwt生成的token
+     * @return 返回token是否过期
+     * @description 通过token中的过期时间与现在时间比较知道是否过期
+     * @author Levi
+     * @since 2022/12/6 01:46
+     */
+    public static boolean isTimeout(String token) throws Exception {
+        Claims claims = parseJwt(token);
+        Date expirationTime = claims.getExpiration();
+        Date nowTime = new Date(System.currentTimeMillis());
+        if (nowTime.after(expirationTime)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }

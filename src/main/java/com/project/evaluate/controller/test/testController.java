@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping(value = "/test")
 public class testController {
     @RequestMapping(value = "/hello", method = RequestMethod.POST)
     public Map<String, Object> testHelloWorld(@RequestBody Map<String, Object> getMessage) {
