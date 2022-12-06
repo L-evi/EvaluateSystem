@@ -21,10 +21,11 @@ public class WebAppConfig implements WebMvcConfigurer {
         InterceptorRegistration interceptorRegistration = registry.addInterceptor(new JwtInterceptor());
 //        设置拦截路径：所有路径
         interceptorRegistration.addPathPatterns("/**");
-//        添加不拦截的路径：测试页面、登录
+//        添加不拦截的路径：测试页面、登录、验证
         interceptorRegistration.excludePathPatterns(
                 "/test/**",
-                "/user/login"
+                "/user/login",
+                "/verify/**"
         );
     }
 }
