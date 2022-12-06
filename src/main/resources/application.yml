@@ -8,3 +8,5 @@ mybatis:
   mapper-locations: classpath:Mapper/*.xml
 server:
   port: 8080
+  tomcat:
+    max-swallow-size: -1

@@ -28,7 +28,7 @@ public class UserController {
     public ResponseResult userLogin(@RequestBody Map<String, Object> dataMap) {
 //        获取其中的数据
         User user = new User();
-        user.setUsername((String) dataMap.get("username"));
+        user.setUserID((String) dataMap.get("userID"));
         user.setPassword((String) dataMap.get("password"));
         return userService.userLogin(user);
     }

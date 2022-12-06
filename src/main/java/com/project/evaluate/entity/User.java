@@ -18,7 +18,7 @@ public class User {
     /**
      * 登录名
      */
-    private String username;
+    private String userID;
     /**
      * 登录密码
      */
@@ -26,9 +26,45 @@ public class User {
     /**
      * 登录角色
      */
-    private String role;
+    private String roleType;
     /**
      * 用户名
      */
-    private String name;
+    private String userName;
+    /**
+     * 手机号码
+     */
+    private String mobile;
+    /**
+     * 电子邮箱
+     */
+    private String email;
+    /**
+     * 账户状态：0-禁用，1-正常
+     */
+    private int status;
+    /**
+     * 是否为初始密码：0-不是，1-是
+     */
+    private int isInitPwd;
+    /**
+     * 上一次登录的IP地址
+     */
+    private String lastLoginIP;
+    /**
+     * 上一次登录时间
+     */
+    private String lastLoginTime;
+    /**
+     * 本次登录IP
+     */
+    private String loginIP;
+    /**
+     * 本次登录时间
+     */
+    private String loginTime;
+    /**
+     * 备注
+     */
+    private String memo;
 }

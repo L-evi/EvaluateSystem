@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 @SpringBootTest
 class EvaluateApplicationTests {
@@ -51,4 +55,16 @@ class EvaluateApplicationTests {
     void testMybatis() throws IOException {
         System.out.println(userMapper.selectByUsername("20202132030").toString());
     }
+
+    @Test
+    void testMD5() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        String string = "admin";
+        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+        Base64.Encoder encoder = Base64.getEncoder();
+        System.out.println(encoder.encodeToString(messageDigest.digest(string.getBytes("utf-8"))));
+        System.out.println(encoder.encodeToString(messageDigest.digest(string.getBytes("utf-8"))));
+
+    }
+
 }
+
