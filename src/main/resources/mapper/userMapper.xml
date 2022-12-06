@@ -9,7 +9,7 @@
     <select id="selectByUsername"
             resultType="com.project.evaluate.entity.User">
         select *
-        from User
-        where username = {#0};
+        from user
+        where username = #{0};
     </select>
 </mapper>
