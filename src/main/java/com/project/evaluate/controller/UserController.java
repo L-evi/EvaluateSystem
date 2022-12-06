@@ -30,7 +30,6 @@ public class UserController {
         User user = new User();
         user.setUsername((String) dataMap.get("username"));
         user.setPassword((String) dataMap.get("password"));
-        user.setRole("user");
         return userService.userLogin(user);
     }
 }
