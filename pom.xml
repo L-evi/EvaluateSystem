@@ -12,6 +12,8 @@
     <artifactId>evaluate</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>evaluate</name>
+    <!-- 打包war包 -->
+    <!--    <packaging>war</packaging> -->
     <description>evaluate</description>
     <properties>
         <java.version>1.8</java.version>
@@ -87,6 +89,10 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

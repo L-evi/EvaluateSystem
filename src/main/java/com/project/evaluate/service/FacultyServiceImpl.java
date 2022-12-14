@@ -2,8 +2,8 @@ package com.project.evaluate.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.project.evaluate.entity.User;
-import com.project.evaluate.mapper.UserMapper;
+import com.project.evaluate.entity.Faculty;
+import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
@@ -22,14 +22,14 @@ import java.util.Objects;
  * @since 2022/12/6 02:07
  */
 @Service
-public class UserServiceImpl implements UserService {
+public class FacultyServiceImpl implements FacultyService {
 
     @Autowired()
-    private UserMapper userMapper;
+    private FacultyMapper facultyMapper;
 
     @Override
-    public ResponseResult userLogin(User user) {
-        User tmp = userMapper.selectByUsername(user.getUserID());
+    public ResponseResult userLogin(Faculty faculty) {
+        Faculty tmp = facultyMapper.selectByUsername(faculty.getUserID());
 //        如果对象为空则登录失败
         if (Objects.isNull(tmp)) {
             return new ResponseResult(ResultCode.LOGIN_ERROR);
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
             Base64.Encoder encoder = Base64.getEncoder();
-            String password = encoder.encodeToString(md5.digest(user.getPassword().getBytes("utf-8")));
+            String password = encoder.encodeToString(md5.digest(faculty.getPassword().getBytes("utf-8")));
             if (password.equals(tmp.getPassword())) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("userID", tmp.getUserID());

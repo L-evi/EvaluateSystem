@@ -1,14 +1,13 @@
 package com.project.evaluate;
 
 import com.alibaba.fastjson.JSONObject;
-import com.project.evaluate.mapper.UserMapper;
+import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -42,19 +41,8 @@ class EvaluateApplicationTests {
     }
 
     @Autowired
-    private UserMapper userMapper;
+    private FacultyMapper facultyMapper;
 
-    /**
-     * @param :
-     * @return
-     * @description : 测试Mybatis
-     * @author Levi
-     * @since 2022/12/6 10:13
-     */
-    @Test
-    void testMybatis() throws IOException {
-        System.out.println(userMapper.selectByUsername("20202132030").toString());
-    }
 
     @Test
     void testMD5() throws NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -63,7 +51,6 @@ class EvaluateApplicationTests {
         Base64.Encoder encoder = Base64.getEncoder();
         System.out.println(encoder.encodeToString(messageDigest.digest(string.getBytes("utf-8"))));
         System.out.println(encoder.encodeToString(messageDigest.digest(string.getBytes("utf-8"))));
-
     }
 
 }
