@@ -1,13 +1,11 @@
 package com.project.evaluate.controller.test;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@CrossOrigin(value = "*")
 @RestController
 @RequestMapping(value = "/test")
 public class testController {

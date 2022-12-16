@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
     password: 20011121
-    url: jdbc:mysql://8.134.139.152:33066/evaluate?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&allowMultiQueries=true
+    url: jdbc:mysql://8.134.139.152:33066/evaluate?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
     # 配置扫描
 mybatis:
   mapper-locations: classpath:**/*.xml
@@ -12,3 +12,10 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
+
+
+
+# 配置文件
+file:
+  pre-path: /Users/apple/Library/CloudStorage/OneDrive-个人/Program/Java/evaluate/bigfile/src/main/resources/static
+  character-set: utf8

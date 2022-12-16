@@ -4,10 +4,7 @@ import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
 import com.project.evaluate.util.response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -19,6 +16,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(value = "/user")
+@CrossOrigin(value = "*")
 public class FacultyController {
 
     @Autowired

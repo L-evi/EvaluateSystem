@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FacultyMapper {
     Faculty selectByUsername(String username);
+
+    int addFaculty(Faculty faculty);
 }

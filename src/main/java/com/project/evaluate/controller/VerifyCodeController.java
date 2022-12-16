@@ -1,10 +1,7 @@
 package com.project.evaluate.controller;
 
 import com.project.evaluate.util.KaptchaUtil;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/verify")
+@CrossOrigin(value = "*")
 public class VerifyCodeController {
     @RequestMapping(value = "/code", method = RequestMethod.POST)
     public void getVerifyCode(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, Object> dataMap) {

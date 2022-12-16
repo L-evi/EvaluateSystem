@@ -1,9 +1,12 @@
 package com.project.evaluate.entity;
 
+import cn.hutool.core.date.DateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+import java.util.Date;
 /**
  * @author Levi
  * @version 1.0 (created by Spring Boot)
@@ -54,7 +57,7 @@ public class Faculty {
     /**
      * 上一次登录时间
      */
-    private String lastLoginTime;
+    private Date lastLoginTime;
     /**
      * 本次登录IP
      */
@@ -62,7 +65,7 @@ public class Faculty {
     /**
      * 本次登录时间
      */
-    private String loginTime;
+    private Date loginTime;
     /**
      * 备注
      */

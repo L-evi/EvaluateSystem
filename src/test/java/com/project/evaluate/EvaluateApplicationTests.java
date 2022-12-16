@@ -3,9 +3,12 @@ package com.project.evaluate;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.JwtUtil;
-import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Claims;;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.UnsupportedEncodingException;
@@ -14,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 @SpringBootTest
+@PropertySource("classpath:application.yml")
 class EvaluateApplicationTests {
 
     @Test
@@ -51,6 +55,19 @@ class EvaluateApplicationTests {
         Base64.Encoder encoder = Base64.getEncoder();
         System.out.println(encoder.encodeToString(messageDigest.digest(string.getBytes("utf-8"))));
         System.out.println(encoder.encodeToString(messageDigest.digest(string.getBytes("utf-8"))));
+    }
+
+
+    @Autowired
+    private Environment environment;
+
+    @Value("${file.pre-path}")
+    private String path;
+
+    @Test
+    void testValue() {
+
+        System.out.println(path);
     }
 
 }
