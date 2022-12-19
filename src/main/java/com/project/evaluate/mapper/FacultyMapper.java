@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface FacultyMapper {
-    Faculty selectByUsername(String username);
+    Faculty selectByUserID(String userID);
 
     int addFaculty(Faculty faculty);
 }

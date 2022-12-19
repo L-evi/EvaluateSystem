@@ -29,7 +29,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public ResponseResult userLogin(Faculty faculty) {
-        Faculty tmp = facultyMapper.selectByUsername(faculty.getUserID());
+        Faculty tmp = facultyMapper.selectByUserID(faculty.getUserID());
 //        如果对象为空则登录失败
         if (Objects.isNull(tmp)) {
             return new ResponseResult(ResultCode.LOGIN_ERROR);

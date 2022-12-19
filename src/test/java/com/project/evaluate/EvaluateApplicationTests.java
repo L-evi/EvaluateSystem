@@ -1,6 +1,8 @@
 package com.project.evaluate;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.JwtUtil;
 import io.jsonwebtoken.Claims;;
@@ -68,6 +70,14 @@ class EvaluateApplicationTests {
     void testValue() {
 
         System.out.println(path);
+    }
+
+    @Test
+    void testClassToJSONObject() {
+        Faculty faculty = new Faculty();
+        faculty.setUserID("user");
+        JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(faculty));
+        System.out.println(jsonObject);
     }
 
 }
