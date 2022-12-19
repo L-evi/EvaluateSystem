@@ -1,5 +1,7 @@
 package com.project.evaluate.controller.File;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -11,5 +13,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
  */
 @Controller
 @CrossOrigin(value = "*")
+@PropertySource("classpath:application.yml")
 public class DownloadController {
+    @Value("${file.character-set")
+    private static String charaset;
+
 }

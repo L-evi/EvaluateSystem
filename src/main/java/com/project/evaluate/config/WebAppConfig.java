@@ -25,7 +25,8 @@ public class WebAppConfig implements WebMvcConfigurer {
         interceptorRegistration.excludePathPatterns(
                 "/test/**",
                 "/user/login",
-                "/verify/**"
+                "/verify/**",
+                "/**"
         );
     }
 }
