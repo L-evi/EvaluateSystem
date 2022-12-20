@@ -3,6 +3,7 @@ package com.project.evaluate.controller.File;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 
+import io.jsonwebtoken.lang.Strings;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,31 +32,34 @@ import java.util.List;
  * @since 2022/12/16 15:22
  */
 @RequestMapping("/api/common")
+@ResponseBody
 @Controller
 @CrossOrigin("*")
 @PropertySource("classpath:application.yml")
 class UploadController {
     //    编码格式
     @Value("${file.character-set}")
-    private static String character;
+    private String character;
     //    文件前缀
     @Value("${file.pre-path}")
-    private static String prePath;
+    private String prePath;
     //    缓冲区大小阈值 TODO 无法读取到
-    @Value("${file.threshold-size")
-    private static int sizeThreshold;
+    @Value("${file.threshold-size}")
+    private String sizeThreshold;
 
     //    文件分片最大值
     @Value("${file.file-size-max}")
-    private static Long fileSizeMax;
+    private String fileSizeMax;
 
     //
     @Value("${file.request-size-max}")
-    private static Long requestSizeMax;
+    private String requestSizeMax;
 
     @RequestMapping(value = "/upload")
-
+    @ResponseBody
     public ResponseResult upload(HttpServletResponse response, HttpServletRequest request) {
+//        初始化参数
+        init();
 //        设置编码格式
         response.setCharacterEncoding(character);
 //        初始化变量
@@ -66,12 +71,12 @@ class UploadController {
         try {
 //            用于处理接受到的文件类
             DiskFileItemFactory factory = new DiskFileItemFactory();
-            factory.setSizeThreshold(sizeThreshold); // 文件缓冲区大小
+            factory.setSizeThreshold(Integer.parseInt(sizeThreshold)); // 文件缓冲区大小
             factory.setRepository(new File(filePath)); // 设置文件缓冲区路径
 //            解析request中的文件信息
             ServletFileUpload upload = new ServletFileUpload(factory);
-            upload.setFileSizeMax(fileSizeMax);
-            upload.setSizeMax(requestSizeMax);
+            upload.setFileSizeMax(Long.parseLong(fileSizeMax));
+            upload.setSizeMax(Long.parseLong(requestSizeMax));
 //            解析这个文件
             List<FileItem> items = upload.parseRequest(request);
 //            取出文件信息
@@ -111,13 +116,13 @@ class UploadController {
                 }
             }
 //            合并文件：有分片并且已经到了最后一个分片才需要合并
-            if (schunks != null && schunk != null && schunk.intValue() == schunks.intValue() - 1) {
+            if (schunks != null && schunk.intValue() == schunks.intValue() - 1) {
 //                合并文件之后的路径
-                File tempFile = new File(prePath, name);
+                File tempFile = new File(filePath, name);
                 os = new BufferedOutputStream(new FileOutputStream(tempFile));
 //                找出所有的分片
-                for (int i = 0; i < schunks.intValue(); i++) {
-                    File file = new File(prePath, i + '_' + name);
+                for (int i = 0; i < schunks; i++) {
+                    File file = new File(filePath, i + '_' + name);
                     while (!file.exists()) {
 //                        TODO 一直找不到文件怎么办
                         Thread.sleep(100);
@@ -131,9 +136,9 @@ class UploadController {
                     file.delete();
                 }
                 os.flush();
+//                返回成功信息
+                response.setHeader("msg", "file upload success");
             }
-//            返回成功信息
-            response.getWriter().write("上传成功" + name);
         } catch (Exception e) {
             System.out.println("upload模块 失败");
             throw new RuntimeException(e);
@@ -148,6 +153,27 @@ class UploadController {
             }
         }
         return new ResponseResult(ResultCode.SUCCESS);
+    }
+
+    private void init() {
+        //        初始化参数
+        if (!Strings.hasText(character)) {
+            character = "utf8";
+        }
+        if (!Strings.hasText(sizeThreshold)) {
+            sizeThreshold = "1024";
+        }
+        if (!Strings.hasText(fileSizeMax)) {
+            Long number = 5L * 1024L * 1024L * 1024L;
+            fileSizeMax = String.valueOf(number);
+        }
+        if (!Strings.hasText(requestSizeMax)) {
+            Long number = 10L * 1024L * 1024L * 1024L;
+            requestSizeMax = String.valueOf(number);
+        }
+        if (!Strings.hasText(prePath)) {
+            prePath = "/Users/apple/Library/CloudStorage/OneDrive-个人/Program/Java/EvaluateSystem/src/main/resources/static/upload";
+        }
     }
 
 }

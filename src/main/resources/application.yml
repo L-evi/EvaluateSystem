@@ -5,6 +5,9 @@ spring:
     password: 20011121
     url: jdbc:mysql://8.134.139.152:33066/evaluate?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
     # 配置扫描
+  servlet:
+    multipart:
+      enabled: false
 mybatis:
   mapper-locations: classpath:**/*.xml
 
@@ -14,11 +17,13 @@ server:
     max-swallow-size: -1
 
 
-
 # 配置文件
 file:
-  threshold-size: 1024   # 文件缓冲区大小 1024MB
   pre-path: /Users/apple/Library/CloudStorage/OneDrive-个人/Program/Java/EvaluateSystem/src/main/resources/static/upload
-  character-set: utf8
-  file-size-max: 5368709120 # 分片文件大小 5 * 1024 * 1024 * 1024 bit 即 5MB
-  request-size-max: 1073741824 #  请求的最大大小 10 * 1024 * 1024 * 1024 bit 即 10M
+  character-set: utf-8
+  # 分片文件大小 5 * 1024 * 1024 * 1024 bit 即 5MB
+  file-size-max: 5368709120
+  #  请求的最大大小 10 * 1024 * 1024 * 1024 bit 即 10M
+  request-size-max: 1073741824
+  # 文件缓冲区大小 1024MB
+  threshold-size: 1024

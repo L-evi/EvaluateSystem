@@ -27,7 +27,7 @@ class EvaluateApplicationTests {
     }
 
     /**
-     * @param null
+     * @param
      * @return
      * @description 测试JwtUtil功能
      * @author Levi
@@ -80,5 +80,31 @@ class EvaluateApplicationTests {
         System.out.println(jsonObject);
     }
 
+
+    //    编码格式
+    @Value("${file.character-set}")
+    private  String character;
+    //    文件前缀
+    @Value("${file.pre-path}")
+    private static String prePath;
+    //    缓冲区大小阈值 TODO 无法读取到
+    @Value("${file.threshold-size")
+    private  String sizeThreshold;
+
+    //    文件分片最大值
+    @Value("${file.file-size-max}")
+    private  String fileSizeMax;
+
+    //
+    @Value("${file.request-size-max}")
+    private  String requestSizeMax;
+
+    @Test
+    void testGetValue() {
+        System.out.println("character:" + character);
+        System.out.println(sizeThreshold);
+        System.out.println("file-size-max:" + Long.parseLong(fileSizeMax));
+        System.out.println("request-size-max:" + Long.parseLong(requestSizeMax));
+    }
 }
 
