@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
+
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
@@ -16,7 +17,9 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 /**
@@ -32,6 +35,8 @@ public class FacultyController {
 
     @Autowired
     private FacultyService facultyService;
+
+
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
     public ResponseResult userLogin(@RequestBody Map<String, Object> dataMap) {

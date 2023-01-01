@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Objects;
 
 @SpringBootTest
 @PropertySource("classpath:application.yml")
@@ -49,7 +50,7 @@ class EvaluateApplicationTests {
         System.out.println(claims.getExpiration());
     }
 
-    @Autowired
+    @Resource
     private FacultyMapper facultyMapper;
 
 
@@ -116,9 +117,11 @@ class EvaluateApplicationTests {
 
     @Test
     public void testRedis() {
-        redisCache.setCacheObject("hello", "你好");
-        String hello = redisCache.getCacheObject("hello");
-        System.out.println(hello);
+        Faculty admin = facultyMapper.selectByUserID("admin");
+        System.out.println(admin.toString());
+//        redisCache.setCacheObject("Faculty" + admin.getUserID(), admin);
+//        Faculty faculty = redisCache.getCacheObject("Faculty" + admin.getUserID());
+//        System.out.println(faculty);
     }
 }
 

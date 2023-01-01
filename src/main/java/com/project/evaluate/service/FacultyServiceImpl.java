@@ -5,13 +5,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.JwtUtil;
+
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Resource;
 import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.Objects;
@@ -28,6 +31,10 @@ public class FacultyServiceImpl implements FacultyService {
     @Autowired()
     private FacultyMapper facultyMapper;
 
+
+
+    //    方法已经弃用
+    @Deprecated
     @Override
     public ResponseResult userLogin(Faculty faculty) {
         Faculty tmp = facultyMapper.selectByUserID(faculty.getUserID());
@@ -62,8 +69,11 @@ public class FacultyServiceImpl implements FacultyService {
         return new ResponseResult(ResultCode.SERVER_ERROR);
     }
 
+
     @Override
     public ResponseResult userRegister(Faculty faculty) {
+//        如果在redis和数据库中找到了该数据，则说明已经注册了
+
         if (facultyMapper.selectByUserID(faculty.getUserID()) != null) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "用户已注册");
