@@ -104,6 +104,11 @@
             <artifactId>shiro-spring-boot-starter</artifactId>
             <version>1.10.0</version>
         </dependency>
+        <!-- 引入redis依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -8,6 +8,9 @@ spring:
   servlet:
     multipart:
       enabled: false
+  redis:
+    host: localhost
+    port: 6379
 mybatis:
   mapper-locations: classpath:**/*.xml
 
@@ -27,3 +30,4 @@ file:
   request-size-max: 1073741824
   # 文件缓冲区大小 1024MB
   threshold-size: 1024
+
