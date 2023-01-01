@@ -29,6 +29,12 @@ public class TokenServiceImpl implements TokenService {
     public ResponseResult getTokenMessage(String token) {
 //        解析Token
         try {
+//            查看token是否过期
+            if (JwtUtil.isTimeout(token)) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("msg", "token已过期");
+                return new ResponseResult(ResultCode.LOGIN_TIMEOUT, jsonObject);
+            }
             Claims claims = JwtUtil.parseJwt(token);
             JSONObject jsonObject = JSONObject.parseObject(claims.getSubject());
             if (jsonObject.containsKey("userID")) {

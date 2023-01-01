@@ -8,6 +8,7 @@ import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,5 +60,22 @@ public class FacultyServiceImpl implements FacultyService {
             return new ResponseResult(ResultCode.SERVER_ERROR);
         }
         return new ResponseResult(ResultCode.SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseResult userRegister(Faculty faculty) {
+        if (facultyMapper.selectByUserID(faculty.getUserID()) != null) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("msg", "用户已注册");
+            return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+        }
+//        明文密码进行MD5 + salt + 散列，盐就用userID
+        Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserID(), 1024);
+        faculty.setPassword(md5Hash.toHex());
+        if (facultyMapper.addFaculty(faculty) == 1) {
+            return new ResponseResult(ResultCode.SUCCESS);
+        } else {
+            return new ResponseResult(ResultCode.DATABASE_ERROR);
+        }
     }
 }

@@ -1,12 +1,23 @@
 package com.project.evaluate.controller;
 
+import cn.hutool.core.date.DateTime;
+import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
 import com.project.evaluate.util.response.ResponseResult;
+import com.project.evaluate.util.response.ResultCode;
+import io.jsonwebtoken.lang.Strings;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * @author Levi
@@ -28,6 +39,41 @@ public class FacultyController {
         Faculty faculty = new Faculty();
         faculty.setUserID((String) dataMap.get("userID"));
         faculty.setPassword((String) dataMap.get("password"));
-        return facultyService.userLogin(faculty);
+//        System.out.println(faculty.toString());
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(faculty.getUserID(), faculty.getPassword());
+        try {
+            subject.login(usernamePasswordToken);
+            return new ResponseResult(ResultCode.SUCCESS);
+        } catch (UnknownAccountException e) {
+            System.out.println("账号错误");
+            e.printStackTrace();
+        } catch (IncorrectCredentialsException e) {
+            System.out.println("密码错误");
+            e.printStackTrace();
+        }
+        return new ResponseResult(ResultCode.LOGIN_ERROR);
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public ResponseResult userLogout() {
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
+        return new ResponseResult(ResultCode.SUCCESS);
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json")
+    public ResponseResult userRegister(@RequestBody Faculty faculty) {
+        if (!Strings.hasText(faculty.getUserID()) || !Strings.hasText(faculty.getPassword())) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("msg", "账号或密码不能为空");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        faculty.setLastLoginIP("localhost");
+        faculty.setLastLoginTime(new DateTime(TimeZone.getTimeZone("Asia/Shanghai")));
+        faculty.setLoginTime(new DateTime());
+        faculty.setLoginIP("localhost");
+        faculty.setIsInitPwd(0);
+        return facultyService.userRegister(faculty);
     }
 }

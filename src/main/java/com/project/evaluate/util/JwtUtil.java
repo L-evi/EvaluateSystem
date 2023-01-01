@@ -153,9 +153,9 @@ public class JwtUtil {
         Date expirationTime = claims.getExpiration();
         Date nowTime = new Date(System.currentTimeMillis());
         if (nowTime.after(expirationTime)) {
-            return false;
-        } else {
             return true;
+        } else {
+            return false;
         }
     }
 
