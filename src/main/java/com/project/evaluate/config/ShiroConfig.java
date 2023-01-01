@@ -34,7 +34,7 @@ public class ShiroConfig {
         map.put("/user/login", "anon");
         map.put("/user/logout", "anon");
         map.put("/user/register", "anon");
-        map.put("/verify/code", "anon");
+        map.put("/api/verify/**", "anon");
 //        默认认证路径
         shiroFilterFactoryBean.setLoginUrl("/login");
 //        设置错误路径

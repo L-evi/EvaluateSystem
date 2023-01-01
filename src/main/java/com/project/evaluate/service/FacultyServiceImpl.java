@@ -6,6 +6,7 @@ import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.JwtUtil;
 
+import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
@@ -31,7 +32,8 @@ public class FacultyServiceImpl implements FacultyService {
     @Autowired()
     private FacultyMapper facultyMapper;
 
-
+    @Resource
+    private RedisCache redisCache;
 
     //    方法已经弃用
     @Deprecated
@@ -83,6 +85,8 @@ public class FacultyServiceImpl implements FacultyService {
         Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserID(), 1024);
         faculty.setPassword(md5Hash.toHex());
         if (facultyMapper.addFaculty(faculty) == 1) {
+//            将信息放入redis中
+            redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty);
             return new ResponseResult(ResultCode.SUCCESS);
         } else {
             return new ResponseResult(ResultCode.DATABASE_ERROR);

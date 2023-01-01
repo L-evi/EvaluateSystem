@@ -36,8 +36,6 @@ public class FacultyController {
     @Autowired
     private FacultyService facultyService;
 
-
-
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
     public ResponseResult userLogin(@RequestBody Map<String, Object> dataMap) {
 //        获取其中的数据
@@ -47,9 +45,13 @@ public class FacultyController {
 //        System.out.println(faculty.toString());
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(faculty.getUserID(), faculty.getPassword());
+        JSONObject jsonObject = new JSONObject();
         try {
             subject.login(usernamePasswordToken);
-            return new ResponseResult(ResultCode.SUCCESS);
+            if (subject.isAuthenticated()) {
+                jsonObject.put("msg", "登录成功");
+            }
+            return new ResponseResult(ResultCode.SUCCESS, jsonObject);
         } catch (UnknownAccountException e) {
             System.out.println("账号错误");
             e.printStackTrace();
@@ -57,7 +59,8 @@ public class FacultyController {
             System.out.println("密码错误");
             e.printStackTrace();
         }
-        return new ResponseResult(ResultCode.LOGIN_ERROR);
+        jsonObject.put("msg", "登录失败");
+        return new ResponseResult(ResultCode.LOGIN_ERROR, jsonObject);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.JwtUtil;
+
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;;
 import org.springframework.context.annotation.PropertySource;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
@@ -117,8 +118,15 @@ class EvaluateApplicationTests {
 
     @Test
     public void testRedis() {
-        Faculty admin = facultyMapper.selectByUserID("admin");
-        System.out.println(admin.toString());
+        Faculty faculty = new Faculty();
+        faculty.setUserID("admin");
+        faculty.setPassword("admin");
+        redisCache.setCacheObject("admin", faculty);
+//        Faculty admin = JSONObject.parseObject(redisCache.getCacheObject("admin"), Faculty.class);
+        JSONObject jsonObject = redisCache.getCacheObject("admin");
+        Faculty admin = JSONObject.toJavaObject(jsonObject, Faculty.class);
+        System.out.println(admin);
+        System.out.println(jsonObject.toString());
 //        redisCache.setCacheObject("Faculty" + admin.getUserID(), admin);
 //        Faculty faculty = redisCache.getCacheObject("Faculty" + admin.getUserID());
 //        System.out.println(faculty);

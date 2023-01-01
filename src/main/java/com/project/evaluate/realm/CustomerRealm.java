@@ -1,10 +1,12 @@
 package com.project.evaluate.realm;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson2.JSON;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.service.FacultyService;
 
+import com.project.evaluate.util.redis.RedisCache;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -26,7 +28,8 @@ import java.util.Objects;
 public class CustomerRealm extends AuthorizingRealm {
     @Resource
     private FacultyMapper facultyMapper;
-
+    @Resource
+    private RedisCache redisCache;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
@@ -39,15 +42,20 @@ public class CustomerRealm extends AuthorizingRealm {
         String principal = (String) authenticationToken.getPrincipal();
 
         Faculty faculty = null;
-        if (Objects.isNull(faculty)) {
+//        从redis中获取信息
+        JSONObject jsonObject = redisCache.getCacheObject("Faculty:" + principal);
+
+        if (Objects.isNull(jsonObject)) {
 //            从数据库中获取信息
             faculty = facultyMapper.selectByUserID(principal);
+        } else {
+            faculty = JSONObject.toJavaObject(jsonObject, Faculty.class);
         }
 
 //        封装信息
         if (!Objects.isNull(faculty)) {
 //            将信息放入redis中
-
+            redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty);
             return new SimpleAuthenticationInfo(principal, faculty.getPassword(), ByteSource.Util.bytes(faculty.getUserID()), this.getName());
         }
         return null;

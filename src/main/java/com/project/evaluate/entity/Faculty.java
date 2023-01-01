@@ -18,7 +18,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Faculty{
+public class Faculty implements Serializable{
     /**
      * 登录名
      */
