@@ -1,8 +1,10 @@
 package com.project.evaluate.filter;
 
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.project.evaluate.util.JwtToken;
 import com.project.evaluate.util.response.ResponseResult;
+import com.project.evaluate.util.response.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
@@ -49,7 +51,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         httpServletResponse.setStatus(400);
         httpServletResponse.setContentType("application/json;charset=utf-8");
         PrintWriter out = httpServletResponse.getWriter();
-        out.println(JSONUtil.toJsonStr(ResponseResult.error(500, "认证失败")));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg", "token 已过期，无法访问");
+        out.println(JSONUtil.toJsonStr(new ResponseResult(ResultCode.TOKEN_EXPIRATION, jsonObject)));
         out.flush();
         out.close();
         return false;

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
 
+import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.Response;
 import java.util.Map;
 import java.util.Objects;
@@ -30,11 +32,14 @@ import java.util.TimeZone;
  * @since 2022/12/6 02:06
  */
 @RestController
-@RequestMapping(value = "/user")
+@RequestMapping(value = "/api/user")
 @CrossOrigin(value = "*")
 public class FacultyController {
 
-    @Autowired
+    @Resource
+    private RedisCache redisCache;
+
+    @Resource
     private FacultyService facultyService;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
@@ -50,6 +55,10 @@ public class FacultyController {
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public ResponseResult userLogout() {
         Subject subject = SecurityUtils.getSubject();
+        System.out.println("principal: " + subject.getPrincipal());
+        String userID = (String) subject.getPrincipal();
+        redisCache.deleteObject("Faculty:" + userID);
+        redisCache.deleteObject("token:" + userID);
         subject.logout();
         return new ResponseResult(ResultCode.SUCCESS);
     }

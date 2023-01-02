@@ -70,9 +70,9 @@ public class JwtRealm extends AuthorizingRealm {
             JSONObject jsonObject = JSONObject.parseObject(claims.getSubject());
             String userID = (String) jsonObject.get("userID");
 //            从redis中获取信息
-            System.out.println(userID);
+//            System.out.println(userID);
             String str = redisCache.getCacheObject("token:" + userID);
-            System.out.println(str);
+//            System.out.println(str);
             if (!Strings.hasText(str)) {
                 throw new UnknownAccountException("用户未登录，请重新登录");
             }
