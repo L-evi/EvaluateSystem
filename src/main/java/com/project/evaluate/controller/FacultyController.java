@@ -4,26 +4,18 @@ import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
-
 import com.project.evaluate.util.IPUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.ws.Response;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TimeZone;
 
 /**
@@ -47,11 +39,11 @@ public class FacultyController {
     public ResponseResult userLogin(@RequestBody Map<String, Object> dataMap, HttpServletRequest request) {
 //        获取其中的数据
         Faculty faculty = new Faculty();
-        faculty.setUserID((String) dataMap.get("userID"));
+        faculty.setUserId((String) dataMap.get("userID"));
         faculty.setPassword((String) dataMap.get("password"));
-        faculty.setLoginIP(IPUtil.getIPAddress(request));
+        faculty.setLoginIp(IPUtil.getIPAddress(request));
 //        调用Service服务进行认证
-        return facultyService.userLogin(faculty);
+        return this.facultyService.userLogin(faculty);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
@@ -59,24 +51,24 @@ public class FacultyController {
         Subject subject = SecurityUtils.getSubject();
         System.out.println("principal: " + subject.getPrincipal());
         String userID = (String) subject.getPrincipal();
-        redisCache.deleteObject("Faculty:" + userID);
-        redisCache.deleteObject("token:" + userID);
+        this.redisCache.deleteObject("Faculty:" + userID);
+        this.redisCache.deleteObject("token:" + userID);
         subject.logout();
         return new ResponseResult(ResultCode.SUCCESS);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json")
     public ResponseResult userRegister(@RequestBody Faculty faculty) {
-        if (!Strings.hasText(faculty.getUserID()) || !Strings.hasText(faculty.getPassword())) {
+        if (!Strings.hasText(faculty.getUserId()) || !Strings.hasText(faculty.getPassword())) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "账号或密码不能为空");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        faculty.setLastLoginIP("localhost");
+        faculty.setLastLoginIp("localhost");
         faculty.setLastLoginTime(new DateTime(TimeZone.getTimeZone("Asia/Shanghai")));
         faculty.setLoginTime(new DateTime());
-        faculty.setLoginIP("localhost");
+        faculty.setLoginIp("localhost");
         faculty.setIsInitPwd(0);
-        return facultyService.userRegister(faculty);
+        return this.facultyService.userRegister(faculty);
     }
 }

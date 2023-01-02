@@ -5,27 +5,25 @@ import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.JwtUtil;
-
 import com.project.evaluate.util.redis.RedisCache;
-import io.jsonwebtoken.Claims;;
+import io.jsonwebtoken.Claims;
 import org.apache.shiro.crypto.hash.Md5Hash;
-import org.apache.shiro.util.ByteSource;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+;
 
 @SpringBootTest
 @PropertySource("classpath:application.yml")
@@ -79,13 +77,13 @@ class EvaluateApplicationTests {
     @Test
     void testValue() {
 
-        System.out.println(path);
+        System.out.println(this.path);
     }
 
     @Test
     void testClassToJSONObject() {
         Faculty faculty = new Faculty();
-        faculty.setUserID("user");
+        faculty.setUserId("user");
         JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(faculty));
         System.out.println(jsonObject);
     }
@@ -111,10 +109,10 @@ class EvaluateApplicationTests {
 
     @Test
     void testGetValue() {
-        System.out.println("character:" + character);
-        System.out.println(sizeThreshold);
-        System.out.println("file-size-max:" + Long.parseLong(fileSizeMax));
-        System.out.println("request-size-max:" + Long.parseLong(requestSizeMax));
+        System.out.println("character:" + this.character);
+        System.out.println(this.sizeThreshold);
+        System.out.println("file-size-max:" + Long.parseLong(this.fileSizeMax));
+        System.out.println("request-size-max:" + Long.parseLong(this.requestSizeMax));
     }
 
     //    测试redis
@@ -124,11 +122,11 @@ class EvaluateApplicationTests {
     @Test
     public void testRedis() {
         Faculty faculty = new Faculty();
-        faculty.setUserID("admin");
+        faculty.setUserId("admin");
         faculty.setPassword("admin");
-        redisCache.setCacheObject("admin", faculty, 1, TimeUnit.MINUTES);
+        this.redisCache.setCacheObject("admin", faculty, 1, TimeUnit.MINUTES);
 //        Faculty admin = JSONObject.parseObject(redisCache.getCacheObject("admin"), Faculty.class);
-        JSONObject jsonObject = redisCache.getCacheObject("admin");
+        JSONObject jsonObject = this.redisCache.getCacheObject("admin");
         Faculty admin = JSONObject.toJavaObject(jsonObject, Faculty.class);
         System.out.println(admin);
         System.out.println(jsonObject.toString());
@@ -143,13 +141,5 @@ class EvaluateApplicationTests {
         System.out.println(md5Hash.toHex());
     }
 
-    @Test
-    public void testUpdateFaulty() {
-        Faculty faculty = new Faculty();
-        faculty.setUserID("admin");
-        faculty.setUserName("admin");
-        faculty.setLoginIP("127.0.0.1");
-        facultyMapper.updateFaculty(faculty);
-    }
 }
 

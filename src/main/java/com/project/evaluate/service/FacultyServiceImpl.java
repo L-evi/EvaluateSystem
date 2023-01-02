@@ -4,23 +4,17 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.FacultyMapper;
-import com.project.evaluate.util.IPUtil;
 import com.project.evaluate.util.JwtUtil;
-
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
-import io.jsonwebtoken.lang.Strings;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
-import java.security.MessageDigest;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -43,9 +37,9 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public ResponseResult userLogin(Faculty faculty) {
 //        从redis中获取信息
-        Faculty tmp = JSONObject.toJavaObject(redisCache.getCacheObject("Faculty:" + faculty.getUserID()), Faculty.class);
+        Faculty tmp = JSONObject.toJavaObject(this.redisCache.getCacheObject("Faculty:" + faculty.getUserId()), Faculty.class);
         if (Objects.isNull(tmp)) {
-            tmp = facultyMapper.selectByUserID(faculty.getUserID());
+            tmp = this.facultyMapper.selectByUserID(faculty.getUserId());
         }
         JSONObject jsonObject = new JSONObject();
 //        如果对象为空则登录失败
@@ -58,20 +52,20 @@ public class FacultyServiceImpl implements FacultyService {
             return new ResponseResult(ResultCode.ACCOUNT_ERROR, jsonObject);
         }
         try {
-            Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserID(), 1024);
+            Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserId(), 1024);
             String password = md5Hash.toHex();
             if (password.equals(tmp.getPassword())) {
                 jsonObject.clear();
-                jsonObject.put("userID", tmp.getUserID());
+                jsonObject.put("userID", tmp.getUserId());
                 jsonObject.put("roleType", tmp.getRoleType());
                 String token = JwtUtil.createJwt(String.valueOf(jsonObject), 60 * 60 * 1000 * 3L);
                 //                更新登录信息
-                updateLoginState(tmp, faculty.getLoginIP());
+                this.updateLoginState(tmp, faculty.getLoginIp());
                 jsonObject.clear();
                 jsonObject = JSONObject.parseObject(JSON.toJSONString(tmp));
 //                放入到redis中
-                redisCache.setCacheObject("Faculty:" + tmp.getUserID(), tmp, 3, TimeUnit.HOURS);
-                redisCache.setCacheObject("token:" + tmp.getUserID(), token, 3, TimeUnit.HOURS);
+                this.redisCache.setCacheObject("Faculty:" + tmp.getUserId(), tmp, 3, TimeUnit.HOURS);
+                this.redisCache.setCacheObject("token:" + tmp.getUserId(), token, 3, TimeUnit.HOURS);
                 jsonObject.put("token", token);
                 jsonObject.put("msg", "登录成功");
                 jsonObject.remove("password");
@@ -93,28 +87,28 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     public void updateLoginState(Faculty faculty, String ip) {
-        faculty.setLastLoginIP(faculty.getLoginIP());
+        faculty.setLastLoginIp(faculty.getLoginIp());
         faculty.setLastLoginTime(faculty.getLoginTime());
-        faculty.setLoginIP(ip);
+        faculty.setLoginIp(ip);
         faculty.setLoginTime(new Date());
-        facultyMapper.updateFaculty(faculty);
+        this.facultyMapper.updateFaculty(faculty);
     }
 
     @Override
     public ResponseResult userRegister(Faculty faculty) {
 //        如果在redis和数据库中找到了该数据，则说明已经注册了
 
-        if (facultyMapper.selectByUserID(faculty.getUserID()) != null) {
+        if (this.facultyMapper.selectByUserID(faculty.getUserId()) != null) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "用户已注册");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        明文密码进行MD5 + salt + 散列，盐就用userID
-        Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserID(), 1024);
+        Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserId(), 1024);
         faculty.setPassword(md5Hash.toHex());
-        if (facultyMapper.addFaculty(faculty) == 1) {
+        if (this.facultyMapper.addFaculty(faculty) == 1) {
 //            将信息放入redis中
-            redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty, 3, TimeUnit.HOURS);
+            this.redisCache.setCacheObject("Faculty:" + faculty.getUserId(), faculty, 3, TimeUnit.HOURS);
             return new ResponseResult(ResultCode.SUCCESS);
         } else {
             return new ResponseResult(ResultCode.DATABASE_ERROR);

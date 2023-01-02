@@ -29,9 +29,9 @@ public class testController {
 
     @RequestMapping(value = "/update")
     public ResponseResult testUpdate() {
-        Faculty faculty = facultyMapper.selectByUserID("user");
-        faculty.setLastLoginIP("127.0.0.1");
-        int i = facultyMapper.updateFaculty(faculty);
+        Faculty faculty = this.facultyMapper.selectByUserID("user");
+        faculty.setLastLoginIp("127.0.0.1");
+        int i = this.facultyMapper.updateFaculty(faculty);
         System.out.println(i);
         return ResponseResult.success();
     }

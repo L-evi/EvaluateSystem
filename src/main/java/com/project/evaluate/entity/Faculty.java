@@ -1,13 +1,12 @@
 package com.project.evaluate.entity;
 
-import cn.hutool.core.date.DateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.Date;
+
 /**
  * @author Levi
  * @version 1.0 (created by Spring Boot)
@@ -18,11 +17,11 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Faculty implements Serializable{
+public class Faculty implements Serializable {
     /**
      * 登录名
      */
-    private String userID;
+    private String userId;
     /**
      * 登录密码
      */
@@ -54,7 +53,7 @@ public class Faculty implements Serializable{
     /**
      * 上一次登录的IP地址
      */
-    private String lastLoginIP;
+    private String lastLoginIp;
     /**
      * 上一次登录时间
      */
@@ -62,7 +61,7 @@ public class Faculty implements Serializable{
     /**
      * 本次登录IP
      */
-    private String loginIP;
+    private String loginIp;
     /**
      * 本次登录时间
      */
