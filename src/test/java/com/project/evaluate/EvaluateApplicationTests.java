@@ -8,6 +8,8 @@ import com.project.evaluate.util.JwtUtil;
 
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;;
+import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.junit.jupiter.api.Test;
@@ -130,6 +132,12 @@ class EvaluateApplicationTests {
 //        redisCache.setCacheObject("Faculty" + admin.getUserID(), admin);
 //        Faculty faculty = redisCache.getCacheObject("Faculty" + admin.getUserID());
 //        System.out.println(faculty);
+    }
+
+    @Test
+    public void testMd5() {
+        Md5Hash md5Hash = new Md5Hash("admin", "admin", 1024);
+        System.out.println(md5Hash.toHex());
     }
 }
 

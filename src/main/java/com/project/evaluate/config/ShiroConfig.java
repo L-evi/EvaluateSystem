@@ -2,6 +2,7 @@ package com.project.evaluate.config;
 
 import com.project.evaluate.filter.JwtFilter;
 import com.project.evaluate.realm.CustomerRealm;
+import com.project.evaluate.realm.JwtRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
@@ -57,12 +58,13 @@ public class ShiroConfig {
         map.put("/api/verify/**", "anon");
         map.put("/user/logout", "anon");
         map.put("/**", "jwt");
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
         return shiroFilterFactoryBean;
     }
 
     //    2、创建安全管理器
     @Bean
-    public DefaultWebSecurityManager getDefaultWebSecurityManager(Realm realm) {
+    public DefaultWebSecurityManager getDefaultWebSecurityManager(JwtRealm realm) {
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
 //        给安全管理器设置realm
         defaultWebSecurityManager.setRealm(realm);
@@ -73,18 +75,5 @@ public class ShiroConfig {
         defaultSubjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
         defaultWebSecurityManager.setSubjectDAO(defaultSubjectDAO);
         return defaultWebSecurityManager;
-    }
-//    3、创建自定义Realm
-
-    @Bean
-    public Realm getRealm() {
-        CustomerRealm customerRealm = new CustomerRealm();
-//        设置加密算法
-        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        hashedCredentialsMatcher.setHashAlgorithmName("MD5");
-//        设置散列次数
-        hashedCredentialsMatcher.setHashIterations(1024);
-        customerRealm.setCredentialsMatcher(hashedCredentialsMatcher);
-        return customerRealm;
     }
 }

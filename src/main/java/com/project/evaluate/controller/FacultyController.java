@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.xml.ws.Response;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -42,7 +43,9 @@ public class FacultyController {
         Faculty faculty = new Faculty();
         faculty.setUserID((String) dataMap.get("userID"));
         faculty.setPassword((String) dataMap.get("password"));
-//        System.out.println(faculty.toString());
+//        调用Service服务进行认证
+        return facultyService.userLogin(faculty);
+/*//        System.out.println(faculty.toString());
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(faculty.getUserID(), faculty.getPassword());
         JSONObject jsonObject = new JSONObject();
@@ -60,7 +63,7 @@ public class FacultyController {
             e.printStackTrace();
         }
         jsonObject.put("msg", "登录失败");
-        return new ResponseResult(ResultCode.LOGIN_ERROR, jsonObject);
+        return new ResponseResult(ResultCode.LOGIN_ERROR, jsonObject);*/
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
@@ -83,5 +86,10 @@ public class FacultyController {
         faculty.setLoginIP("localhost");
         faculty.setIsInitPwd(0);
         return facultyService.userRegister(faculty);
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    public ResponseResult userTest() {
+        return new ResponseResult(ResultCode.SUCCESS);
     }
 }

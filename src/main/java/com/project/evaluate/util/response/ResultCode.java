@@ -13,6 +13,8 @@ public enum ResultCode {
 //    2001   用户未登录，无权限 / 当前令牌已过期
 //    2002   登录超时
 //    2003   IP已被禁止访问
+//    2004   账号或密码错误
+//    2005   账号状态异常，无法访问
 //    3001   服务器错误
 //    3002   数据库访问异常
 //    3003   IO操作异常
@@ -25,8 +27,8 @@ public enum ResultCode {
     NUMBER_INTERFACE_CALLS_OVER(1004, "接口调用次数已达到设定的上限", 0),
     TOKEN_EXPIRATION(2001, "用户未登录、无权限或当前令牌过期", 0),
     LOGIN_TIMEOUT(2002, "登录超时", 0),
-    LOGIN_ERROR(2003, "账号或密码错误", 0),
-
+    LOGIN_ERROR(2004, "账号或密码错误", 0),
+    ACCOUNT_ERROR(2005, "账号状态异常，无法访问", 0),
     IP_BLOCKED(2003, "IP被禁止访问", 0),
 
     SERVER_ERROR(3001, "服务器错误", 0),

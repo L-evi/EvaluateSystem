@@ -27,10 +27,10 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         // 判断请求头是否带上“Token”
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String token = httpServletRequest.getHeader("Authorization");
+        String token = httpServletRequest.getHeader("token");
         // 游客访问电商平台首页可以不用携带 token
         if (StringUtils.isEmpty(token)) {
-            return true;
+            return false;
         }
         try {
             // 交给 myRealm

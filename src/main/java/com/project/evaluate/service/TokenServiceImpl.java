@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.JwtUtil;
+import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.Claims;
@@ -25,6 +26,9 @@ public class TokenServiceImpl implements TokenService {
     @Resource
     private FacultyMapper facultyMapper;
 
+    @Resource
+    private RedisCache redisCache;
+
     @Override
     public ResponseResult getTokenMessage(String token) {
 //        解析Token
@@ -39,7 +43,11 @@ public class TokenServiceImpl implements TokenService {
             JSONObject jsonObject = JSONObject.parseObject(claims.getSubject());
             if (jsonObject.containsKey("userID")) {
                 String userID = jsonObject.get("userID").toString();
-                Faculty faculty = facultyMapper.selectByUserID(userID);
+//                调用redis
+                Faculty faculty = JSONObject.toJavaObject(redisCache.getCacheObject("Faculty:" + userID), Faculty.class);
+                if (Objects.isNull(faculty)) {
+                    faculty = facultyMapper.selectByUserID(userID);
+                }
 //                如果对象为空则返回错误
                 if (!Objects.isNull(faculty)) {
                     jsonObject = JSONObject.parseObject(JSON.toJSONString(faculty));
@@ -48,6 +56,8 @@ public class TokenServiceImpl implements TokenService {
                         jsonObject.remove("password");
                     }
                     jsonObject.put("msg", "token获取信息成功");
+//                    将信息放入redis中
+                    redisCache.setCacheObject("Faculty:" + userID, faculty);
                     return new ResponseResult(ResultCode.SUCCESS, jsonObject);
                 } else {
                     jsonObject = new JSONObject();
@@ -57,9 +67,10 @@ public class TokenServiceImpl implements TokenService {
             }
         } catch (Exception e) {
             System.out.println("TokenService Token的Parse失败");
-            throw new RuntimeException(e);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("msg", "Token 的解析失败");
+            return new ResponseResult(ResultCode.SERVER_ERROR, jsonObject);
         }
-
         return null;
     }
 }
