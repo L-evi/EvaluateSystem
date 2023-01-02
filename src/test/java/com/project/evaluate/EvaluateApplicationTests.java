@@ -24,6 +24,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 @PropertySource("classpath:application.yml")
@@ -123,7 +124,7 @@ class EvaluateApplicationTests {
         Faculty faculty = new Faculty();
         faculty.setUserID("admin");
         faculty.setPassword("admin");
-        redisCache.setCacheObject("admin", faculty);
+        redisCache.setCacheObject("admin", faculty, 1, TimeUnit.MINUTES);
 //        Faculty admin = JSONObject.parseObject(redisCache.getCacheObject("admin"), Faculty.class);
         JSONObject jsonObject = redisCache.getCacheObject("admin");
         Faculty admin = JSONObject.toJavaObject(jsonObject, Faculty.class);

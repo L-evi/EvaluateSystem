@@ -12,7 +12,9 @@ import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Levi
@@ -56,8 +58,9 @@ public class TokenServiceImpl implements TokenService {
                         jsonObject.remove("password");
                     }
                     jsonObject.put("msg", "token获取信息成功");
-//                    将信息放入redis中
-                    redisCache.setCacheObject("Faculty:" + userID, faculty);
+//                    将信息放入redis中：根据过期时间设置redis中的token过期时间
+                    int seconds = (int) (claims.getExpiration().getTime() - (new Date()).getTime());
+                    redisCache.setCacheObject("Faculty:" + userID, faculty, seconds, TimeUnit.MILLISECONDS);
                     return new ResponseResult(ResultCode.SUCCESS, jsonObject);
                 } else {
                     jsonObject = new JSONObject();

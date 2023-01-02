@@ -106,7 +106,7 @@ public class FacultyServiceImpl implements FacultyService {
         faculty.setPassword(md5Hash.toHex());
         if (facultyMapper.addFaculty(faculty) == 1) {
 //            将信息放入redis中
-            redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty);
+            redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty, 3, TimeUnit.HOURS);
             return new ResponseResult(ResultCode.SUCCESS);
         } else {
             return new ResponseResult(ResultCode.DATABASE_ERROR);
