@@ -77,12 +77,18 @@ public class FacultyServiceImpl implements FacultyService {
             } else {
                 throw new IncorrectCredentialsException("密码错误");
             }
+        } catch (IncorrectCredentialsException e) {
+            e.printStackTrace();
+            jsonObject.clear();
+            jsonObject.put("msg", "密码错误");
+            return new ResponseResult(ResultCode.LOGIN_ERROR, jsonObject);
         } catch (Exception e) {
             e.printStackTrace();
             jsonObject.clear();
             jsonObject.put("msg", "服务器错误");
             return new ResponseResult(ResultCode.SERVER_ERROR, jsonObject);
         }
+
     }
 
 

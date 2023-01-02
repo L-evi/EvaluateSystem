@@ -52,7 +52,7 @@ public class JwtRealm extends AuthorizingRealm {
                 simpleAuthorizationInfo.addRole(roleType);
             }
         } catch (Exception e) {
-            throw new RuntimeException("token parse失败");
+            throw new AuthenticationException("token parse失败");
         }
         return simpleAuthorizationInfo;
     }

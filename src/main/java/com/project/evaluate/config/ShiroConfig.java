@@ -30,22 +30,6 @@ public class ShiroConfig {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
 //        给filter设置安全管理器
         shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
-
-/*//        配置系统受限资源
-        Map<String, String> map = new HashMap<String, String>();
-//        authc是请求这个资源需要认证和授权
-        map.put("/**", "authc");
-//        设置登录页面匿名访问：没有拦截
-        map.put("/user/login", "anon");
-        map.put("/user/logout", "anon");
-        map.put("/user/register", "anon");
-        map.put("/api/verify/**", "anon");
-//        默认认证路径
-        shiroFilterFactoryBean.setLoginUrl("/login");
-//        设置错误路径
-        shiroFilterFactoryBean.setUnauthorizedUrl("/error");
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(map);*/
-
 //        添加自定义过滤器
         Map<String, Filter> filterMap = new HashMap<String, Filter>();
         filterMap.put("jwt", new JwtFilter());
