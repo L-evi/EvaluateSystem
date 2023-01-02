@@ -152,11 +152,7 @@ public class JwtUtil {
         Claims claims = parseJwt(token);
         Date expirationTime = claims.getExpiration();
         Date nowTime = new Date(System.currentTimeMillis());
-        if (nowTime.after(expirationTime)) {
-            return true;
-        } else {
-            return false;
-        }
+        return nowTime.after(expirationTime);
     }
 
 }

@@ -1,13 +1,17 @@
 package com.project.evaluate.config;
 
+import com.project.evaluate.filter.JwtFilter;
 import com.project.evaluate.realm.CustomerRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
+import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.Filter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +30,7 @@ public class ShiroConfig {
 //        给filter设置安全管理器
         shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
 
-//        配置系统受限资源
+/*//        配置系统受限资源
         Map<String, String> map = new HashMap<String, String>();
 //        authc是请求这个资源需要认证和授权
         map.put("/**", "authc");
@@ -39,7 +43,20 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setLoginUrl("/login");
 //        设置错误路径
         shiroFilterFactoryBean.setUnauthorizedUrl("/error");
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(map);*/
+
+//        添加自定义过滤器
+        Map<String, Filter> filterMap = new HashMap<String, Filter>();
+        filterMap.put("jwt", new JwtFilter());
+        shiroFilterFactoryBean.setFilters(filterMap);
+
+//        配置系统受限资源
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("/user/login", "anon");
+        map.put("/user/register", "anon");
+        map.put("/api/verify/**", "anon");
+        map.put("/user/logout", "anon");
+        map.put("/**", "jwt");
         return shiroFilterFactoryBean;
     }
 
@@ -49,6 +66,12 @@ public class ShiroConfig {
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
 //        给安全管理器设置realm
         defaultWebSecurityManager.setRealm(realm);
+//        关闭session
+        DefaultSubjectDAO defaultSubjectDAO = new DefaultSubjectDAO();
+        DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = new DefaultSessionStorageEvaluator();
+        defaultSessionStorageEvaluator.setSessionStorageEnabled(false);
+        defaultSubjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
+        defaultWebSecurityManager.setSubjectDAO(defaultSubjectDAO);
         return defaultWebSecurityManager;
     }
 //    3、创建自定义Realm

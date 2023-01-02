@@ -3,6 +3,8 @@ package com.project.evaluate.util.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author Levi
  * @version 1.0 (created by Spring Boot)
@@ -11,7 +13,7 @@ import lombok.Data;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResponseResult<T> {
+public class ResponseResult<T> implements Serializable {
 
     //    状态码
     private int code;
