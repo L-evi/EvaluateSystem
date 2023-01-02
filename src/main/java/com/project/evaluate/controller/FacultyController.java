@@ -87,9 +87,4 @@ public class FacultyController {
         faculty.setIsInitPwd(0);
         return facultyService.userRegister(faculty);
     }
-
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
-    public ResponseResult userTest() {
-        return new ResponseResult(ResultCode.SUCCESS);
-    }
 }

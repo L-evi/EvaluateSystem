@@ -9,8 +9,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.lang.Strings;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.tomcat.util.net.jsse.JSSEImplementation;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +33,28 @@ public class JwtRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        return null;
+//        从中获取token
+        String userID = (String) principals.getPrimaryPrincipal();
+        SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+//        从redis中获取Token
+        String token = redisCache.getCacheObject("token:" + userID);
+        try {
+            if (JwtUtil.isTimeout(token)) {
+                return simpleAuthorizationInfo;
+            }
+            Claims claims = JwtUtil.parseJwt(token);
+            JSONObject jsonObject = JSONObject.parseObject(claims.getSubject());
+            String roleType = null;
+            if (jsonObject.containsKey("roleType")) {
+                roleType = (String) jsonObject.get("roleType");
+            }
+            if (Strings.hasText(roleType)) {
+                simpleAuthorizationInfo.addRole(roleType);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("token parse失败");
+        }
+        return simpleAuthorizationInfo;
     }
 
 
