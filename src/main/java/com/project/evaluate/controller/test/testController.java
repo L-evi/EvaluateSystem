@@ -1,7 +1,11 @@
 package com.project.evaluate.controller.test;
 
+import com.project.evaluate.entity.Faculty;
+import com.project.evaluate.mapper.FacultyMapper;
+import com.project.evaluate.util.response.ResponseResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +13,9 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/test")
 public class testController {
+    @Resource
+    private FacultyMapper facultyMapper;
+
     @RequestMapping(value = "/hello", method = RequestMethod.POST)
     public Map<String, Object> testHelloWorld(@RequestBody Map<String, Object> getMessage) {
         Map<String, Object> res = new HashMap<>();
@@ -19,6 +26,16 @@ public class testController {
         res.put("mag", "Hello World!");
         return res;
     }
+
+    @RequestMapping(value = "/update")
+    public ResponseResult testUpdate() {
+        Faculty faculty = facultyMapper.selectByUserID("user");
+        faculty.setLastLoginIP("127.0.0.1");
+        int i = facultyMapper.updateFaculty(faculty);
+        System.out.println(i);
+        return ResponseResult.success();
+    }
+
 
     @RequestMapping(value = "/helloget", method = RequestMethod.GET)
     public Map<String, Object> testGet() {

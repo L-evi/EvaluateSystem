@@ -20,4 +20,19 @@
         values (#{userID}, #{userName}, #{password}, #{roleType}, #{mobile}, #{email}, #{status}, #{isInitPwd},
                 #{lastLoginIP}, #{lastLoginTime}, #{loginIP}, #{loginTime})
     </insert>
+
+    <update id="updateFaculty" parameterType="com.project.evaluate.entity.Faculty">
+        update faculty
+        set userName      = #{userName},
+            roleType      = #{roleType},
+            mobile        = #{mobile},
+            email         = #{email},
+            status        = #{status},
+            isInitPwd     = #{isInitPwd},
+            lastLoginIP   = #{lastLoginIP},
+            lastLoginTime = #{lastLoginTime},
+            loginIP       = #{loginIP},
+            loginTime     = #{loginTime}
+        where userID = #{userID}
+    </update>
 </mapper>

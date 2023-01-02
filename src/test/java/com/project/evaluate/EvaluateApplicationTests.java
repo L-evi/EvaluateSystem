@@ -10,6 +10,7 @@ import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.util.ByteSource;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 @PropertySource("classpath:application.yml")
+@ComponentScan("classpath:mapper/*.xml")
 class EvaluateApplicationTests {
 
     @Test
@@ -139,6 +141,15 @@ class EvaluateApplicationTests {
     public void testMd5() {
         Md5Hash md5Hash = new Md5Hash("admin", "admin", 1024);
         System.out.println(md5Hash.toHex());
+    }
+
+    @Test
+    public void testUpdateFaulty() {
+        Faculty faculty = new Faculty();
+        faculty.setUserID("admin");
+        faculty.setUserName("admin");
+        faculty.setLoginIP("127.0.0.1");
+        facultyMapper.updateFaculty(faculty);
     }
 }
 

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
 
+import com.project.evaluate.util.IPUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
@@ -43,11 +44,12 @@ public class FacultyController {
     private FacultyService facultyService;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
-    public ResponseResult userLogin(@RequestBody Map<String, Object> dataMap) {
+    public ResponseResult userLogin(@RequestBody Map<String, Object> dataMap, HttpServletRequest request) {
 //        获取其中的数据
         Faculty faculty = new Faculty();
         faculty.setUserID((String) dataMap.get("userID"));
         faculty.setPassword((String) dataMap.get("password"));
+        faculty.setLoginIP(IPUtil.getIPAddress(request));
 //        调用Service服务进行认证
         return facultyService.userLogin(faculty);
     }

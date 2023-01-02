@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.FacultyMapper;
+import com.project.evaluate.util.IPUtil;
 import com.project.evaluate.util.JwtUtil;
 
 import com.project.evaluate.util.redis.RedisCache;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import java.security.MessageDigest;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -38,8 +40,6 @@ public class FacultyServiceImpl implements FacultyService {
     @Resource
     private RedisCache redisCache;
 
-    //    方法已经弃用
-    @Deprecated
     @Override
     public ResponseResult userLogin(Faculty faculty) {
 //        从redis中获取信息
@@ -65,6 +65,8 @@ public class FacultyServiceImpl implements FacultyService {
                 jsonObject.put("userID", tmp.getUserID());
                 jsonObject.put("roleType", tmp.getRoleType());
                 String token = JwtUtil.createJwt(String.valueOf(jsonObject), 60 * 60 * 1000 * 3L);
+                //                更新登录信息
+                updateLoginState(tmp, faculty.getLoginIP());
                 jsonObject.clear();
                 jsonObject = JSONObject.parseObject(JSON.toJSONString(tmp));
 //                放入到redis中
@@ -88,9 +90,15 @@ public class FacultyServiceImpl implements FacultyService {
             jsonObject.put("msg", "服务器错误");
             return new ResponseResult(ResultCode.SERVER_ERROR, jsonObject);
         }
-
     }
 
+    public void updateLoginState(Faculty faculty, String ip) {
+        faculty.setLastLoginIP(faculty.getLoginIP());
+        faculty.setLastLoginTime(faculty.getLoginTime());
+        faculty.setLoginIP(ip);
+        faculty.setLoginTime(new Date());
+        facultyMapper.updateFaculty(faculty);
+    }
 
     @Override
     public ResponseResult userRegister(Faculty faculty) {

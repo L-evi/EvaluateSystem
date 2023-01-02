@@ -10,4 +10,6 @@ public interface FacultyMapper {
     Faculty selectByUserID(String userID);
 
     int addFaculty(Faculty faculty);
+
+    int updateFaculty(Faculty faculty);
 }
