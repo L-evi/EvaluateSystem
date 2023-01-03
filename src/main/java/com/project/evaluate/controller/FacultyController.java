@@ -58,16 +58,16 @@ public class FacultyController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json")
-    public ResponseResult userRegister(@RequestBody Faculty faculty) {
+    public ResponseResult userRegister(@RequestBody Faculty faculty, HttpServletRequest request) {
         if (!Strings.hasText(faculty.getUserId()) || !Strings.hasText(faculty.getPassword())) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "账号或密码不能为空");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        faculty.setLastLoginIp("localhost");
+        faculty.setLastLoginIp(IPUtil.getIPAddress(request));
         faculty.setLastLoginTime(new DateTime(TimeZone.getTimeZone("Asia/Shanghai")));
         faculty.setLoginTime(new DateTime());
-        faculty.setLoginIp("localhost");
+        faculty.setLoginIp(IPUtil.getIPAddress(request));
         faculty.setIsInitPwd(0);
         return this.facultyService.userRegister(faculty);
     }

@@ -3,5 +3,25 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.mapper.CourseMapper">
+    <select id="getPageCourse" resultType="com.project.evaluate.entity.Course">
+        SELECT Id,
+               courseID,
+               courseName,
+               courseProperty,
+               testType,
+               educationType,
+               courseType,
+               credit,
+               teamLeader,
+               major,
+               courseType
+        FROM course
+        ORDER BY Id
+        LIMIT #{start},#{end}
+    </select>
 
+    <select id="countCourse" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM Course
+    </select>
 </mapper>

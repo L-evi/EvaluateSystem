@@ -2,7 +2,12 @@ package com.project.evaluate;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.entity.Course;
+import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.entity.Faculty;
+import com.project.evaluate.mapper.CourseDocDetailMapper;
+import com.project.evaluate.mapper.CourseDocTaskMapper;
+import com.project.evaluate.mapper.CourseMapper;
 import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
@@ -21,6 +26,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 ;
@@ -141,5 +149,43 @@ class EvaluateApplicationTests {
         System.out.println(md5Hash.toHex());
     }
 
+    @Resource
+    private CourseMapper courseMapper;
+
+    @Test
+    public void testCourseMapper() {
+        List<Course> pageCourse = this.courseMapper.getPageCourse(0, 2);
+        pageCourse.forEach(System.out::println);
+    }
+
+    @Resource
+    private CourseDocDetailMapper courseDocDetailMapper;
+
+    @Test
+    public void testCourseDocDetailMapper() {
+
+    }
+
+    @Resource
+    private CourseDocTaskMapper courseDocTaskMapper;
+
+    @Test
+    public void testCourseDocTaskMapper() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("start", 0);
+        map.put("end", 10);
+        map.put("teacher", "teacher");
+        map.put("schoolEndYear", 2);
+        CourseDocTask courseDocTask = JSON.parseObject(JSONObject.toJSONString(map), CourseDocTask.class);
+        System.out.println(courseDocTask.toString());
+        System.out.println("-----------------");
+        Map<String, Object> objectMap = JSON.parseObject(JSON.toJSONString(courseDocTask), Map.class);
+        objectMap.put("start", 0);
+        objectMap.put("end", 100);
+        System.out.println(objectMap.toString());
+        System.out.println("---------");
+        List<CourseDocTask> courseDocTasks = this.courseDocTaskMapper.screenTeacherCourseDocTask(objectMap);
+        courseDocTasks.forEach(System.out::println);
+    }
 }
 

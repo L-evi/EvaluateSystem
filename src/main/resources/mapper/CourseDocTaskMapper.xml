@@ -3,5 +3,48 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.mapper.CourseDocTaskMapper">
-
+    <select id="screenTeacherCourseDocTask"
+            resultType="com.project.evaluate.entity.CourseDocTask"
+            parameterType="java.util.Map">
+        SELECT Id,
+               courseID,
+               teacher,
+               schoolStartYear,
+               schoolEndYear,
+               schoolTerm,
+               grades,
+               studentNum,
+               issueTime,
+               deadline,
+               taskStatus,
+               closeTask,
+               operator,
+               memo
+        FROM coursedoctask
+        <where>
+            <if test="teacher != null and teacher != ''">
+                teacher = #{teacher}
+            </if>
+            <if test="schoolStartYear != null and schoolStartYear != ''">
+                AND schoolStartYear = #{schoolStartYear}
+            </if>
+            <if test="schoolEndYear != null and schoolEndYear != ''">
+                AND schoolEndYear = #{schoolEndYear}
+            </if>
+            <if test="schoolTerm != null and schoolTerm != ''">
+                AND schoolTerm = #{schoolTerm}
+            </if>
+            <if test="courseID != null and courseID != ''">
+                AND courseID = #{courseID}
+            </if>
+            <if test="taskStatus != null and taskStatus != ''">
+                AND taskStatus = #{taskStatus}
+            </if>
+            <if test="closeTask != null and closeTask != ''">
+                AND closeTask = #{closeTask}
+            </if>
+        </where>
+        ORDER BY Id
+        LIMIT #{index},#{pageSize}
+    </select>
 </mapper>

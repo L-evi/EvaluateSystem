@@ -36,6 +36,12 @@ public class ResponseResult<T> implements Serializable {
         this.data = data;
     }
 
+    public ResponseResult(ResultCode resultCode) {
+        this.code = resultCode.getCode();
+        this.msg = resultCode.getMsg();
+        this.status = resultCode.getStatus();
+    }
+
     // 默认返回成功状态码，数据对象
     public ResponseResult(T data) {
         this.code = ResultCode.SUCCESS.getCode();

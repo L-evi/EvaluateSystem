@@ -1,5 +1,9 @@
 package com.project.evaluate.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,6 +13,9 @@ import java.util.Date;
  * @description 课程达成度计算任务表的实体类
  * @since 2023/1/2 21:11
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CourseDocTask implements Serializable {
 
     /**
@@ -39,7 +46,7 @@ public class CourseDocTask implements Serializable {
     /**
      * 学期：1--上学期；2--下学期
      */
-    int schoolTeam;
+    int schoolTerm;
 
     /**
      * 选修班级：如19计算机科学与技术（师范），专业名称由major表提供，其余信息手工输入

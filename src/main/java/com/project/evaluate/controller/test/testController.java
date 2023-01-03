@@ -38,9 +38,7 @@ public class testController {
 
 
     @RequestMapping(value = "/helloget", method = RequestMethod.GET)
-    public Map<String, Object> testGet() {
-        Map<String, Object> res = new HashMap<>();
-        res.put("msg", "Method GET OK!");
-        return res;
+    public ResponseResult testGet() {
+        return ResponseResult.success();
     }
 }

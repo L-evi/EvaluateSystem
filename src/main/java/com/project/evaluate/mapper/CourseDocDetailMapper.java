@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Mapper
 public interface CourseDocDetailMapper {
+
 }
