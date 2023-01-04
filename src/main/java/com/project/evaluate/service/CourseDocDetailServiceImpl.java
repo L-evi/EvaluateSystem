@@ -1,12 +1,17 @@
 package com.project.evaluate.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.mapper.CourseDocDetailMapper;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Levi
@@ -21,8 +26,8 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
     private CourseDocDetailMapper courseDocDetailMapper;
 
     @Override
-    public ResponseResult deleteByTaskID(int taskID) {
-        Long num = this.courseDocDetailMapper.deleteByTaskID(taskID);
+    public ResponseResult deleteByTaskID(int taskID, String userID) {
+        Long num = this.courseDocDetailMapper.deleteByTaskID(taskID, userID);
         JSONObject jsonObject = new JSONObject();
         if (num > 0) {
             jsonObject.put("msg", "删除成功");
@@ -35,4 +40,23 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
         }
         return new ResponseResult(ResultCode.DATABASE_ERROR);
     }
+
+    @Override
+    public ResponseResult selectByTaskID(Map<String, Object> map) {
+        int page = 1;
+        if (map.containsKey("page")) {
+            page = Integer.valueOf((String) map.get("page"));
+        }
+        int pageSize = 10;
+        if (map.containsKey("pageSize")) {
+            pageSize = Integer.valueOf((String) map.get("pageSize"));
+        }
+        map.put("page", (page - 1) * pageSize);
+        map.put("pageSize", pageSize);
+        List<CourseDocDetail> courseDocDetails = this.courseDocDetailMapper.selectByTaskID(map);
+        JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(courseDocDetails));
+        return new ResponseResult<>(ResultCode.SUCCESS, jsonArray);
+    }
+
+
 }

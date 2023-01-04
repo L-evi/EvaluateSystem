@@ -6,12 +6,24 @@
     <delete id="deleteByTaskID">
         DELETE
         FROM coursedocdetail
-        WHERE taskID = #{taskID}
+        <where>
+            <if test="param1 != null">
+                taskID = #{param1}
+            </if>
+            <if test="param2 != null and param2 != ''">
+                AND submitter = #{param2}
+            </if>
+        </where>
     </delete>
 
     <select id="selectByTaskID" resultType="com.project.evaluate.entity.CourseDocDetail"
             parameterType="java.util.Map">
-        SELECT taskID, docTypeID, docPath, uploadTime, submitter
+        SELECT id,
+               taskID,
+               docTypeID,
+               docPath,
+               uploadTime,
+               submitter
         FROM coursedocdetail
         WHERE taskID = #{taskID}
         LIMIT #{page}, #{pageSize}

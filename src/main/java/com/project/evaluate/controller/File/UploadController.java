@@ -2,13 +2,10 @@ package com.project.evaluate.controller.File;
 
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
-
 import io.jsonwebtoken.lang.Strings;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
-
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -59,24 +56,24 @@ class UploadController {
     @ResponseBody
     public ResponseResult upload(HttpServletResponse response, HttpServletRequest request) {
 //        初始化参数
-        init();
+        this.init();
 //        设置编码格式
-        response.setCharacterEncoding(character);
+        response.setCharacterEncoding(this.character);
 //        初始化变量
         Integer schunk = null; // 当前分片编号
         Integer schunks = null; // 总分片数
         String name = null; // 文件名
-        String filePath = prePath; // 文件前缀路径
+        String filePath = this.prePath; // 文件前缀路径
         BufferedOutputStream os = null; // 输出流
         try {
 //            用于处理接受到的文件类
             DiskFileItemFactory factory = new DiskFileItemFactory();
-            factory.setSizeThreshold(Integer.parseInt(sizeThreshold)); // 文件缓冲区大小
+            factory.setSizeThreshold(Integer.parseInt(this.sizeThreshold)); // 文件缓冲区大小
             factory.setRepository(new File(filePath)); // 设置文件缓冲区路径
 //            解析request中的文件信息
             ServletFileUpload upload = new ServletFileUpload(factory);
-            upload.setFileSizeMax(Long.parseLong(fileSizeMax));
-            upload.setSizeMax(Long.parseLong(requestSizeMax));
+            upload.setFileSizeMax(Long.parseLong(this.fileSizeMax));
+            upload.setSizeMax(Long.parseLong(this.requestSizeMax));
 //            解析这个文件
             List<FileItem> items = upload.parseRequest(request);
 //            取出文件信息
@@ -84,15 +81,15 @@ class UploadController {
                 if (item.isFormField()) {
 //                    获取当前分片序号
                     if ("chunk".equals(item.getFieldName())) {
-                        schunk = Integer.parseInt(item.getString(character));
+                        schunk = Integer.parseInt(item.getString(this.character));
                     }
 //                    获取总分片数
                     if ("chunks".equals(item.getFieldName())) {
-                        schunks = Integer.parseInt(item.getString(character));
+                        schunks = Integer.parseInt(item.getString(this.character));
                     }
 //                    获取文件名
                     if ("name".equals(item.getFieldName())) {
-                        name = item.getString(character);
+                        name = item.getString(this.character);
                     }
                 }
             }
@@ -107,7 +104,7 @@ class UploadController {
 //                            缓存文件名字：分片序号_文件名
                             tempFileName = schunk + '_' + name;
                         }
-                        File file = new File(prePath, tempFileName);
+                        File file = new File(this.prePath, tempFileName);
 //                        如果文件不存在则需要存下来
                         if (!file.exists()) {
                             item.write(file);
@@ -157,22 +154,22 @@ class UploadController {
 
     private void init() {
         //        初始化参数
-        if (!Strings.hasText(character)) {
-            character = "utf8";
+        if (!Strings.hasText(this.character)) {
+            this.character = "utf8";
         }
-        if (!Strings.hasText(sizeThreshold)) {
-            sizeThreshold = "1024";
+        if (!Strings.hasText(this.sizeThreshold)) {
+            this.sizeThreshold = "1024";
         }
-        if (!Strings.hasText(fileSizeMax)) {
+        if (!Strings.hasText(this.fileSizeMax)) {
             Long number = 5L * 1024L * 1024L * 1024L;
-            fileSizeMax = String.valueOf(number);
+            this.fileSizeMax = String.valueOf(number);
         }
-        if (!Strings.hasText(requestSizeMax)) {
+        if (!Strings.hasText(this.requestSizeMax)) {
             Long number = 10L * 1024L * 1024L * 1024L;
-            requestSizeMax = String.valueOf(number);
+            this.requestSizeMax = String.valueOf(number);
         }
-        if (!Strings.hasText(prePath)) {
-            prePath = "/Users/apple/Library/CloudStorage/OneDrive-个人/Program/Java/EvaluateSystem/src/main/resources/static/upload";
+        if (!Strings.hasText(this.prePath)) {
+            this.prePath = "~";
         }
     }
 

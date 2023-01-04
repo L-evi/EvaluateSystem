@@ -12,7 +12,7 @@ import java.util.Map;
 public interface CourseDocDetailMapper {
 
     //    根据taskID删除
-    Long deleteByTaskID(int taskID);
+    Long deleteByTaskID(int taskID, String userID);
 
     //    根据taskID查询
     List<CourseDocDetail> selectByTaskID(Map<String, Object> map);

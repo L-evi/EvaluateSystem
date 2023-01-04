@@ -22,7 +22,8 @@ server:
 
 # 配置文件
 file:
-  pre-path: /Users/apple/Library/CloudStorage/OneDrive-个人/Program/Java/EvaluateSystem/src/main/resources/static/upload
+  #  pre-path: /Users/apple/Library/CloudStorage/OneDrive-个人/Program/Java/EvaluateSystem/src/main/resources/static/upload
+  pre-path: ~
   character-set: utf-8
   # 分片文件大小 5 * 1024 * 1024 * 1024 bit 即 5MB
   file-size-max: 5368709120
