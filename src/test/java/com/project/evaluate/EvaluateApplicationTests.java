@@ -145,7 +145,7 @@ class EvaluateApplicationTests {
 
     @Test
     public void testMd5() {
-        Md5Hash md5Hash = new Md5Hash("admin", "admin", 1024);
+        Md5Hash md5Hash = new Md5Hash("teacher", "teacher", 1024);
         System.out.println(md5Hash.toHex());
     }
 
@@ -180,8 +180,8 @@ class EvaluateApplicationTests {
         System.out.println(courseDocTask.toString());
         System.out.println("-----------------");
         Map<String, Object> objectMap = JSON.parseObject(JSON.toJSONString(courseDocTask), Map.class);
-        objectMap.put("start", 0);
-        objectMap.put("end", 100);
+        objectMap.put("index", 0);
+        objectMap.put("pageSize", 3);
         System.out.println(objectMap.toString());
         System.out.println("---------");
         List<CourseDocTask> courseDocTasks = this.courseDocTaskMapper.screenTeacherCourseDocTask(objectMap);
