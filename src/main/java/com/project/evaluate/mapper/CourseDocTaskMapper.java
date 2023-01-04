@@ -12,4 +12,7 @@ import java.util.Map;
 public interface CourseDocTaskMapper {
     List<CourseDocTask> screenTeacherCourseDocTask(Map<String, Object> map);
 
+    Long deleteTaskByID(int ID);
+
+    CourseDocTask selectByID(int ID);
 }

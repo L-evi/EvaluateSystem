@@ -6,4 +6,6 @@ import java.util.Map;
 
 public interface CourseDocTaskService {
     ResponseResult searchTeachingDocuments(Map<String, Object> map);
+
+    ResponseResult deleteTeachingDocuments(int ID);
 }

@@ -2,6 +2,7 @@ package com.project.evaluate;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.CourseDocDetailMapper;
@@ -167,6 +168,12 @@ class EvaluateApplicationTests {
 //        System.out.println(this.courseDocDetailMapper.deleteByTaskID(2));
 //        List<CourseDocDetail> details = this.courseDocDetailMapper.selectByTaskID(2);
 //        details.forEach(System.out::println);
+        Map<String, Object> map = new HashMap<>();
+        map.put("taskID", 2);
+        map.put("page", 1);
+        map.put("pageSize", 10);
+        List<CourseDocDetail> courseDocDetails = this.courseDocDetailMapper.selectByTaskID(map);
+        courseDocDetails.forEach(System.out::println);
     }
 
     @Resource

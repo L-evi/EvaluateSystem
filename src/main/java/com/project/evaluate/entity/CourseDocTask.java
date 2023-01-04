@@ -77,7 +77,7 @@ public class CourseDocTask implements Serializable {
     /**
      * 关闭任务：对于已完成上传的资料，可设置关闭任务，关闭任务之后，将不可以编辑任务记录、上传和删除文档
      */
-    boolean closeTask;
+    int closeTask;
 
     /**
      * 操作员：外键，关联Faculty的userID，创建提交任务的操作员，通常是文档的管理员

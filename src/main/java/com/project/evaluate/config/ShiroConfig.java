@@ -1,12 +1,9 @@
 package com.project.evaluate.config;
 
 import com.project.evaluate.filter.JwtFilter;
-import com.project.evaluate.realm.CustomerRealm;
 import com.project.evaluate.realm.JwtRealm;
-import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
-import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;

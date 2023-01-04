@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.service.CourseDocTaskService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
+import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,4 +48,16 @@ public class CourseDocTaskController {
         return this.courseDocTaskService.searchTeachingDocuments(map);
     }
 
+    //    只有文档管理员才能删除
+    @RequiresRoles("2")
+    @RequestMapping(value = "/delete")
+    public ResponseResult deleteTeachingDocuments(@RequestBody JSONObject jsonObject) {
+        String ID = (String) jsonObject.get("ID");
+        if (!Strings.hasText(ID)) {
+            jsonObject.clear();
+            jsonObject.put("msg", "缺少必要参数ID");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        return this.courseDocTaskService.deleteTeachingDocuments(Integer.parseInt(ID));
+    }
 }

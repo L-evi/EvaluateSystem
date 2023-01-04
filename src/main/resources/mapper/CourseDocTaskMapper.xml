@@ -47,4 +47,29 @@
         ORDER BY Id
         LIMIT #{index},#{pageSize}
     </select>
+
+    <delete id="deleteTaskByID">
+        DELETE
+        FROM coursedoctask
+        WHERE Id = #{ID}
+    </delete>
+
+    <select id="selectByID" resultType="com.project.evaluate.entity.CourseDocTask">
+        SELECT Id,
+               courseID,
+               teacher,
+               schoolStartYear,
+               schoolEndYear,
+               schoolTerm,
+               grades,
+               studentNum,
+               issueTime,
+               deadline,
+               taskStatus,
+               closeTask,
+               operator,
+               memo
+        FROM coursedoctask
+        WHERE Id = #{ID}
+    </select>
 </mapper>

@@ -7,7 +7,6 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
@@ -38,7 +37,7 @@ public class GlobalExceptionHandler {
         jsonObject.put("error", e.getMessage());
         return new ResponseResult(ResultCode.LOGIN_ERROR, jsonObject);
     }
-
+    
     @ExceptionHandler(AuthenticationException.class)
     public ResponseResult AuthenticationExceptionHandler(AuthenticationException e) {
         System.out.println("Token 错误");
@@ -48,4 +47,5 @@ public class GlobalExceptionHandler {
         jsonObject.put("error", e.getMessage());
         return new ResponseResult(ResultCode.TOKEN_EXPIRATION, jsonObject);
     }
+
 }
