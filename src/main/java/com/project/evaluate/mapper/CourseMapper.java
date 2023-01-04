@@ -14,4 +14,6 @@ public interface CourseMapper {
     List<Course> getPageCourse(int start, int end);
 
     Integer countCourse();
+
+    Course selectByCourseID(String courseID);
 }

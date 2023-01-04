@@ -21,6 +21,14 @@ public class Course implements Serializable {
      * ID：自增
      */
     int id;
+    /**
+     * 课程名称
+     */
+    String courseName;
+    /**
+     * 课程性质：理论、实验
+     */
+    String courseProperty;
 
     /**
      * 课程代码：主键或索引

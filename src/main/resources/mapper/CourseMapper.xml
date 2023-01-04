@@ -24,4 +24,20 @@
         SELECT COUNT(*)
         FROM Course
     </select>
+
+    <select id="selectByCourseID" resultType="com.project.evaluate.entity.Course">
+        SELECT Id,
+               courseID,
+               courseName,
+               courseProperty,
+               testType,
+               educationType,
+               courseType,
+               credit,
+               teamLeader,
+               major,
+               courseType
+        FROM course
+        WHERE courseID = #{courseID}
+    </select>
 </mapper>

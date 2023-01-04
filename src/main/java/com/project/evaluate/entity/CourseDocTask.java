@@ -66,7 +66,8 @@ public class CourseDocTask implements Serializable {
     /**
      * 截止提交时间
      */
-    Date deadTime;
+
+    Date deadline;
 
     /**
      * 任务状态：0--编辑任务：未正式发布（用户端无法看到该任务）；1--正式发布：等待上传（用户端可以看到上传任务）；2--已上传部分文档；3--已上传全部文档

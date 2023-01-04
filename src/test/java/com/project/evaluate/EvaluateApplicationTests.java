@@ -2,7 +2,6 @@ package com.project.evaluate;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.project.evaluate.entity.Course;
 import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.mapper.CourseDocDetailMapper;
@@ -154,16 +153,20 @@ class EvaluateApplicationTests {
 
     @Test
     public void testCourseMapper() {
-        List<Course> pageCourse = this.courseMapper.getPageCourse(0, 2);
-        pageCourse.forEach(System.out::println);
+//        List<Course> pageCourse = this.courseMapper.getPageCourse(0, 2);
+//        pageCourse.forEach(System.out::println);
+        System.out.println(this.courseMapper.selectByCourseID("1"));
     }
+
 
     @Resource
     private CourseDocDetailMapper courseDocDetailMapper;
 
     @Test
     public void testCourseDocDetailMapper() {
-
+//        System.out.println(this.courseDocDetailMapper.deleteByTaskID(2));
+//        List<CourseDocDetail> details = this.courseDocDetailMapper.selectByTaskID(2);
+//        details.forEach(System.out::println);
     }
 
     @Resource

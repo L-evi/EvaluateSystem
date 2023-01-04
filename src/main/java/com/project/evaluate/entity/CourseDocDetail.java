@@ -1,11 +1,19 @@
 package com.project.evaluate.entity;
 
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * @author Levi
  * @version 1.0 (created by Spring Boot)
  * @description
  * @since 2022/12/6 16:24
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CourseDocDetail {
     /*
      * 说明:
@@ -20,7 +28,7 @@ public class CourseDocDetail {
      * 定位文档路径时，应匹配课程代码，而不匹配课程名称，因课程名称可能会发生改变， 但课程编码不会变。
      * 如:对于“21HA0250_JAVA 语言程序设计”，只匹配编码 21HA0250 来 定位路径。
      */
-    
+
     /**
      * 文件标识：自增
      */
