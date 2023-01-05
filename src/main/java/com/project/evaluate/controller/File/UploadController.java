@@ -1,5 +1,6 @@
 package com.project.evaluate.controller.File;
 
+import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
@@ -10,9 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Levi
@@ -55,6 +55,7 @@ class UploadController {
     @RequestMapping(value = "/upload")
     @ResponseBody
     public ResponseResult upload(HttpServletResponse response, HttpServletRequest request) {
+        System.out.println("文件上传开始");
 //        初始化参数
         this.init();
 //        设置编码格式
@@ -93,6 +94,7 @@ class UploadController {
                     }
                 }
             }
+            System.out.println("上传文件：文件解析完成");
 //            取出文件
             for (FileItem item : items) {
                 if (!item.isFormField()) {
@@ -112,6 +114,7 @@ class UploadController {
                     }
                 }
             }
+            System.out.println("上传文件：分片文件存储完成");
 //            合并文件：有分片并且已经到了最后一个分片才需要合并
             if (schunks != null && schunk.intValue() == schunks.intValue() - 1) {
 //                合并文件之后的路径
@@ -134,8 +137,11 @@ class UploadController {
                 }
                 os.flush();
 //                返回成功信息
+
                 response.setHeader("msg", "file upload success");
+                response.setHeader("FileName", name);
             }
+            System.out.println("文件合并完成");
         } catch (Exception e) {
             System.out.println("upload模块 失败");
             throw new RuntimeException(e);
@@ -149,7 +155,9 @@ class UploadController {
                 }
             }
         }
-        return new ResponseResult(ResultCode.SUCCESS);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("FileName", name);
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
     private void init() {
@@ -171,6 +179,12 @@ class UploadController {
         if (!Strings.hasText(this.prePath)) {
             this.prePath = "~";
         }
+    }
+
+    @RequestMapping(value = "/submit", method = RequestMethod.POST)
+    public ResponseResult submit(@RequestBody Map<String, Object> map) {
+        System.out.println(map.toString());
+        return new ResponseResult(ResultCode.SUCCESS, map);
     }
 
 }

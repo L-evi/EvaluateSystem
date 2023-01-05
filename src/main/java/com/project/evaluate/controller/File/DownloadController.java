@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
  * @since 2022/12/16 15:23
  */
 @Controller
-@CrossOrigin(value = "*")
+@CrossOrigin("*")
 @PropertySource("classpath:application.yml")
 public class DownloadController {
     @Value("${file.character-set")
