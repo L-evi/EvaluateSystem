@@ -16,4 +16,7 @@ public interface CourseDocDetailMapper {
 
     //    根据taskID查询
     List<CourseDocDetail> selectByTaskID(Map<String, Object> map);
+
+    //    插入数据
+    Long insertCourseDocDetail(CourseDocDetail courseDocDetail);
 }

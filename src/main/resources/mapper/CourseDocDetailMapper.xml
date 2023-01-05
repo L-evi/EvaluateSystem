@@ -28,4 +28,12 @@
         WHERE taskID = #{taskID}
         LIMIT #{page}, #{pageSize}
     </select>
+
+    <insert id="insertCourseDocDetail"
+            parameterType="com.project.evaluate.entity.CourseDocDetail"
+            useGeneratedKeys="true"
+            keyProperty="ID">
+        insert into coursedocdetail (taskID, docTypeID, docPath, uploadTime, submitter)
+        values (#{taskID}, #{docTypeID}, #{docPath}, #{uploadTime}, #{submitter});
+    </insert>
 </mapper>

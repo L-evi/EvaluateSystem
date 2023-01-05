@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * @author Levi
  * @version 1.0 (created by Spring Boot)
@@ -48,7 +50,7 @@ public class CourseDocDetail {
     /**
      * 文件提交时间
      */
-    private String uploadTime;
+    private Date uploadTime;
     /**
      * 文档提交人
      */

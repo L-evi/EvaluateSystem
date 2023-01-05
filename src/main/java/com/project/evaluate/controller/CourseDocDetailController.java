@@ -6,6 +6,7 @@ import com.project.evaluate.service.CourseDocDetailService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import java.util.Map;
  * @since 2023/1/2 22:09
  */
 @RestController
+@CrossOrigin("*")
 @RequestMapping(value = "/api/courseDocDetail/")
 public class CourseDocDetailController {
     @Resource

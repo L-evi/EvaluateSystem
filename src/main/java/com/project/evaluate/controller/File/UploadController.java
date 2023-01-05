@@ -1,6 +1,14 @@
 package com.project.evaluate.controller.File;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.entity.Course;
+import com.project.evaluate.entity.CourseDocDetail;
+import com.project.evaluate.entity.CourseDocTask;
+import com.project.evaluate.mapper.CourseDocDetailMapper;
+import com.project.evaluate.mapper.CourseDocTaskMapper;
+import com.project.evaluate.mapper.CourseMapper;
+import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
@@ -13,14 +21,14 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Levi
@@ -34,9 +42,23 @@ import java.util.Map;
 @CrossOrigin("*")
 @PropertySource("classpath:application.yml")
 class UploadController {
+    @Resource
+    private CourseDocTaskMapper courseDocTaskMapper;
+
+    @Resource
+    private RedisCache redisCache;
+
+    @Resource
+    private CourseDocDetailMapper courseDocDetailMapper;
+
+    @Resource
+    private CourseMapper courseMapper;
     //    编码格式
     @Value("${file.character-set}")
     private String character;
+    //    缓存文件前缀
+    @Value("${file.temp-pre-path}")
+    private String tempPrePath;
     //    文件前缀
     @Value("${file.pre-path}")
     private String prePath;
@@ -64,7 +86,7 @@ class UploadController {
         Integer schunk = null; // 当前分片编号
         Integer schunks = null; // 总分片数
         String name = null; // 文件名
-        String filePath = this.prePath; // 文件前缀路径
+        String filePath = this.tempPrePath; // 文件前缀路径
         BufferedOutputStream os = null; // 输出流
         try {
 //            用于处理接受到的文件类
@@ -106,7 +128,7 @@ class UploadController {
 //                            缓存文件名字：分片序号_文件名
                             tempFileName = schunk + '_' + name;
                         }
-                        File file = new File(this.prePath, tempFileName);
+                        File file = new File(this.tempPrePath, tempFileName);
 //                        如果文件不存在则需要存下来
                         if (!file.exists()) {
                             item.write(file);
@@ -120,12 +142,25 @@ class UploadController {
 //                合并文件之后的路径
                 File tempFile = new File(filePath, name);
                 os = new BufferedOutputStream(new FileOutputStream(tempFile));
+//                是否能够找到分片文件的标记
+                boolean isExist = true;
 //                找出所有的分片
                 for (int i = 0; i < schunks; i++) {
                     File file = new File(filePath, i + '_' + name);
+                    int j = 0;
                     while (!file.exists()) {
-//                        TODO 一直找不到文件怎么办
                         Thread.sleep(100);
+//                        如果超过了一定时间还没有找到那些分片，就跳出来，并且将前面所有的分片删除
+                        if (j == schunks) {
+                            deleteFile(i, name, filePath);
+                            isExist = false;
+                            break;
+                        }
+                        j++;
+                    }
+//                    如果读不到分片文件，则跳出循环
+                    if (!isExist) {
+                        break;
                     }
 //                    将分片文件读取到byte数组中
                     byte[] bytes = FileUtils.readFileToByteArray(file);
@@ -136,12 +171,25 @@ class UploadController {
                     file.delete();
                 }
                 os.flush();
-//                返回成功信息
-
-                response.setHeader("msg", "file upload success");
-                response.setHeader("FileName", name);
+                if (isExist == false) {
+//                    返回失败信息
+                    System.out.println("文件上传失败，分片丢失");
+                    response.setHeader("msg", "file upload fail");
+                    response.setHeader("status", "0");
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("msg", "file upload fail");
+                    return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+                } else {
+                    //                返回成功信息
+                    System.out.println("文件合并完成");
+                    response.setHeader("msg", "file upload success");
+                    response.setHeader("FileName", name);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("msg", "file upload success");
+                    jsonObject.put("FileName", name);
+                    return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+                }
             }
-            System.out.println("文件合并完成");
         } catch (Exception e) {
             System.out.println("upload模块 失败");
             throw new RuntimeException(e);
@@ -155,9 +203,7 @@ class UploadController {
                 }
             }
         }
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("FileName", name);
-        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+        return new ResponseResult(ResultCode.SYSTEM_ERROR);
     }
 
     private void init() {
@@ -176,15 +222,103 @@ class UploadController {
             Long number = 10L * 1024L * 1024L * 1024L;
             this.requestSizeMax = String.valueOf(number);
         }
-        if (!Strings.hasText(this.prePath)) {
-            this.prePath = "~";
+        if (!Strings.hasText(this.tempPrePath)) {
+            this.tempPrePath = "~";
         }
     }
 
-    @RequestMapping(value = "/submit", method = RequestMethod.POST)
-    public ResponseResult submit(@RequestBody Map<String, Object> map) {
-        System.out.println(map.toString());
-        return new ResponseResult(ResultCode.SUCCESS, map);
+    private void deleteFile(int index, String name, String filePath) {
+        for (int i = 0; i < index; i++) {
+            File file = new File(filePath, i + "_" + name);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
     }
+
+
+    @RequestMapping(value = "/submit", method = RequestMethod.POST)
+    public ResponseResult submit(@RequestBody Map<String, Object> map) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        if (!map.containsKey("FileName") || !map.containsKey("taskID")) {
+            jsonObject.put("msg", "缺少文件名FileName或TaskID");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        String fileName = (String) map.get("FileName");
+        String taskID = (String) map.get("taskID");
+//        获取CourseDocTask信息
+        CourseDocTask courseDocTask = null;
+//        从redis中获取CourseDocTask信息
+        courseDocTask = JSONObject.toJavaObject(redisCache.getCacheObject("CourseDocTask:" + taskID), CourseDocTask.class);
+        if (Objects.isNull(courseDocTask)) {
+            courseDocTask = courseDocTaskMapper.selectByID(Integer.parseInt(taskID));
+            if (Objects.isNull(courseDocTask)) {
+                jsonObject.put("msg", "找不到课程文档任务信息");
+                return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+            } else {
+//                将信息放入redis中
+                redisCache.setCacheObject("CourseDocTask:" + taskID, courseDocTask);
+            }
+        }
+//        获取Course信息
+        Course course = null;
+//        从redis中获取
+        course = JSONObject.toJavaObject(redisCache.getCacheObject("Course:" + courseDocTask.getCourseID()), Course.class);
+        if (Objects.isNull(course)) {
+            course = courseMapper.selectByCourseID(courseDocTask.getCourseID());
+            if (Objects.isNull(course)) {
+                jsonObject.put("msg", "找不到课程信息");
+                return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+            } else {
+//                将信息放入redis中
+                redisCache.setCacheObject("Course:" + course.getCourseID(), course);
+            }
+        }
+//        根据CourseDocTask信息构建文件目录
+        String fileDir = courseDocTask.getSchoolStartYear() + "-" + courseDocTask.getSchoolEndYear() + "-" + courseDocTask.getSchoolTerm()
+                + File.separator
+                + courseDocTask.getCourseID() + "-" + course.getCourseName()
+                + File.separator;
+        File tempFileDir = new File(fileDir);
+        if (!tempFileDir.exists()) {
+            if (!tempFileDir.mkdir()) {
+                jsonObject.put("msg", "文件夹新建失败");
+                return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+            }
+        }
+//        构建新的文件以及缓存文件
+        File file = new File(this.prePath + fileDir, fileName);
+        File tempFile = new File(this.tempPrePath, fileName);
+        if (!tempFile.exists()) {
+            jsonObject.put("msg", "文件不存在，无法提交");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        }
+//        复制文件
+        try (InputStream inputStream = new FileInputStream(tempFile);
+             OutputStream outputStream = new FileOutputStream(file)) {
+            byte[] bytes = new byte[1024];
+            int length;
+            while ((length = inputStream.read(bytes)) > 0) {
+                outputStream.write(bytes, 0, length);
+            }
+        } catch (FileNotFoundException e) {
+            jsonObject.put("msg", "文件无法找到");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        } catch (IOException e) {
+            jsonObject.put("msg", "IO操作错误");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        }
+        CourseDocDetail courseDocDetail = new CourseDocDetail();
+        courseDocDetail.setTaskID(courseDocTask.getID());
+        courseDocDetail.setDocPath(fileDir + fileName);
+        courseDocDetail.setUploadTime(new Date());
+        courseDocDetail.setSubmitter("test");
+        courseDocDetail.setDocTypeID(1);
+//        Long num = courseDocDetailMapper.insertCourseDocDetail(courseDocDetail);
+//        TODO 上传数据库
+        System.out.println(courseDocDetail.toString());
+        return new ResponseResult(ResultCode.SUCCESS, courseDocDetail);
+    }
+
 
 }
