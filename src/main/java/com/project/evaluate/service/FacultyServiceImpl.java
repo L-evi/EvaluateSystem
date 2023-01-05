@@ -37,9 +37,9 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public ResponseResult userLogin(Faculty faculty) {
 //        从redis中获取信息
-        Faculty tmp = JSONObject.toJavaObject(this.redisCache.getCacheObject("Faculty:" + faculty.getUserId()), Faculty.class);
+        Faculty tmp = JSONObject.toJavaObject(this.redisCache.getCacheObject("Faculty:" + faculty.getUserID()), Faculty.class);
         if (Objects.isNull(tmp)) {
-            tmp = this.facultyMapper.selectByUserID(faculty.getUserId());
+            tmp = this.facultyMapper.selectByUserID(faculty.getUserID());
         }
         JSONObject jsonObject = new JSONObject();
 //        如果对象为空则登录失败
@@ -52,20 +52,20 @@ public class FacultyServiceImpl implements FacultyService {
             return new ResponseResult(ResultCode.ACCOUNT_ERROR, jsonObject);
         }
         try {
-            Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserId(), 1024);
+            Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserID(), 1024);
             String password = md5Hash.toHex();
             if (password.equals(tmp.getPassword())) {
                 jsonObject.clear();
-                jsonObject.put("userID", tmp.getUserId());
+                jsonObject.put("userID", tmp.getUserID());
                 jsonObject.put("roleType", tmp.getRoleType());
                 String token = JwtUtil.createJwt(String.valueOf(jsonObject), 60 * 60 * 1000 * 3L);
                 //                更新登录信息
-                this.updateLoginState(tmp, faculty.getLoginIp());
+                this.updateLoginState(tmp, faculty.getLoginIP());
                 jsonObject.clear();
                 jsonObject = JSONObject.parseObject(JSON.toJSONString(tmp));
 //                放入到redis中
-                this.redisCache.setCacheObject("Faculty:" + tmp.getUserId(), tmp, 3, TimeUnit.HOURS);
-                this.redisCache.setCacheObject("token:" + tmp.getUserId(), token, 3, TimeUnit.HOURS);
+                this.redisCache.setCacheObject("Faculty:" + tmp.getUserID(), tmp, 3, TimeUnit.HOURS);
+                this.redisCache.setCacheObject("token:" + tmp.getUserID(), token, 3, TimeUnit.HOURS);
                 jsonObject.put("token", token);
                 jsonObject.put("msg", "登录成功");
                 jsonObject.remove("password");
@@ -87,9 +87,9 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     public void updateLoginState(Faculty faculty, String ip) {
-        faculty.setLastLoginIp(faculty.getLoginIp());
+        faculty.setLastLoginIP(faculty.getLoginIP());
         faculty.setLastLoginTime(faculty.getLoginTime());
-        faculty.setLoginIp(ip);
+        faculty.setLoginIP(ip);
         faculty.setLoginTime(new Date());
         this.facultyMapper.updateFaculty(faculty);
     }
@@ -98,17 +98,17 @@ public class FacultyServiceImpl implements FacultyService {
     public ResponseResult userRegister(Faculty faculty) {
 //        如果在redis和数据库中找到了该数据，则说明已经注册了
 
-        if (this.facultyMapper.selectByUserID(faculty.getUserId()) != null) {
+        if (this.facultyMapper.selectByUserID(faculty.getUserID()) != null) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "用户已注册");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        明文密码进行MD5 + salt + 散列，盐就用userID
-        Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserId(), 1024);
+        Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserID(), 1024);
         faculty.setPassword(md5Hash.toHex());
         if (this.facultyMapper.addFaculty(faculty) == 1) {
 //            将信息放入redis中
-            this.redisCache.setCacheObject("Faculty:" + faculty.getUserId(), faculty, 3, TimeUnit.HOURS);
+            this.redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty, 3, TimeUnit.HOURS);
             return new ResponseResult(ResultCode.SUCCESS);
         } else {
             return new ResponseResult(ResultCode.DATABASE_ERROR);

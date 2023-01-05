@@ -39,8 +39,8 @@ public class CourseDocDetailController {
         } catch (Exception e) {
             throw new RuntimeException("token parse 错误");
         }
-        if (courseDocDetail.getTaskId() != 0) {
-            return this.courseDocDetailService.deleteByTaskID(courseDocDetail.getTaskId(), userID);
+        if (courseDocDetail.getTaskID() != 0) {
+            return this.courseDocDetailService.deleteByTaskID(courseDocDetail.getTaskID(), userID);
         } else {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "TaskID缺失，无法删除");

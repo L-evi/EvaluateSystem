@@ -39,9 +39,9 @@ public class FacultyController {
     public ResponseResult userLogin(@RequestBody Map<String, Object> dataMap, HttpServletRequest request) {
 //        获取其中的数据
         Faculty faculty = new Faculty();
-        faculty.setUserId((String) dataMap.get("userID"));
+        faculty.setUserID((String) dataMap.get("userID"));
         faculty.setPassword((String) dataMap.get("password"));
-        faculty.setLoginIp(IPUtil.getIPAddress(request));
+        faculty.setLoginIP(IPUtil.getIPAddress(request));
 //        调用Service服务进行认证
         return this.facultyService.userLogin(faculty);
     }
@@ -59,15 +59,15 @@ public class FacultyController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json")
     public ResponseResult userRegister(@RequestBody Faculty faculty, HttpServletRequest request) {
-        if (!Strings.hasText(faculty.getUserId()) || !Strings.hasText(faculty.getPassword())) {
+        if (!Strings.hasText(faculty.getUserID()) || !Strings.hasText(faculty.getPassword())) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "账号或密码不能为空");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        faculty.setLastLoginIp(IPUtil.getIPAddress(request));
+        faculty.setLastLoginIP(IPUtil.getIPAddress(request));
         faculty.setLastLoginTime(new DateTime(TimeZone.getTimeZone("Asia/Shanghai")));
         faculty.setLoginTime(new DateTime());
-        faculty.setLoginIp(IPUtil.getIPAddress(request));
+        faculty.setLoginIP(IPUtil.getIPAddress(request));
         faculty.setIsInitPwd(0);
         return this.facultyService.userRegister(faculty);
     }

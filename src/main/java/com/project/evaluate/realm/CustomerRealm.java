@@ -52,8 +52,8 @@ public class CustomerRealm extends AuthorizingRealm {
 //        封装信息
         if (!Objects.isNull(faculty)) {
 //            将信息放入redis中
-            this.redisCache.setCacheObject("Faculty:" + faculty.getUserId(), faculty);
-            return new SimpleAuthenticationInfo(principal, faculty.getPassword(), ByteSource.Util.bytes(faculty.getUserId()), this.getName());
+            this.redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty);
+            return new SimpleAuthenticationInfo(principal, faculty.getPassword(), ByteSource.Util.bytes(faculty.getUserID()), this.getName());
         }
         return null;
     }

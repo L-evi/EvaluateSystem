@@ -67,11 +67,11 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
             Map<String, Object> taskMap = JSON.parseObject(JSON.toJSONString(task), Map.class);
             Course course = null;
 //            从redis中获取数据
-            course = JSONObject.toJavaObject(this.redisCache.getCacheObject("Course:" + task.getCourseId()), Course.class);
+            course = JSONObject.toJavaObject(this.redisCache.getCacheObject("Course:" + task.getCourseID()), Course.class);
 //            如果没有获取到则从数据库中获取
             if (Objects.isNull(course)) {
-                course = this.courseMapper.selectByCourseID(task.getCourseId());
-                this.redisCache.setCacheObject("Course:" + course.getCourseId(), course);
+                course = this.courseMapper.selectByCourseID(task.getCourseID());
+                this.redisCache.setCacheObject("Course:" + course.getCourseID(), course);
             }
             taskMap.put("courseName", course.getCourseName());
             taskMaps.add(taskMap);

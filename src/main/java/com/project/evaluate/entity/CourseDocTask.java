@@ -21,12 +21,12 @@ public class CourseDocTask implements Serializable {
     /**
      * ID：自增
      */
-    int id;
+    int ID;
 
     /**
      * 课程代码：外键，关联Course的courseID
      */
-    String courseId;
+    String courseID;
 
     /**
      * 任课老师：外键，关联Faculty的userID

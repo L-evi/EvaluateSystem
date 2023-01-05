@@ -6,7 +6,7 @@
     <select id="screenTeacherCourseDocTask"
             resultType="com.project.evaluate.entity.CourseDocTask"
             parameterType="java.util.Map">
-        SELECT Id,
+        SELECT ID,
                courseID,
                teacher,
                schoolStartYear,
@@ -44,18 +44,18 @@
                 AND closeTask = #{closeTask}
             </if>
         </where>
-        ORDER BY Id
+        ORDER BY ID
         LIMIT #{index},#{pageSize}
     </select>
 
     <delete id="deleteTaskByID">
         DELETE
         FROM coursedoctask
-        WHERE Id = #{ID}
+        WHERE ID = #{ID}
     </delete>
 
     <select id="selectByID" resultType="com.project.evaluate.entity.CourseDocTask">
-        SELECT Id,
+        SELECT ID,
                courseID,
                teacher,
                schoolStartYear,
@@ -70,6 +70,6 @@
                operator,
                memo
         FROM coursedoctask
-        WHERE Id = #{ID}
+        WHERE ID = #{ID}
     </select>
 </mapper>

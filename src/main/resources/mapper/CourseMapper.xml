@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.mapper.CourseMapper">
     <select id="getPageCourse" resultType="com.project.evaluate.entity.Course">
-        SELECT Id,
+        SELECT ID,
                courseID,
                courseName,
                courseProperty,
@@ -16,7 +16,7 @@
                major,
                courseType
         FROM course
-        ORDER BY Id
+        ORDER BY ID
         LIMIT #{start},#{end}
     </select>
 
@@ -26,7 +26,7 @@
     </select>
 
     <select id="selectByCourseID" resultType="com.project.evaluate.entity.Course">
-        SELECT Id,
+        SELECT ID,
                courseID,
                courseName,
                courseProperty,

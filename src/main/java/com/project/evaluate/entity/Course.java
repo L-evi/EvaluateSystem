@@ -20,7 +20,7 @@ public class Course implements Serializable {
     /**
      * ID：自增
      */
-    int id;
+    int ID;
     /**
      * 课程名称
      */
@@ -33,7 +33,7 @@ public class Course implements Serializable {
     /**
      * 课程代码：主键或索引
      */
-    String courseId;
+    String courseID;
 
     /**
      * 考核类型：考试|考查

@@ -21,7 +21,7 @@ public class Faculty implements Serializable {
     /**
      * 登录名
      */
-    private String userId;
+    private String userID;
     /**
      * 登录密码
      */
@@ -53,7 +53,7 @@ public class Faculty implements Serializable {
     /**
      * 上一次登录的IP地址
      */
-    private String lastLoginIp;
+    private String lastLoginIP;
     /**
      * 上一次登录时间
      */
@@ -61,7 +61,7 @@ public class Faculty implements Serializable {
     /**
      * 本次登录IP
      */
-    private String loginIp;
+    private String loginIP;
     /**
      * 本次登录时间
      */

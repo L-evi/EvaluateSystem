@@ -91,7 +91,7 @@ class EvaluateApplicationTests {
     @Test
     void testClassToJSONObject() {
         Faculty faculty = new Faculty();
-        faculty.setUserId("user");
+        faculty.setUserID("user");
         JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(faculty));
         System.out.println(jsonObject);
     }
@@ -130,7 +130,7 @@ class EvaluateApplicationTests {
     @Test
     public void testRedis() {
         Faculty faculty = new Faculty();
-        faculty.setUserId("admin");
+        faculty.setUserID("admin");
         faculty.setPassword("admin");
         this.redisCache.setCacheObject("admin", faculty, 1, TimeUnit.MINUTES);
 //        Faculty admin = JSONObject.parseObject(redisCache.getCacheObject("admin"), Faculty.class);
