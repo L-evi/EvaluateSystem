@@ -1,5 +1,6 @@
 package com.project.evaluate.handler;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
@@ -37,7 +38,7 @@ public class GlobalExceptionHandler {
         jsonObject.put("error", e.getMessage());
         return new ResponseResult(ResultCode.LOGIN_ERROR, jsonObject);
     }
-    
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseResult AuthenticationExceptionHandler(AuthenticationException e) {
         System.out.println("Token 错误");
@@ -46,6 +47,16 @@ public class GlobalExceptionHandler {
         jsonObject.put("msg", "token 错误");
         jsonObject.put("error", e.getMessage());
         return new ResponseResult(ResultCode.TOKEN_EXPIRATION, jsonObject);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseResult RuntimeExceptionHandler(RuntimeException e) {
+        System.out.println("RuntimeException：" + e.getMessage());
+        e.printStackTrace();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg", "Runtime Exception");
+        jsonObject.put("error", e.getMessage());
+        return new ResponseResult(ResultCode.SYSTEM_ERROR, jsonObject);
     }
 
 }
