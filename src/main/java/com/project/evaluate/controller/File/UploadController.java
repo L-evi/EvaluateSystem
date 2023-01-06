@@ -77,7 +77,7 @@ class UploadController {
     @RequestMapping(value = "/upload")
     @ResponseBody
     public ResponseResult upload(HttpServletResponse response, HttpServletRequest request) {
-        System.out.println("文件上传开始");
+//        System.out.println("文件上传开始");
 //        初始化参数
         this.init();
 //        设置编码格式
@@ -116,7 +116,7 @@ class UploadController {
                     }
                 }
             }
-            System.out.println("上传文件：文件解析完成");
+//            System.out.println("上传文件：文件解析完成");
 //            取出文件
             for (FileItem item : items) {
                 if (!item.isFormField()) {
@@ -136,7 +136,7 @@ class UploadController {
                     }
                 }
             }
-            System.out.println("上传文件：分片文件存储完成");
+//            System.out.println("上传文件：分片文件存储完成");
 //            合并文件：有分片并且已经到了最后一个分片才需要合并
             if (schunks != null && schunk.intValue() == schunks.intValue() - 1) {
 //                合并文件之后的路径
@@ -173,15 +173,14 @@ class UploadController {
                 os.flush();
                 if (isExist == false) {
 //                    返回失败信息
-                    System.out.println("文件上传失败，分片丢失");
                     response.setHeader("msg", "file upload fail");
                     response.setHeader("status", "0");
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("msg", "file upload fail");
+                    jsonObject.put("error", "文件上传失败，分片丢失");
                     return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
                 } else {
                     //                返回成功信息
-                    System.out.println("文件合并完成");
                     response.setHeader("msg", "file upload success");
                     response.setHeader("FileName", name);
                     JSONObject jsonObject = new JSONObject();
@@ -191,19 +190,22 @@ class UploadController {
                 }
             }
         } catch (Exception e) {
-            System.out.println("upload模块 失败");
-            throw new RuntimeException(e);
+//            System.out.println("upload模块 失败");
+            throw new RuntimeException("upload 模块 失败");
         } finally {
             if (os != null) {
                 try {
                     os.close();
                 } catch (IOException e) {
-                    System.out.println("upload 模块 os 关闭失败");
-                    throw new RuntimeException(e);
+//                    System.out.println("upload 模块 os 关闭失败");
+                    throw new RuntimeException("upload 模块 os 关闭失败");
                 }
             }
         }
-        return new ResponseResult(ResultCode.SYSTEM_ERROR);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg", "file upload success");
+        jsonObject.put("FileName", name);
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
     private void init() {
@@ -245,13 +247,13 @@ class UploadController {
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
         String fileName = (String) map.get("FileName");
-        String taskID = (String) map.get("taskID");
+        Integer taskID = (Integer) map.get("taskID");
 //        获取CourseDocTask信息
         CourseDocTask courseDocTask = null;
 //        从redis中获取CourseDocTask信息
         courseDocTask = JSONObject.toJavaObject(redisCache.getCacheObject("CourseDocTask:" + taskID), CourseDocTask.class);
         if (Objects.isNull(courseDocTask)) {
-            courseDocTask = courseDocTaskMapper.selectByID(Integer.parseInt(taskID));
+            courseDocTask = courseDocTaskMapper.selectByID(taskID);
             if (Objects.isNull(courseDocTask)) {
                 jsonObject.put("msg", "找不到课程文档任务信息");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
@@ -277,17 +279,17 @@ class UploadController {
 //        根据CourseDocTask信息构建文件目录
         String fileDir = courseDocTask.getSchoolStartYear() + "-" + courseDocTask.getSchoolEndYear() + "-" + courseDocTask.getSchoolTerm()
                 + File.separator
-                + courseDocTask.getCourseID() + "-" + course.getCourseName()
+                + courseDocTask.getCourseID() + "_" + course.getCourseName()
                 + File.separator;
-        File tempFileDir = new File(fileDir);
+        File tempFileDir = new File(this.prePath + File.separator + fileDir);
         if (!tempFileDir.exists()) {
-            if (!tempFileDir.mkdir()) {
+            if (!tempFileDir.mkdirs()) {
                 jsonObject.put("msg", "文件夹新建失败");
                 return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
             }
         }
 //        构建新的文件以及缓存文件
-        File file = new File(this.prePath + fileDir, fileName);
+        File file = new File(tempFileDir.getAbsolutePath(), fileName);
         File tempFile = new File(this.tempPrePath, fileName);
         if (!tempFile.exists()) {
             jsonObject.put("msg", "文件不存在，无法提交");
@@ -316,7 +318,6 @@ class UploadController {
         courseDocDetail.setDocTypeID(1);
 //        Long num = courseDocDetailMapper.insertCourseDocDetail(courseDocDetail);
 //        TODO 上传数据库
-        System.out.println(courseDocDetail.toString());
         return new ResponseResult(ResultCode.SUCCESS, courseDocDetail);
     }
 

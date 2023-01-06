@@ -84,8 +84,12 @@ class EvaluateApplicationTests {
 
     @Test
     void testValue() {
-
-        System.out.println(this.path);
+        Map<String, Object> map = new HashMap<>();
+        map.put("taskID", 2);
+        String taskID =  map.get("taskID").toString();
+        System.out.println(taskID);
+        Integer id = Integer.parseInt(taskID);
+        System.out.println(id);
     }
 
     @Test
