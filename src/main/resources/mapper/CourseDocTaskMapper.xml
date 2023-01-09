@@ -2,24 +2,24 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.project.evaluate.mapper.CourseDocTaskMapper">
+<mapper namespace="com.project.evaluate.dao.CourseDocTaskDao">
     <select id="screenTeacherCourseDocTask"
             resultType="com.project.evaluate.entity.CourseDocTask"
             parameterType="java.util.Map">
         SELECT ID,
-               courseID,
-               teacher,
-               schoolStartYear,
-               schoolEndYear,
-               schoolTerm,
-               grades,
-               studentNum,
-               issueTime,
-               deadline,
-               taskStatus,
-               closeTask,
-               operator,
-               memo
+        courseID,
+        teacher,
+        schoolStartYear,
+        schoolEndYear,
+        schoolTerm,
+        grades,
+        studentNum,
+        issueTime,
+        deadline,
+        taskStatus,
+        closeTask,
+        operator,
+        memo
         FROM coursedoctask
         <where>
             <if test="teacher != null and teacher != ''">

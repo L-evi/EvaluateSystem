@@ -1,9 +1,10 @@
-package com.project.evaluate.service;
+package com.project.evaluate.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.dao.FacultyDao;
 import com.project.evaluate.entity.Faculty;
-import com.project.evaluate.mapper.FacultyMapper;
+import com.project.evaluate.service.FacultyService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class FacultyServiceImpl implements FacultyService {
 
     @Autowired()
-    private FacultyMapper facultyMapper;
+    private FacultyDao facultyDao;
 
     @Resource
     private RedisCache redisCache;
@@ -39,7 +40,7 @@ public class FacultyServiceImpl implements FacultyService {
 //        从redis中获取信息
         Faculty tmp = JSONObject.toJavaObject(this.redisCache.getCacheObject("Faculty:" + faculty.getUserID()), Faculty.class);
         if (Objects.isNull(tmp)) {
-            tmp = this.facultyMapper.selectByUserID(faculty.getUserID());
+            tmp = this.facultyDao.selectByUserID(faculty.getUserID());
         }
         JSONObject jsonObject = new JSONObject();
 //        如果对象为空则登录失败
@@ -91,14 +92,14 @@ public class FacultyServiceImpl implements FacultyService {
         faculty.setLastLoginTime(faculty.getLoginTime());
         faculty.setLoginIP(ip);
         faculty.setLoginTime(new Date());
-        this.facultyMapper.updateFaculty(faculty);
+        this.facultyDao.updateFaculty(faculty);
     }
 
     @Override
     public ResponseResult userRegister(Faculty faculty) {
 //        如果在redis和数据库中找到了该数据，则说明已经注册了
 
-        if (this.facultyMapper.selectByUserID(faculty.getUserID()) != null) {
+        if (this.facultyDao.selectByUserID(faculty.getUserID()) != null) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "用户已注册");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
@@ -106,7 +107,7 @@ public class FacultyServiceImpl implements FacultyService {
 //        明文密码进行MD5 + salt + 散列，盐就用userID
         Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserID(), 1024);
         faculty.setPassword(md5Hash.toHex());
-        if (this.facultyMapper.addFaculty(faculty) == 1) {
+        if (this.facultyDao.addFaculty(faculty) == 1) {
 //            将信息放入redis中
             this.redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty, 3, TimeUnit.HOURS);
             return new ResponseResult(ResultCode.SUCCESS);

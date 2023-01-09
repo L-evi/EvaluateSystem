@@ -1,9 +1,10 @@
-package com.project.evaluate.service;
+package com.project.evaluate.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.dao.FacultyDao;
 import com.project.evaluate.entity.Faculty;
-import com.project.evaluate.mapper.FacultyMapper;
+import com.project.evaluate.service.TokenService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class TokenServiceImpl implements TokenService {
 
     @Resource
-    private FacultyMapper facultyMapper;
+    private FacultyDao facultyDao;
 
     @Resource
     private RedisCache redisCache;
@@ -46,9 +47,9 @@ public class TokenServiceImpl implements TokenService {
             if (jsonObject.containsKey("userID")) {
                 String userID = jsonObject.get("userID").toString();
 //                调用redis
-                Faculty faculty = JSONObject.toJavaObject(redisCache.getCacheObject("Faculty:" + userID), Faculty.class);
+                Faculty faculty = JSONObject.toJavaObject(this.redisCache.getCacheObject("Faculty:" + userID), Faculty.class);
                 if (Objects.isNull(faculty)) {
-                    faculty = facultyMapper.selectByUserID(userID);
+                    faculty = this.facultyDao.selectByUserID(userID);
                 }
 //                如果对象为空则返回错误
                 if (!Objects.isNull(faculty)) {
@@ -60,7 +61,7 @@ public class TokenServiceImpl implements TokenService {
                     jsonObject.put("msg", "token获取信息成功");
 //                    将信息放入redis中：根据过期时间设置redis中的token过期时间
                     int seconds = (int) (claims.getExpiration().getTime() - (new Date()).getTime());
-                    redisCache.setCacheObject("Faculty:" + userID, faculty, seconds, TimeUnit.MILLISECONDS);
+                    this.redisCache.setCacheObject("Faculty:" + userID, faculty, seconds, TimeUnit.MILLISECONDS);
                     return new ResponseResult(ResultCode.SUCCESS, jsonObject);
                 } else {
                     jsonObject = new JSONObject();

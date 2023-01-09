@@ -1,4 +1,4 @@
-package com.project.evaluate.mapper;
+package com.project.evaluate.dao;
 
 
 import com.project.evaluate.entity.Course;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 @Mapper
-public interface CourseMapper {
+public interface CourseDao {
 
     List<Course> getPageCourse(int start, int end);
 

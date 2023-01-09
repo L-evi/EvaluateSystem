@@ -1,8 +1,8 @@
 package com.project.evaluate.realm;
 
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.dao.FacultyDao;
 import com.project.evaluate.entity.Faculty;
-import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.redis.RedisCache;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -24,7 +24,7 @@ import java.util.Objects;
  */
 public class CustomerRealm extends AuthorizingRealm {
     @Resource
-    private FacultyMapper facultyMapper;
+    private FacultyDao facultyDao;
     @Resource
     private RedisCache redisCache;
 
@@ -44,7 +44,7 @@ public class CustomerRealm extends AuthorizingRealm {
 
         if (Objects.isNull(jsonObject)) {
 //            从数据库中获取信息
-            faculty = this.facultyMapper.selectByUserID(principal);
+            faculty = this.facultyDao.selectByUserID(principal);
         } else {
             faculty = JSONObject.toJavaObject(jsonObject, Faculty.class);
         }

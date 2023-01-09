@@ -18,7 +18,11 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
-
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
 
 # 配置文件
 file:
@@ -33,3 +37,4 @@ file:
   # 文件缓冲区大小 1024MB
   threshold-size: 1024
 
+  

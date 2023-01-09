@@ -2,13 +2,13 @@ package com.project.evaluate;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.project.evaluate.dao.*;
 import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.entity.Faculty;
-import com.project.evaluate.mapper.CourseDocDetailMapper;
-import com.project.evaluate.mapper.CourseDocTaskMapper;
-import com.project.evaluate.mapper.CourseMapper;
-import com.project.evaluate.mapper.FacultyMapper;
+import com.project.evaluate.entity.Feedback;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;
@@ -63,7 +63,7 @@ class EvaluateApplicationTests {
     }
 
     @Resource
-    private FacultyMapper facultyMapper;
+    private FacultyDao facultyDao;
 
 
     @Test
@@ -86,7 +86,7 @@ class EvaluateApplicationTests {
     void testValue() {
         Map<String, Object> map = new HashMap<>();
         map.put("taskID", 2);
-        String taskID =  map.get("taskID").toString();
+        String taskID = map.get("taskID").toString();
         System.out.println(taskID);
         Integer id = Integer.parseInt(taskID);
         System.out.println(id);
@@ -154,18 +154,18 @@ class EvaluateApplicationTests {
     }
 
     @Resource
-    private CourseMapper courseMapper;
+    private CourseDao courseDao;
 
     @Test
     public void testCourseMapper() {
 //        List<Course> pageCourse = this.courseMapper.getPageCourse(0, 2);
 //        pageCourse.forEach(System.out::println);
-        System.out.println(this.courseMapper.selectByCourseID("1"));
+        System.out.println(this.courseDao.selectByCourseID("1"));
     }
 
 
     @Resource
-    private CourseDocDetailMapper courseDocDetailMapper;
+    private CourseDocDetailDao courseDocDetailDao;
 
     @Test
     public void testCourseDocDetailMapper() {
@@ -176,12 +176,12 @@ class EvaluateApplicationTests {
         map.put("taskID", 2);
         map.put("page", 1);
         map.put("pageSize", 10);
-        List<CourseDocDetail> courseDocDetails = this.courseDocDetailMapper.selectByTaskID(map);
+        List<CourseDocDetail> courseDocDetails = this.courseDocDetailDao.selectByTaskID(map);
         courseDocDetails.forEach(System.out::println);
     }
 
     @Resource
-    private CourseDocTaskMapper courseDocTaskMapper;
+    private CourseDocTaskDao courseDocTaskDao;
 
     @Test
     public void testCourseDocTaskMapper() {
@@ -198,8 +198,40 @@ class EvaluateApplicationTests {
         objectMap.put("pageSize", 3);
         System.out.println(objectMap.toString());
         System.out.println("---------");
-        List<CourseDocTask> courseDocTasks = this.courseDocTaskMapper.screenTeacherCourseDocTask(objectMap);
+        List<CourseDocTask> courseDocTasks = this.courseDocTaskDao.screenTeacherCourseDocTask(objectMap);
         courseDocTasks.forEach(System.out::println);
     }
+
+    @Test
+    public void testPageHelper() {
+        PageHelper.startPage(0, 5);
+        PageHelper.orderBy("taskID DESC");
+        List<CourseDocDetail> all = this.courseDocDetailDao.getAll();
+        PageInfo<CourseDocDetail> pageInfo = new PageInfo<CourseDocDetail>(all);
+        List<CourseDocDetail> list = pageInfo.getList();
+        list.forEach(System.out::println);
+        long endRow = pageInfo.getEndRow();
+        System.out.println("end row:" + endRow);
+        System.out.println("pages:" + pageInfo.getPages());
+    }
+
+    @Resource
+    private FeedbackDao feedbackDao;
+
+    @Test
+    public void testFeedbackDao() {
+//        this.feedbackDao.insert(new Feedback(null, "反馈标题", "反馈内容：测试内容", new Date(), "teach"));
+//        System.out.println(this.feedbackDao.selectByID(1));
+        Feedback feedback = new Feedback();
+        PageHelper.startPage(0, 1, "ID ASC");
+        List<Feedback> feedbacks = this.feedbackDao.selectByFeedback(feedback);
+        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbacks);
+//        System.out.println(pageInfo.getNextPage());
+        pageInfo.calcByNavigatePages(2);
+        pageInfo.getList().forEach(System.out::println);
+//        System.out.println(feedbacks.toString());
+//        System.out.println(this.feedbackDao.delete(1));
+    }
+
 }
 

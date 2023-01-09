@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.evaluate.dao.FeedbackDao">
+    <insert id="insert" useGeneratedKeys="true">
+        INSERT INTO feedback(title, content, feedbackTime, userID)
+        VALUES (#{title}, #{content}, #{feedBackTime}, #{userid})
+    </insert>
+
+    <delete id="delete">
+        DELETE
+        FROM feedback
+        WHERE ID = #{ID}
+    </delete>
+
+    <select id="selectByID"
+            resultType="com.project.evaluate.entity.Feedback">
+        SELECT id, title, content, feedbacktime, userid
+        FROM feedback
+        WHERE ID = #{id}
+    </select>
+
+
+    <select id="selectByFeedback"
+            resultType="com.project.evaluate.entity.Feedback"
+            parameterType="com.project.evaluate.entity.Feedback">
+        SELECT ID, title, content, feedbackTime, userID
+        FROM feedback
+        <where>
+            <if test="id != null and id != 0">
+                ID = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                AND content = #{content}
+            </if>
+            <if test="userid != null and userid !=''">
+                AND userid = #{userid}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

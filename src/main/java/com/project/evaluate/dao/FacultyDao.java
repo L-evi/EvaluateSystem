@@ -1,4 +1,4 @@
-package com.project.evaluate.mapper;
+package com.project.evaluate.dao;
 
 import com.project.evaluate.entity.Faculty;
 import org.apache.ibatis.annotations.Mapper;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Mapper
 @Repository
-public interface FacultyMapper {
+public interface FacultyDao {
     Faculty selectByUserID(String userID);
 
     int addFaculty(Faculty faculty);

@@ -1,13 +1,13 @@
 package com.project.evaluate.controller.File;
 
-import com.alibaba.fastjson.JSON;
+
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.dao.CourseDao;
+import com.project.evaluate.dao.CourseDocDetailDao;
+import com.project.evaluate.dao.CourseDocTaskDao;
 import com.project.evaluate.entity.Course;
 import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.entity.CourseDocTask;
-import com.project.evaluate.mapper.CourseDocDetailMapper;
-import com.project.evaluate.mapper.CourseDocTaskMapper;
-import com.project.evaluate.mapper.CourseMapper;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
@@ -43,16 +43,16 @@ import java.util.Objects;
 @PropertySource("classpath:application.yml")
 class UploadController {
     @Resource
-    private CourseDocTaskMapper courseDocTaskMapper;
+    private CourseDocTaskDao courseDocTaskDao;
 
     @Resource
     private RedisCache redisCache;
 
     @Resource
-    private CourseDocDetailMapper courseDocDetailMapper;
+    private CourseDocDetailDao courseDocDetailDao;
 
     @Resource
-    private CourseMapper courseMapper;
+    private CourseDao courseDao;
     //    编码格式
     @Value("${file.character-set}")
     private String character;
@@ -152,7 +152,7 @@ class UploadController {
                         Thread.sleep(100);
 //                        如果超过了一定时间还没有找到那些分片，就跳出来，并且将前面所有的分片删除
                         if (j == schunks) {
-                            deleteFile(i, name, filePath);
+                            UploadController.deleteFile(i, name, filePath);
                             isExist = false;
                             break;
                         }
@@ -229,7 +229,7 @@ class UploadController {
         }
     }
 
-    private void deleteFile(int index, String name, String filePath) {
+    private static void deleteFile(int index, String name, String filePath) {
         for (int i = 0; i < index; i++) {
             File file = new File(filePath, i + "_" + name);
             if (file.exists()) {
@@ -251,29 +251,29 @@ class UploadController {
 //        获取CourseDocTask信息
         CourseDocTask courseDocTask = null;
 //        从redis中获取CourseDocTask信息
-        courseDocTask = JSONObject.toJavaObject(redisCache.getCacheObject("CourseDocTask:" + taskID), CourseDocTask.class);
+        courseDocTask = JSONObject.toJavaObject(this.redisCache.getCacheObject("CourseDocTask:" + taskID), CourseDocTask.class);
         if (Objects.isNull(courseDocTask)) {
-            courseDocTask = courseDocTaskMapper.selectByID(taskID);
+            courseDocTask = this.courseDocTaskDao.selectByID(taskID);
             if (Objects.isNull(courseDocTask)) {
                 jsonObject.put("msg", "找不到课程文档任务信息");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             } else {
 //                将信息放入redis中
-                redisCache.setCacheObject("CourseDocTask:" + taskID, courseDocTask);
+                this.redisCache.setCacheObject("CourseDocTask:" + taskID, courseDocTask);
             }
         }
 //        获取Course信息
         Course course = null;
 //        从redis中获取
-        course = JSONObject.toJavaObject(redisCache.getCacheObject("Course:" + courseDocTask.getCourseID()), Course.class);
+        course = JSONObject.toJavaObject(this.redisCache.getCacheObject("Course:" + courseDocTask.getCourseID()), Course.class);
         if (Objects.isNull(course)) {
-            course = courseMapper.selectByCourseID(courseDocTask.getCourseID());
+            course = this.courseDao.selectByCourseID(courseDocTask.getCourseID());
             if (Objects.isNull(course)) {
                 jsonObject.put("msg", "找不到课程信息");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             } else {
 //                将信息放入redis中
-                redisCache.setCacheObject("Course:" + course.getCourseID(), course);
+                this.redisCache.setCacheObject("Course:" + course.getCourseID(), course);
             }
         }
 //        根据CourseDocTask信息构建文件目录

@@ -1,10 +1,11 @@
-package com.project.evaluate.service;
+package com.project.evaluate.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.dao.CourseDocDetailDao;
 import com.project.evaluate.entity.CourseDocDetail;
-import com.project.evaluate.mapper.CourseDocDetailMapper;
+import com.project.evaluate.service.CourseDocDetailService;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,11 @@ import java.util.Map;
 public class CourseDocDetailServiceImpl implements CourseDocDetailService {
 
     @Resource
-    private CourseDocDetailMapper courseDocDetailMapper;
+    private CourseDocDetailDao courseDocDetailDao;
 
     @Override
     public ResponseResult deleteByTaskID(int taskID, String userID) {
-        Long num = this.courseDocDetailMapper.deleteByTaskID(taskID, userID);
+        Long num = this.courseDocDetailDao.deleteByTaskID(taskID, userID);
         JSONObject jsonObject = new JSONObject();
         if (num > 0) {
             jsonObject.put("msg", "删除成功");
@@ -53,7 +54,7 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
         }
         map.put("page", (page - 1) * pageSize);
         map.put("pageSize", pageSize);
-        List<CourseDocDetail> courseDocDetails = this.courseDocDetailMapper.selectByTaskID(map);
+        List<CourseDocDetail> courseDocDetails = this.courseDocDetailDao.selectByTaskID(map);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(courseDocDetails));
         return new ResponseResult<>(ResultCode.SUCCESS, jsonArray);
     }

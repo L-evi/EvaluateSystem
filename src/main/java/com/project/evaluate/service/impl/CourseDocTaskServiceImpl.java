@@ -1,14 +1,15 @@
-package com.project.evaluate.service;
+package com.project.evaluate.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.dao.CourseDao;
+import com.project.evaluate.dao.CourseDocDetailDao;
+import com.project.evaluate.dao.CourseDocTaskDao;
 import com.project.evaluate.entity.Course;
 import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.entity.CourseDocTask;
-import com.project.evaluate.mapper.CourseDocDetailMapper;
-import com.project.evaluate.mapper.CourseDocTaskMapper;
-import com.project.evaluate.mapper.CourseMapper;
+import com.project.evaluate.service.CourseDocTaskService;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
@@ -26,14 +27,14 @@ import java.util.*;
 @Service
 public class CourseDocTaskServiceImpl implements CourseDocTaskService {
     @Resource
-    private CourseDocTaskMapper courseDocTaskMapper;
+    private CourseDocTaskDao courseDocTaskDao;
 
     @Resource
-    private CourseMapper courseMapper;
+    private CourseDao courseDao;
 
 
     @Resource
-    private CourseDocDetailMapper courseDocDetailMapper;
+    private CourseDocDetailDao courseDocDetailDao;
 
     @Resource
     private RedisCache redisCache;
@@ -60,7 +61,7 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
         objectMap.put("pageSize", pageSize);
 
 //        获取数据
-        List<CourseDocTask> courseDocTasks = this.courseDocTaskMapper.screenTeacherCourseDocTask(objectMap);
+        List<CourseDocTask> courseDocTasks = this.courseDocTaskDao.screenTeacherCourseDocTask(objectMap);
         List<Map<String, Object>> taskMaps = new ArrayList<>();
 //         每一个都获取其中的课程名称
         courseDocTasks.forEach(task -> {
@@ -70,7 +71,7 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
             course = JSONObject.toJavaObject(this.redisCache.getCacheObject("Course:" + task.getCourseID()), Course.class);
 //            如果没有获取到则从数据库中获取
             if (Objects.isNull(course)) {
-                course = this.courseMapper.selectByCourseID(task.getCourseID());
+                course = this.courseDao.selectByCourseID(task.getCourseID());
                 this.redisCache.setCacheObject("Course:" + course.getCourseID(), course);
             }
             taskMap.put("courseName", course.getCourseName());
@@ -95,13 +96,13 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
         map.put("taskID", ID);
         map.put("page", 1);
         map.put("pageSize", 10);
-        List<CourseDocDetail> courseDocDetails = this.courseDocDetailMapper.selectByTaskID(map);
+        List<CourseDocDetail> courseDocDetails = this.courseDocDetailDao.selectByTaskID(map);
 //        教学文档任务已经上传文件了
         if (!courseDocDetails.isEmpty()) {
             jsonObject.put("msg", "教学文档文件已上传文件，无法删除");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        CourseDocTask courseDocTask = this.courseDocTaskMapper.selectByID(ID);
+        CourseDocTask courseDocTask = this.courseDocTaskDao.selectByID(ID);
         Date now = new Date();
 //        如果任务超时 或者 任务已经关闭了
         if (now.after(courseDocTask.getDeadline()) || courseDocTask.getCloseTask() == 1) {
@@ -109,7 +110,7 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        没有问题了才删除
-        Long num = this.courseDocTaskMapper.deleteTaskByID(ID);
+        Long num = this.courseDocTaskDao.deleteTaskByID(ID);
         if (num > 0) {
             jsonObject.put("msg", "删除成功");
             jsonObject.put("count", num);

@@ -1,7 +1,7 @@
 package com.project.evaluate.controller.test;
 
+import com.project.evaluate.dao.FacultyDao;
 import com.project.evaluate.entity.Faculty;
-import com.project.evaluate.mapper.FacultyMapper;
 import com.project.evaluate.util.response.ResponseResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 @RequestMapping(value = "/test")
 public class testController {
     @Resource
-    private FacultyMapper facultyMapper;
+    private FacultyDao facultyDao;
 
     @RequestMapping(value = "/hello", method = RequestMethod.POST)
     public Map<String, Object> testHelloWorld(@RequestBody Map<String, Object> getMessage) {
@@ -29,9 +29,9 @@ public class testController {
 
     @RequestMapping(value = "/update")
     public ResponseResult testUpdate() {
-        Faculty faculty = this.facultyMapper.selectByUserID("user");
+        Faculty faculty = this.facultyDao.selectByUserID("user");
         faculty.setLastLoginIP("127.0.0.1");
-        int i = this.facultyMapper.updateFaculty(faculty);
+        int i = this.facultyDao.updateFaculty(faculty);
         System.out.println(i);
         return ResponseResult.success();
     }
