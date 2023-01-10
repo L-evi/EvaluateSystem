@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Levi
@@ -51,7 +52,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         Feedback feedback = JSONObject.toJavaObject(this.redisCache.getCacheObject("Feedback:" + id), Feedback.class);
         if (Objects.isNull(feedback)) {
             feedback = this.feedbackDao.selectByID(id);
-            this.redisCache.setCacheObject("Feedback:" + feedback.getId(), feedback);
+            this.redisCache.setCacheObject("Feedback:" + feedback.getId(), feedback, 1, TimeUnit.DAYS);
         }
         if (Objects.isNull(feedback)) {
             jsonObject.put("msg", "查询失败");

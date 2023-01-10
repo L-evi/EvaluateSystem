@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Levi
@@ -72,7 +73,7 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
 //            如果没有获取到则从数据库中获取
             if (Objects.isNull(course)) {
                 course = this.courseDao.selectByCourseID(task.getCourseID());
-                this.redisCache.setCacheObject("Course:" + course.getCourseID(), course);
+                this.redisCache.setCacheObject("Course:" + course.getCourseID(), course, 1, TimeUnit.DAYS);
             }
             taskMap.put("courseName", course.getCourseName());
             taskMaps.add(taskMap);

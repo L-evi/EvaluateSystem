@@ -15,6 +15,7 @@ import org.apache.shiro.util.ByteSource;
 
 import javax.annotation.Resource;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Levi
@@ -52,7 +53,7 @@ public class CustomerRealm extends AuthorizingRealm {
 //        封装信息
         if (!Objects.isNull(faculty)) {
 //            将信息放入redis中
-            this.redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty);
+            this.redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty, 1, TimeUnit.DAYS);
             return new SimpleAuthenticationInfo(principal, faculty.getPassword(), ByteSource.Util.bytes(faculty.getUserID()), this.getName());
         }
         return null;

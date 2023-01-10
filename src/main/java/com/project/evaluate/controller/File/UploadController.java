@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Levi
@@ -259,7 +260,7 @@ class UploadController {
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             } else {
 //                将信息放入redis中
-                this.redisCache.setCacheObject("CourseDocTask:" + taskID, courseDocTask);
+                this.redisCache.setCacheObject("CourseDocTask:" + taskID, courseDocTask, 1, TimeUnit.DAYS);
             }
         }
 //        获取Course信息
@@ -273,14 +274,11 @@ class UploadController {
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             } else {
 //                将信息放入redis中
-                this.redisCache.setCacheObject("Course:" + course.getCourseID(), course);
+                this.redisCache.setCacheObject("Course:" + course.getCourseID(), course, 1, TimeUnit.DAYS);
             }
         }
 //        根据CourseDocTask信息构建文件目录
-        String fileDir = courseDocTask.getSchoolStartYear() + "-" + courseDocTask.getSchoolEndYear() + "-" + courseDocTask.getSchoolTerm()
-                + File.separator
-                + courseDocTask.getCourseID() + "_" + course.getCourseName()
-                + File.separator;
+        String fileDir = courseDocTask.getSchoolStartYear() + "-" + courseDocTask.getSchoolEndYear() + "-" + courseDocTask.getSchoolTerm() + File.separator + courseDocTask.getCourseID() + "_" + course.getCourseName() + File.separator;
         File tempFileDir = new File(this.prePath + File.separator + fileDir);
         if (!tempFileDir.exists()) {
             if (!tempFileDir.mkdirs()) {
@@ -296,8 +294,7 @@ class UploadController {
             return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
         }
 //        复制文件
-        try (InputStream inputStream = new FileInputStream(tempFile);
-             OutputStream outputStream = new FileOutputStream(file)) {
+        try (InputStream inputStream = new FileInputStream(tempFile); OutputStream outputStream = new FileOutputStream(file)) {
             byte[] bytes = new byte[1024];
             int length;
             while ((length = inputStream.read(bytes)) > 0) {
