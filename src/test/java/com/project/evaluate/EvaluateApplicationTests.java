@@ -5,10 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.*;
+import com.project.evaluate.entity.Bulletin;
 import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.entity.Faculty;
-import com.project.evaluate.entity.Feedback;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;
@@ -221,16 +221,32 @@ class EvaluateApplicationTests {
     @Test
     public void testFeedbackDao() {
 //        this.feedbackDao.insert(new Feedback(null, "反馈标题", "反馈内容：测试内容", new Date(), "teach"));
-//        System.out.println(this.feedbackDao.selectByID(1));
-        Feedback feedback = new Feedback();
-        PageHelper.startPage(0, 1, "ID ASC");
-        List<Feedback> feedbacks = this.feedbackDao.selectByFeedback(feedback);
-        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbacks);
+//        System.out.println(this.feedbackDao.selectByID(9));
+//        Feedback feedback = new Feedback();
+//        PageHelper.startPage(0, 15, "ID ASC");
+//        List<Feedback> feedbacks = this.feedbackDao.selectByFeedback(feedback);
+//        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbacks);
 //        System.out.println(pageInfo.getNextPage());
-        pageInfo.calcByNavigatePages(2);
-        pageInfo.getList().forEach(System.out::println);
+//        pageInfo.calcByNavigatePages(2);
+//        pageInfo.getList().forEach(System.out::println);
 //        System.out.println(feedbacks.toString());
 //        System.out.println(this.feedbackDao.delete(1));
+    }
+
+    @Resource
+    private BulletinDao bulletinDao;
+
+    @Test
+    public void testBulletinDao() {
+//        Bulletin bulletin = this.bulletinDao.selectByID(2);
+//        System.out.println(bulletin.toString());
+//        bulletin.setID(null);
+//        Long aLong = this.bulletinDao.insertBulletin(bulletin);
+//        System.out.println(aLong);
+//        Boolean aBoolean = this.bulletinDao.deleteByID(1);
+//        System.out.println(aBoolean);
+        List<Bulletin> bulletins = this.bulletinDao.selectByBulletin(new Bulletin(), null);
+        bulletins.forEach(System.out::println);
     }
 
 }

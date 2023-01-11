@@ -10,11 +10,11 @@ import java.util.List;
 @Mapper
 @Repository
 public interface FeedbackDao {
-    Feedback selectByID(Integer id);
+    Feedback selectByID(Integer ID);
 
     List<Feedback> selectByFeedback(Feedback feedback);
 
     Long insert(Feedback feedback);
 
-    Boolean delete(Integer id);
+    Boolean delete(Integer ID);
 }

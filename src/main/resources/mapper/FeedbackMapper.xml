@@ -5,7 +5,7 @@
 <mapper namespace="com.project.evaluate.dao.FeedbackDao">
     <insert id="insert" useGeneratedKeys="true">
         INSERT INTO feedback(title, content, feedbackTime, userID)
-        VALUES (#{title}, #{content}, #{feedBackTime}, #{userid})
+        VALUES (#{title}, #{content}, #{feedBackTime}, #{userID})
     </insert>
 
     <delete id="delete">
@@ -16,9 +16,9 @@
 
     <select id="selectByID"
             resultType="com.project.evaluate.entity.Feedback">
-        SELECT id, title, content, feedbacktime, userid
+        SELECT ID, title, content, feedbacktime, userID
         FROM feedback
-        WHERE ID = #{id}
+        WHERE ID = #{ID}
     </select>
 
 
@@ -28,14 +28,14 @@
         SELECT ID, title, content, feedbackTime, userID
         FROM feedback
         <where>
-            <if test="id != null and id != 0">
-                ID = #{id}
+            <if test="ID != null and ID != 0">
+                ID = #{ID}
             </if>
             <if test="title != null and title != ''">
                 AND content = #{content}
             </if>
-            <if test="userid != null and userid !=''">
-                AND userid = #{userid}
+            <if test="userID != null and userID !=''">
+                AND userID = #{userID}
             </if>
         </where>
     </select>

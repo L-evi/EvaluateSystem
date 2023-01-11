@@ -40,7 +40,7 @@ public class FeedbackController {
         try {
             jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
             String userID = (String) jsonObject.get("userID");
-            feedback.setUserid(userID);
+            feedback.setUserID(userID);
             feedback.setFeedBackTime(new Date());
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -49,17 +49,17 @@ public class FeedbackController {
     }
 
     @GetMapping("/get/single")
-    public ResponseResult getSingleFeedback(Integer id) {
+    public ResponseResult getSingleFeedback(Integer ID) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(id) || id == 0) {
+        if (Objects.isNull(ID) || ID == 0) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        return this.feedbackService.selectSingleFeedback(id);
+        return this.feedbackService.selectSingleFeedback(ID);
     }
 
     @GetMapping("/get/page")
-    public ResponseResult getPageFeedback(Integer page, Integer pageSize, @DefaultValue("ID ASC") String orderBy, @RequestBody(required = false) Feedback feedback) {
+    public ResponseResult getPageFeedback(Integer page, Integer pageSize, @DefaultValue("ID ASC") String orderBy, Feedback feedback) {
         if (Objects.isNull(page)) {
             page = 0;
         }
@@ -71,12 +71,12 @@ public class FeedbackController {
 
     @RequiresRoles("1")
     @DeleteMapping("/delete/single")
-    public ResponseResult deleteFeedback(Integer id) {
+    public ResponseResult deleteFeedback(Integer ID) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(id) || id == 0) {
+        if (Objects.isNull(ID) || ID == 0) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        return this.feedbackService.deleteFeedback(id);
+        return this.feedbackService.deleteFeedback(ID);
     }
 }

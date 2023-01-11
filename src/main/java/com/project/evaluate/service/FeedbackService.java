@@ -6,9 +6,9 @@ import com.project.evaluate.util.response.ResponseResult;
 public interface FeedbackService {
     ResponseResult insertFeedback(Feedback feedback);
 
-    ResponseResult selectSingleFeedback(Integer id);
+    ResponseResult selectSingleFeedback(Integer ID);
 
     ResponseResult selectFeedbacks(Feedback feedback, Integer page, Integer pageSize, String orderBy);
 
-    ResponseResult deleteFeedback(Integer id);
+    ResponseResult deleteFeedback(Integer ID);
 }

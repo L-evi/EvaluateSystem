@@ -46,17 +46,17 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public ResponseResult selectSingleFeedback(Integer id) {
+    public ResponseResult selectSingleFeedback(Integer ID) {
         JSONObject jsonObject = new JSONObject();
 //        从redis中查询
-        Feedback feedback = JSONObject.toJavaObject(this.redisCache.getCacheObject("Feedback:" + id), Feedback.class);
+        Feedback feedback = JSONObject.toJavaObject(this.redisCache.getCacheObject("Feedback:" + ID), Feedback.class);
         if (Objects.isNull(feedback)) {
-            feedback = this.feedbackDao.selectByID(id);
-            this.redisCache.setCacheObject("Feedback:" + feedback.getId(), feedback, 1, TimeUnit.DAYS);
-        }
-        if (Objects.isNull(feedback)) {
-            jsonObject.put("msg", "查询失败");
-            return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+            feedback = this.feedbackDao.selectByID(ID);
+            if (Objects.isNull(feedback)) {
+                jsonObject.put("msg", "查询失败");
+                return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+            }
+            this.redisCache.setCacheObject("Feedback:" + feedback.getID(), feedback, 1, TimeUnit.DAYS);
         }
         jsonObject = JSONObject.parseObject(JSON.toJSONString(feedback));
         jsonObject.put("msg", "查询成功");
@@ -78,15 +78,15 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public ResponseResult deleteFeedback(Integer id) {
+    public ResponseResult deleteFeedback(Integer ID) {
         JSONObject jsonObject = new JSONObject();
-        Boolean isDelete = this.feedbackDao.delete(id);
+        Boolean isDelete = this.feedbackDao.delete(ID);
         if (!isDelete) {
             jsonObject.put("msg", "删除失败，数据不存在");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        从redis中删除
-        this.redisCache.deleteObject("Feedback:" + id);
+        this.redisCache.deleteObject("Feedback:" + ID);
         jsonObject.put("msg", "删除成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }

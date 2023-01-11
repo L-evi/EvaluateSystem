@@ -21,7 +21,7 @@ public class Feedback implements Serializable {
     /**
      * ID
      */
-    private Integer id;
+    private Integer ID;
     /**
      * 反馈标题
      */
@@ -37,6 +37,6 @@ public class Feedback implements Serializable {
     /**
      * 作者
      */
-    private String userid;
+    private String userID;
 }
 
