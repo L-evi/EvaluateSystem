@@ -10,8 +10,9 @@ import java.util.Map;
 @Repository
 @Mapper
 public interface CourseDocTaskDao {
-    List<CourseDocTask> screenTeacherCourseDocTask(Map<String, Object> map);
-    
+
+    List<Map<String, Object>> selectPageCourseDocTask(CourseDocTask courseDocTask);
+
     Long deleteTaskByID(int ID);
 
     CourseDocTask selectByID(int ID);

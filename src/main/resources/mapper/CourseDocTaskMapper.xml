@@ -3,50 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.dao.CourseDocTaskDao">
-    <select id="screenTeacherCourseDocTask"
-            resultType="com.project.evaluate.entity.CourseDocTask"
-            parameterType="java.util.Map">
-        SELECT ID,
-        courseID,
-        teacher,
-        schoolStartYear,
-        schoolEndYear,
-        schoolTerm,
-        grades,
-        studentNum,
-        issueTime,
-        deadline,
-        taskStatus,
-        closeTask,
-        operator,
-        memo
-        FROM coursedoctask
-        <where>
-            <if test="teacher != null and teacher != ''">
-                teacher = #{teacher}
-            </if>
-            <if test="schoolStartYear != null and schoolStartYear != ''">
-                AND schoolStartYear = #{schoolStartYear}
-            </if>
-            <if test="schoolEndYear != null and schoolEndYear != ''">
-                AND schoolEndYear = #{schoolEndYear}
-            </if>
-            <if test="schoolTerm != null and schoolTerm != ''">
-                AND schoolTerm = #{schoolTerm}
-            </if>
-            <if test="courseID != null and courseID != ''">
-                AND courseID = #{courseID}
-            </if>
-            <if test="taskStatus != null and taskStatus != ''">
-                AND taskStatus = #{taskStatus}
-            </if>
-            <if test="closeTask != null and closeTask != ''">
-                AND closeTask = #{closeTask}
-            </if>
-        </where>
-        ORDER BY ID
-        LIMIT #{index},#{pageSize}
-    </select>
 
     <delete id="deleteTaskByID">
         DELETE
@@ -71,5 +27,48 @@
                memo
         FROM coursedoctask
         WHERE ID = #{ID}
+    </select>
+    <select id="selectPageCourseDocTask" resultType="java.util.Map">
+        SELECT coursedoctask.ID,
+        coursedoctask.courseID,
+        coursedoctask.teacher,
+        coursedoctask.schoolStartYear,
+        coursedoctask.schoolEndYear,
+        coursedoctask.schoolTerm,
+        coursedoctask.grades,
+        coursedoctask.studentNum,
+        coursedoctask.issueTime,
+        coursedoctask.deadline,
+        coursedoctask.taskStatus,
+        coursedoctask.closeTask,
+        coursedoctask.operator,
+        coursedoctask.memo,
+        course.courseName
+        FROM coursedoctask
+        LEFT JOIN course
+        ON course.courseID = coursedoctask.courseid
+        <where>
+            <if test="teacher != null and teacher != ''">
+                coursedoctask.teacher = #{teacher}
+            </if>
+            <if test="schoolStartYear != null and schoolStartYear != ''">
+                AND coursedoctask.schoolStartYear = #{schoolStartYear}
+            </if>
+            <if test="schoolEndYear != null and schoolEndYear != ''">
+                AND coursedoctask.schoolEndYear = #{schoolEndYear}
+            </if>
+            <if test="schoolTerm != null and schoolTerm != ''">
+                AND coursedoctask.schoolTerm = #{schoolTerm}
+            </if>
+            <if test="courseID != null and courseID != ''">
+                AND coursedoctask.courseID = #{courseID}
+            </if>
+            <if test="taskStatus != null and taskStatus != ''">
+                AND coursedoctask.taskStatus = #{taskStatus}
+            </if>
+            <if test="closeTask != null and closeTask != ''">
+                AND coursedoctask.closeTask = #{closeTask}
+            </if>
+        </where>
     </select>
 </mapper>

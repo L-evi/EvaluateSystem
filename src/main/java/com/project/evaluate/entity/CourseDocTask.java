@@ -21,7 +21,7 @@ public class CourseDocTask implements Serializable {
     /**
      * ID：自增
      */
-    int ID;
+    Integer ID;
 
     /**
      * 课程代码：外键，关联Course的courseID
@@ -36,17 +36,17 @@ public class CourseDocTask implements Serializable {
     /**
      * 开始学年
      */
-    int schoolStartYear;
+    Integer schoolStartYear;
 
     /**
      * 结束学年
      */
-    int schoolEndYear;
+    Integer schoolEndYear;
 
     /**
      * 学期：1--上学期；2--下学期
      */
-    int schoolTerm;
+    Integer schoolTerm;
 
     /**
      * 选修班级：如19计算机科学与技术（师范），专业名称由major表提供，其余信息手工输入
@@ -56,7 +56,7 @@ public class CourseDocTask implements Serializable {
     /**
      * 选修人数
      */
-    int studentNum;
+    Integer studentNum;
 
     /**
      * 发布任务时间：设置任务状态为1时，设置发布任务时间
@@ -72,12 +72,12 @@ public class CourseDocTask implements Serializable {
     /**
      * 任务状态：0--编辑任务：未正式发布（用户端无法看到该任务）；1--正式发布：等待上传（用户端可以看到上传任务）；2--已上传部分文档；3--已上传全部文档
      */
-    int taskStatus;
+    Integer taskStatus;
 
     /**
      * 关闭任务：对于已完成上传的资料，可设置关闭任务，关闭任务之后，将不可以编辑任务记录、上传和删除文档
      */
-    int closeTask;
+    Integer closeTask;
 
     /**
      * 操作员：外键，关联Faculty的userID，创建提交任务的操作员，通常是文档的管理员

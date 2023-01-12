@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.*;
-import com.project.evaluate.entity.Bulletin;
-import com.project.evaluate.entity.CourseDocDetail;
-import com.project.evaluate.entity.CourseDocTask;
-import com.project.evaluate.entity.Faculty;
+import com.project.evaluate.entity.*;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;
@@ -185,21 +182,31 @@ class EvaluateApplicationTests {
 
     @Test
     public void testCourseDocTaskMapper() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("start", 0);
-        map.put("end", 10);
-        map.put("teacher", "teacher");
-        map.put("schoolEndYear", 2);
-        CourseDocTask courseDocTask = JSON.parseObject(JSONObject.toJSONString(map), CourseDocTask.class);
-        System.out.println(courseDocTask.toString());
-        System.out.println("-----------------");
-        Map<String, Object> objectMap = JSON.parseObject(JSON.toJSONString(courseDocTask), Map.class);
-        objectMap.put("index", 0);
-        objectMap.put("pageSize", 3);
-        System.out.println(objectMap.toString());
-        System.out.println("---------");
-        List<CourseDocTask> courseDocTasks = this.courseDocTaskDao.screenTeacherCourseDocTask(objectMap);
-        courseDocTasks.forEach(System.out::println);
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("start", 0);
+//        map.put("end", 10);
+//        map.put("teacher", "teacher");
+//        map.put("schoolEndYear", 2);
+//        CourseDocTask courseDocTask = JSON.parseObject(JSONObject.toJSONString(map), CourseDocTask.class);
+//        System.out.println(courseDocTask.toString());
+//        System.out.println("-----------------");
+//        Map<String, Object> objectMap = JSON.parseObject(JSON.toJSONString(courseDocTask), Map.class);
+//        objectMap.put("index", 0);
+//        objectMap.put("pageSize", 3);
+//        System.out.println(objectMap.toString());
+//        System.out.println("---------");
+//        List<CourseDocTask> courseDocTasks = this.courseDocTaskDao.screenTeacherCourseDocTask(objectMap);
+//        courseDocTasks.forEach(System.out::println);
+        CourseDocTask courseDocTask = new CourseDocTask();
+        courseDocTask.setID(3);
+        PageHelper.startPage(0, 5, "ID DESC");
+        List<Map<String, Object>> courseDocTasks = this.courseDocTaskDao.selectPageCourseDocTask(courseDocTask);
+        PageInfo<Map<String, Object>> courseDocTaskPageInfo = new PageInfo<>(courseDocTasks);
+        List<Map<String, Object>> list = courseDocTaskPageInfo.getList();
+        list.forEach(System.out::println);
+        System.out.println(courseDocTaskPageInfo.getTotal());
+        System.out.println(courseDocTaskPageInfo.getPages());
+
     }
 
     @Test
@@ -222,13 +229,15 @@ class EvaluateApplicationTests {
     public void testFeedbackDao() {
 //        this.feedbackDao.insert(new Feedback(null, "反馈标题", "反馈内容：测试内容", new Date(), "teach"));
 //        System.out.println(this.feedbackDao.selectByID(9));
-//        Feedback feedback = new Feedback();
-//        PageHelper.startPage(0, 15, "ID ASC");
-//        List<Feedback> feedbacks = this.feedbackDao.selectByFeedback(feedback);
-//        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbacks);
+        Feedback feedback = new Feedback();
+        PageHelper.startPage(0, 15, "ID ASC");
+        List<Feedback> feedbacks = this.feedbackDao.selectByFeedback(feedback);
+        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbacks);
 //        System.out.println(pageInfo.getNextPage());
 //        pageInfo.calcByNavigatePages(2);
-//        pageInfo.getList().forEach(System.out::println);
+        pageInfo.getList().forEach(System.out::println);
+        System.out.println(pageInfo.getPages());
+        System.out.println(pageInfo.getTotal());
 //        System.out.println(feedbacks.toString());
 //        System.out.println(this.feedbackDao.delete(1));
     }

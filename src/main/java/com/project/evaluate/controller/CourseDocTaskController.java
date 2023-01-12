@@ -1,20 +1,18 @@
 package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.service.CourseDocTaskService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Levi
@@ -30,24 +28,30 @@ public class CourseDocTaskController {
     @Resource
     private CourseDocTaskService courseDocTaskService;
 
-    @RequestMapping(value = "/search")
-    public ResponseResult searchTeachingDocuments(@RequestBody Map<String, Object> map, HttpServletRequest request) {
-        String token = request.getHeader("token");
-        if (map.containsKey("teacher")) {
-            map.remove("teacher");
+    @GetMapping(value = "/search")
+    public ResponseResult selectPageCourseDocTask(CourseDocTask courseDocTask, Integer page, Integer pageSize, String orderBy, HttpServletRequest request) {
+        if (Objects.isNull(page)) {
+            page = 0;
         }
+        if (Objects.isNull(pageSize) || pageSize == 0) {
+            pageSize = 10;
+        }
+        if (!Strings.hasText(orderBy)) {
+            orderBy = "ID ASC";
+        }
+        String token = request.getHeader("token");
         if (Strings.hasText(token)) {
             try {
                 JSONObject jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
                 String roleType = (String) jsonObject.get("roleType");
                 if (roleType.equals("0")) {
-                    map.put("teacher", (String) jsonObject.get("userID"));
+                    courseDocTask.setTeacher((String) jsonObject.get("userID"));
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Parse token  错误");
             }
         }
-        return this.courseDocTaskService.searchTeachingDocuments(map);
+        return this.courseDocTaskService.selectPageCourseDocTask(courseDocTask, page, pageSize, orderBy);
     }
 
     //    只有文档管理员才能删除

@@ -67,7 +67,10 @@ public class BulletinServiceImpl implements BulletinService {
         }
         PageInfo<Bulletin> pageInfo = new PageInfo<Bulletin>(bulletins);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(pageInfo.getList()));
-        return new ResponseResult(ResultCode.SUCCESS, jsonArray);
+        jsonObject.put("array", jsonArray);
+        jsonObject.put("total", pageInfo.getTotal());
+        jsonObject.put("pages", pageInfo.getPages());
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
     @Override

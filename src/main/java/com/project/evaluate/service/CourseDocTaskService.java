@@ -1,11 +1,11 @@
 package com.project.evaluate.service;
 
+import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.util.response.ResponseResult;
 
-import java.util.Map;
-
 public interface CourseDocTaskService {
-    ResponseResult searchTeachingDocuments(Map<String, Object> map);
+
+    ResponseResult selectPageCourseDocTask(CourseDocTask courseDocTask, Integer page, Integer pageSize, String orderBy);
 
     ResponseResult deleteTeachingDocuments(int ID);
 }

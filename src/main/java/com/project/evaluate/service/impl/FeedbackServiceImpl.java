@@ -72,9 +72,12 @@ public class FeedbackServiceImpl implements FeedbackService {
             jsonObject.put("msg", "查询结果为空");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<Feedback> pageInfo = new PageInfo<Feedback>(feedbacks);
+        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbacks);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(pageInfo.getList()));
-        return new ResponseResult(ResultCode.SUCCESS, jsonArray);
+        jsonObject.put("array", jsonArray);
+        jsonObject.put("total", pageInfo.getTotal());
+        jsonObject.put("pages", pageInfo.getPages());
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
     @Override
