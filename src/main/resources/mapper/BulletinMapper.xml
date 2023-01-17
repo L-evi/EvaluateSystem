@@ -11,6 +11,7 @@
     </insert>
     <update id="updateBulletin">
         UPDATE bulletin
+
         <set>
             <if test="subject != null and subject != ''">
                 subject = #{subject},

@@ -16,7 +16,7 @@ public interface DocShareDao {
 
     DocShare selectDocShare(Integer ID);
 
-    Long updatePageDocShare(DocShare docShare);
+    Long updateDocShare(DocShare docShare);
 
-    Long deleteDocShare(Integer ID);
+    Long deleteDocShare(Integer ID, String userID);
 }

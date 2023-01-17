@@ -116,6 +116,7 @@ public class BulletinServiceImpl implements BulletinService {
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        更新redis
+        bulletin = this.bulletinDao.selectByID(bulletin.getID());
         this.redisCache.setCacheObject("Bulletin:" + bulletin.getID(), bulletin, 1, TimeUnit.DAYS);
         jsonObject.put("msg", "更新数据成功");
         jsonObject.put("num", num);

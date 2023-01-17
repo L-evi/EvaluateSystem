@@ -7,26 +7,26 @@
         INSERT INTO docshare(title, `desc`, docPath, docSize, uploadTime, submitter)
         VALUES (#{title}, #{desc}, #{docPath}, #{docSize}, #{uploadTime}, #{submitter})
     </insert>
-    <update id="updatePageDocShare">
+    <update id="updateDocShare">
         UPDATE docshare
         <set>
             <if test="title != null and title != ''">
-                title = #{title}
+                title = #{title},
             </if>
             <if test="desc != null and desc != ''">
-                AND desc = #{desc}
+                `desc` = #{desc},
             </if>
             <if test="docPath != null and docPath !=''">
-                AND docPath = #{docPath}
+                docPath = #{docPath},
             </if>
             <if test="docSize != null and docSize != 0">
-                AND docSize = #{docSize}
+                docSize = #{docSize},
             </if>
             <if test="uploadTime != null">
-                AND uploadTime = #{uploadTime}
+                uploadTime = #{uploadTime},
             </if>
             <if test="submitter != null and submitter != ''">
-                AND submitter = #{submitter}
+                submitter = #{submitter}
             </if>
         </set>
         WHERE ID = #{ID}
@@ -34,7 +34,12 @@
     <delete id="deleteDocShare">
         DELETE
         FROM docshare
-        WHERE ID = #{ID}
+        <where>
+            ID = #{ID}
+            <if test="userID  != null and userID !=''">
+                AND submitter = #{userID}
+            </if>
+        </where>
     </delete>
     <select id="selectPageDocShare" resultType="com.project.evaluate.entity.DocShare">
         SELECT ID, title, `desc`, docPath, docSize, uploadTime, submitter
