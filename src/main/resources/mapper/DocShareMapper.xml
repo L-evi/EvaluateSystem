@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.evaluate.dao.DocShareDao">
+    <insert id="insertDocShare" useGeneratedKeys="true">
+        INSERT INTO docshare(title, `desc`, docPath, docSize, uploadTime, submitter)
+        VALUES (#{title}, #{desc}, #{docPath}, #{docSize}, #{uploadTime}, #{submitter})
+    </insert>
+    <update id="updatePageDocShare">
+        UPDATE docshare
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title}
+            </if>
+            <if test="desc != null and desc != ''">
+                AND desc = #{desc}
+            </if>
+            <if test="docPath != null and docPath !=''">
+                AND docPath = #{docPath}
+            </if>
+            <if test="docSize != null and docSize != 0">
+                AND docSize = #{docSize}
+            </if>
+            <if test="uploadTime != null">
+                AND uploadTime = #{uploadTime}
+            </if>
+            <if test="submitter != null and submitter != ''">
+                AND submitter = #{submitter}
+            </if>
+        </set>
+        WHERE ID = #{ID}
+    </update>
+    <delete id="deleteDocShare">
+        DELETE
+        FROM docshare
+        WHERE ID = #{ID}
+    </delete>
+    <select id="selectPageDocShare" resultType="com.project.evaluate.entity.DocShare">
+        SELECT ID, title, `desc`, docPath, docSize, uploadTime, submitter
+        FROM docshare
+        <where>
+            <if test="ID != null and ID != ''">
+                ID = #{ID}
+            </if>
+            <if test="title != null and title != ''">
+                AND title = #{title}
+            </if>
+            <if test="desc != null and desc != ''">
+                AND desc = #{desc}
+            </if>
+            <if test="docPath != null and docPath !=''">
+                AND docPath = #{docPath}
+            </if>
+            <if test="docSize != null and docSize != 0">
+                AND docSize = #{docSize}
+            </if>
+            <if test="uploadTime != null">
+                AND uploadTime = #{uploadTime}
+            </if>
+            <if test="submitter != null and submitter != ''">
+                AND submitter = #{submitter}
+            </if>
+        </where>
+    </select>
+    <select id="selectDocShare" resultType="com.project.evaluate.entity.DocShare">
+        SELECT ID, title, `desc`, docPath, docSize, uploadTime, submitter
+        FROM docshare
+        WHERE ID = #{ID}
+    </select>
+</mapper>
