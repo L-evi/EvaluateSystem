@@ -99,4 +99,15 @@ public class DocShareController {
         return this.docShareService.deleteDocShare(id, token);
     }
 
+    @PostMapping("/submit")
+    public ResponseResult submitDocShare(@RequestBody DocShare docShare) {
+        JSONObject jsonObject = new JSONObject();
+        if (Objects.isNull(docShare)
+                || Objects.isNull(docShare.getID())
+                || Objects.isNull(docShare.getDocPath())) {
+            jsonObject.put("msg", "参数缺失");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        return this.docShareService.submitDocument(docShare);
+    }
 }

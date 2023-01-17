@@ -40,5 +40,7 @@ file:
   request-size-max: 1073741824
   # 文件缓冲区大小 1024MB
   threshold-size: 1024
+  # 共享文件文件架
+  share-pre-path: /root/upload/share
 
   

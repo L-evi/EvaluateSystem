@@ -12,9 +12,11 @@ import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +32,18 @@ public class DocShareServiceImpl implements DocShareService {
 
     @Resource
     private RedisCache redisCache;
+
+    /**
+     * 临时文件前缀
+     */
+    @Value("${file.temp-pre-path}")
+    private String tempPrePath;
+
+    /**
+     * 文件前缀
+     */
+    @Value("${file.share-pre-path}")
+    private String sharePrePath;
 
     @Resource
     private DocShareDao docShareDao;
@@ -133,6 +147,36 @@ public class DocShareServiceImpl implements DocShareService {
         this.redisCache.deleteObject("DocShare:" + ID);
         jsonObject.put("msg", "删除成功");
         jsonObject.put("num", num);
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+    }
+
+    @Override
+    public ResponseResult submitDocument(DocShare docShare) {
+        JSONObject jsonObject = new JSONObject();
+//        根据文件路径去找临时文件是否存在
+        File tempShareFile = new File(this.tempPrePath + File.separator, docShare.getDocPath());
+        if (!tempShareFile.exists()) {
+            jsonObject.put("msg", "文件不存在");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        }
+//        把文件放入share文件夹中
+        File file = new File(this.sharePrePath + File.separator, docShare.getDocPath());
+        try (InputStream inputStream = new FileInputStream(tempShareFile);
+             OutputStream outputStream = new FileOutputStream(file)) {
+            byte[] bytes = new byte[1024];
+            int length;
+            while ((length = inputStream.read(bytes)) > 0) {
+                outputStream.write(bytes, 0, length);
+            }
+        } catch (FileNotFoundException e) {
+            jsonObject.put("msg", "文件无法找到");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        } catch (IOException e) {
+            jsonObject.put("msg", "IO操作错误");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        }
+        jsonObject.put("DocPath", this.sharePrePath + File.separator + docShare.getDocPath());
+        jsonObject.put("ID", docShare.getID());
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 }
