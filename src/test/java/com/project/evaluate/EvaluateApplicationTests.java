@@ -59,6 +59,10 @@ class EvaluateApplicationTests {
     @Resource
     private FacultyDao facultyDao;
 
+    @Test
+    void testFacultyDao() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        this.facultyDao.selectPageFaculty(new Faculty()).forEach(System.out::println);
+    }
 
     @Test
     void testMD5() throws NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -68,7 +72,6 @@ class EvaluateApplicationTests {
         System.out.println(encoder.encodeToString(messageDigest.digest(string.getBytes("utf-8"))));
         System.out.println(encoder.encodeToString(messageDigest.digest(string.getBytes("utf-8"))));
     }
-
 
     @Autowired
     private Environment environment;

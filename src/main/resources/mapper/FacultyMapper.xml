@@ -6,6 +6,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.dao.FacultyDao">
+
     <select id="selectByUserID"
             resultType="com.project.evaluate.entity.Faculty">
         select *
@@ -13,7 +14,8 @@
         where userID = #{0};
     </select>
 
-    <insert id="addFaculty"
+
+    <insert id="insertFaculty"
             parameterType="com.project.evaluate.entity.Faculty">
         insert into faculty(userID, userName, password, roleType, mobile, email, status, isInitPwd, lastLoginIP,
                             lastLoginTime, loginIP, loginTime)
@@ -23,16 +25,104 @@
 
     <update id="updateFaculty" parameterType="com.project.evaluate.entity.Faculty">
         update faculty
-        set userName      = #{userName},
-            roleType      = #{roleType},
-            mobile        = #{mobile},
-            email         = #{email},
-            status        = #{status},
-            isInitPwd     = #{isInitPwd},
-            lastLoginIP   = #{lastLoginIP},
-            lastLoginTime = #{lastLoginTime},
-            loginIP       = #{loginIP},
-            loginTime     = #{loginTime}
+        <set>
+            <if test="userName != null and userName != ''">
+                userName = #{userName},
+            </if>
+            <if test="roleType != null">
+                roleType = #{roleType},
+            </if>
+            <if test="mobile != null and mobile != ''">
+                mobile = #{mobile},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="isInitPwd != null">
+                isInitPwd = #{isInitPwd},
+            </if>
+            <if test="lastLoginIP != null and lastLoginIP != ''">
+                lastLoginIP = #{lastLoginIP},
+            </if>
+            <if test="lastLoginTime != null">
+                lastLoginTime = #{lastLoginTime},
+            </if>
+            <if test="loginIP != null and loginIP != ''">
+                loginIP = #{loginIP},
+            </if>
+            <if test="loginTime != null">
+                loginTime = #{loginTime}
+            </if>
+        </set>
         where userID = #{userID}
+    </update>
+    <update id="resetFaculty">
+        UPDATE faculty
+        SET password  = #{password},
+            isInitPwd = 1
+        WHERE userID = #{userID}
+    </update>
+
+    <select id="selectPageFaculty" resultType="com.project.evaluate.entity.Faculty">
+        SELECT USERID,
+        USERNAME,
+        ROLETYPE,
+        MOBILE,
+        EMAIL,
+        STATUS,
+        ISINITPWD,
+        LASTLOGINIP,
+        LASTLOGINTIME,
+        LOGINIP,
+        LOGINTIME,
+        MEMO
+        FROM faculty
+        <where>
+            <if test="userName != null and userName != ''">
+                userName = #{userName}
+            </if>
+            <if test="roleType != null">
+                AND roleType = #{roleType}
+            </if>
+            <if test="mobile != null and mobile != ''">
+                AND mobile = #{mobile}
+            </if>
+            <if test="email != null and email != ''">
+                AND email = #{email}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="isInitPwd != null">
+                AND isInitPwd = #{isInitPwd}
+            </if>
+            <if test="lastLoginIP != null and lastLoginIP != ''">
+                AND lastLoginIP = #{lastLoginIP}
+            </if>
+            <if test="lastLoginTime != null">
+                AND lastLoginTime = #{lastLoginTime}
+            </if>
+            <if test="loginIP != null and loginIP != ''">
+                AND loginIP = #{loginIP}
+            </if>
+            <if test="loginTime != null">
+                AND loginTime = #{loginTime}
+            </if>
+            <if test="memo != null and memo != ''">
+                AND memo = #{memo}
+            </if>
+        </where>
+    </select>
+    <delete id="deletePageFaculty">
+        DELETE
+        FROM faculty
+        WHERE userID = #{userID}
+    </delete>
+    <update id="banFaculty">
+        UPDATE faculty
+        SET status = 1
     </update>
 </mapper>

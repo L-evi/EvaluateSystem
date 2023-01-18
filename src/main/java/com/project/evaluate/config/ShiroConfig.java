@@ -34,8 +34,8 @@ public class ShiroConfig {
 
 //        配置系统受限资源
         Map<String, String> map = new HashMap<String, String>();
-        map.put("/api/user/login", "anon");
-        map.put("/api/user/register", "anon");
+        map.put("/api/faculty/login", "anon");
+        map.put("/api/faculty/register", "anon");
         map.put("/api/verify/**", "anon");
         map.put("/test/*", "anon");
         map.put("/**", "jwt");

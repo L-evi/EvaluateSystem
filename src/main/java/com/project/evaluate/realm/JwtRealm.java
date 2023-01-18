@@ -1,7 +1,6 @@
 package com.project.evaluate.realm;
 
 import com.alibaba.fastjson.JSONObject;
-import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.util.JwtToken;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
@@ -12,8 +11,6 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.tomcat.util.net.jsse.JSSEImplementation;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -37,19 +34,19 @@ public class JwtRealm extends AuthorizingRealm {
         String userID = (String) principals.getPrimaryPrincipal();
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 //        从redis中获取Token
-        String token = redisCache.getCacheObject("token:" + userID);
+        String token = this.redisCache.getCacheObject("token:" + userID);
         try {
             if (JwtUtil.isTimeout(token)) {
                 return simpleAuthorizationInfo;
             }
             Claims claims = JwtUtil.parseJwt(token);
             JSONObject jsonObject = JSONObject.parseObject(claims.getSubject());
-            String roleType = null;
+            Integer roleType = null;
             if (jsonObject.containsKey("roleType")) {
-                roleType = (String) jsonObject.get("roleType");
+                roleType = (Integer) jsonObject.get("roleType");
             }
-            if (Strings.hasText(roleType)) {
-                simpleAuthorizationInfo.addRole(roleType);
+            if (!Objects.isNull(roleType)) {
+                simpleAuthorizationInfo.addRole(String.valueOf(roleType));
             }
         } catch (Exception e) {
             throw new AuthenticationException("token parse失败");
@@ -71,7 +68,7 @@ public class JwtRealm extends AuthorizingRealm {
             String userID = (String) jsonObject.get("userID");
 //            从redis中获取信息
 //            System.out.println(userID);
-            String str = redisCache.getCacheObject("token:" + userID);
+            String str = this.redisCache.getCacheObject("token:" + userID);
 //            System.out.println(str);
             if (!Strings.hasText(str)) {
                 throw new UnknownAccountException("用户未登录，请重新登录");

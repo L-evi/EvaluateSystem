@@ -29,7 +29,7 @@ public class Faculty implements Serializable {
     /**
      * 登录角色
      */
-    private String roleType;
+    private Integer roleType;
     /**
      * 用户名
      */
@@ -45,11 +45,11 @@ public class Faculty implements Serializable {
     /**
      * 账户状态：0-禁用，1-正常
      */
-    private int status;
+    private Integer status;
     /**
      * 是否为初始密码：0-不是，1-是
      */
-    private int isInitPwd;
+    private Integer isInitPwd;
     /**
      * 上一次登录的IP地址
      */
