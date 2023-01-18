@@ -176,7 +176,6 @@ public class DocShareServiceImpl implements DocShareService {
             return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
         }
         jsonObject.put("DocPath", this.sharePrePath + File.separator + docShare.getDocPath());
-        jsonObject.put("ID", docShare.getID());
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 }

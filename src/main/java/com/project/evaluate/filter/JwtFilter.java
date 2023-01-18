@@ -5,9 +5,8 @@ import cn.hutool.json.JSONUtil;
 import com.project.evaluate.util.JwtToken;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
+import org.apache.shiro.web.filter.authc.AuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,8 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
 @Component
-@Slf4j
-public class JwtFilter extends BasicHttpAuthenticationFilter {
+public class JwtFilter extends AuthenticationFilter {
     private String errorMsg;
 
     // 过滤器拦截请求的入口方法
@@ -30,16 +28,16 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         // 判断请求头是否带上“Token”
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader("token");
-        // 游客访问电商平台首页可以不用携带 token
+
         if (StringUtils.isEmpty(token)) {
             return false;
         }
         try {
-            // 交给 myRealm
+            // 交给 自定义的Realm
             SecurityUtils.getSubject().login(new JwtToken(token));
             return true;
         } catch (Exception e) {
-            errorMsg = e.getMessage();
+            this.errorMsg = e.getMessage();
             e.printStackTrace();
             return false;
         }

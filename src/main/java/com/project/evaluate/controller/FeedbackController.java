@@ -6,6 +6,7 @@ import com.project.evaluate.service.FeedbackService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.web.bind.annotation.*;
@@ -69,7 +70,7 @@ public class FeedbackController {
         return this.feedbackService.selectFeedbacks(feedback, page, pageSize, orderBy);
     }
 
-    @RequiresRoles("1")
+    @RequiresRoles(value = "1", logical = Logical.OR)
     @DeleteMapping("/delete/single")
     public ResponseResult deleteFeedback(Integer ID) {
         JSONObject jsonObject = new JSONObject();

@@ -7,6 +7,8 @@ import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -27,6 +29,7 @@ public class DocShareController {
     private DocShareService docShareService;
 
     @PostMapping(value = "/add")
+    @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
     public ResponseResult insertDocShare(@RequestBody DocShare docShare, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (!Strings.hasText(docShare.getSubmitter())) {
@@ -78,6 +81,7 @@ public class DocShareController {
     }
 
     @PutMapping(value = "/update")
+    @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
     public ResponseResult updateDocShare(@RequestBody DocShare docShare, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(docShare)) {
@@ -89,6 +93,7 @@ public class DocShareController {
     }
 
     @DeleteMapping(value = "/delete")
+    @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
     public ResponseResult deleteDocShare(Integer id, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(id) || id == 0) {
@@ -100,10 +105,10 @@ public class DocShareController {
     }
 
     @PostMapping("/submit")
+    @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
     public ResponseResult submitDocShare(@RequestBody DocShare docShare) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(docShare)
-                || Objects.isNull(docShare.getID())
                 || Objects.isNull(docShare.getDocPath())) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);

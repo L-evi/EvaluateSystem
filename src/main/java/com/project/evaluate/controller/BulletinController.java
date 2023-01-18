@@ -7,6 +7,8 @@ import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,7 @@ public class BulletinController {
     private BulletinService bulletinService;
 
     @PostMapping(value = "/add")
+    @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
     public ResponseResult insertBulletin(@RequestBody Bulletin bulletin, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(bulletin)) {
@@ -90,6 +93,7 @@ public class BulletinController {
     }
 
     @PutMapping(value = "/update")
+    @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
     public ResponseResult updateBulletin(@RequestBody Bulletin bulletin, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(bulletin) || Objects.isNull(bulletin.getID()) || bulletin.getID() == 0) {
@@ -108,6 +112,7 @@ public class BulletinController {
     }
 
     @DeleteMapping(value = "/delete")
+    @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
     public ResponseResult deleteBulletin(Integer ID) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(ID) || ID == 0) {
