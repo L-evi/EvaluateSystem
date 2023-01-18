@@ -41,9 +41,10 @@
             </if>
         </where>
     </delete>
-    <select id="selectPageDocShare" resultType="com.project.evaluate.entity.DocShare">
-        SELECT ID, title, `desc`, docPath, docSize, uploadTime, submitter
-        FROM docshare
+    <select id="selectPageDocShare" resultType="java.util.Map">
+        SELECT docshare.ID, docshare.title, docshare.`desc`, docshare.docPath, docshare.docSize, docshare.uploadTime,
+        docshare.submitter, faculty.userName
+        FROM docshare LEFT JOIN faculty ON docshare.submitter = faculty.userID
         <where>
             <if test="ID != null and ID != ''">
                 ID = #{ID}

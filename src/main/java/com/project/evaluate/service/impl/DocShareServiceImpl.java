@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -82,12 +83,12 @@ public class DocShareServiceImpl implements DocShareService {
     public ResponseResult selectPageDocShare(DocShare docShare, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         PageHelper.startPage(page, pageSize, orderBy);
-        List<DocShare> docShares = this.docShareDao.selectPageDocShare(docShare);
+        List<Map<String, Object>> docShares = this.docShareDao.selectPageDocShare(docShare);
         if (Objects.isNull(docShares) || docShares.isEmpty()) {
             jsonObject.put("msg", "查询结果为空");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<DocShare> pageInfo = new PageInfo<>(docShares);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(docShares);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString((pageInfo.getList())));
         jsonObject.put("total", pageInfo.getTotal());
         jsonObject.put("pages", pageInfo.getPages());

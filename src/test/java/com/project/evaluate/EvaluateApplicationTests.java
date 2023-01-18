@@ -22,7 +22,10 @@ import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 ;
@@ -263,26 +266,26 @@ class EvaluateApplicationTests {
 
     @Test
     public void testDocShareDao() {
-        DocShare docShare = new DocShare();
-        docShare.setTitle("文档分享标题2");
-        docShare.setDesc("文档分享描述2");
-        docShare.setSubmitter("admin");
-        docShare.setDocPath("C:\\Users\\zwk57\\IdeaProjects\\EvaluateSystem\\文档\\计算机学院本科教学文档管理系统需求说明书 v0.5(1).doc");
-        docShare.setDocSize(3);
-        docShare.setUploadTime(new Date());
+//        DocShare docShare = new DocShare();
+//        docShare.setTitle("文档分享标题2");
+//        docShare.setDesc("文档分享描述2");
+//        docShare.setSubmitter("admin");
+//        docShare.setDocPath("C:\\Users\\zwk57\\IdeaProjects\\EvaluateSystem\\文档\\计算机学院本科教学文档管理系统需求说明书 v0.5(1).doc");
+//        docShare.setDocSize(3);
+//        docShare.setUploadTime(new Date());
 //        插入
 //        System.out.println(docShareDao.insertDocShare(docShare));
 //        根据ID查询
-        System.out.println(this.docShareDao.selectDocShare(2).toString());
+//        System.out.println(this.docShareDao.selectDocShare(2).toString());
 //        分页查询
         PageHelper.startPage(0, 2);
-        PageInfo<DocShare> pageInfo = new PageInfo<>(this.docShareDao.selectPageDocShare(new DocShare()));
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(this.docShareDao.selectPageDocShare(new DocShare()));
         pageInfo.getList().forEach(System.out::println);
 //        修改
-        docShare.setID(3);
-        docShare.setTitle("修改标题");
-        docShare.setDesc("修改描述");
-        System.out.println(this.docShareDao.updateDocShare(docShare));
+//        docShare.setID(3);
+//        docShare.setTitle("修改标题");
+//        docShare.setDesc("修改描述");
+//        System.out.println(this.docShareDao.updateDocShare(docShare));
 //        删除
 //        System.out.println(docShareDao.deleteDocShare(3));
     }
