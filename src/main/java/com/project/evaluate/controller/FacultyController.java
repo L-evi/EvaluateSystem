@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
 import com.project.evaluate.util.IPUtil;
+import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
@@ -142,4 +143,52 @@ public class FacultyController {
         }
         return this.facultyService.deleteFaculty(userID);
     }
+
+    @PostMapping(value = "/personal/update")
+    public ResponseResult personalMessageUpdate(@RequestBody Faculty faculty, HttpServletRequest request) {
+        JSONObject jsonObject = new JSONObject();
+        String token = request.getHeader("token");
+        if (Objects.isNull(faculty)
+                || !Strings.hasText(token)) {
+            jsonObject.put("msg", "参数缺失");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+//        获取userID
+        String userID = null;
+        try {
+            jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
+            userID = (String) jsonObject.get("userID");
+            jsonObject.clear();
+        } catch (Exception e) {
+            throw new RuntimeException("token parse失败");
+        }
+//        设置只有用户才能更改的数据
+        Faculty temp = new Faculty();
+        temp.setUserID(userID);
+        temp.setEmail(faculty.getEmail());
+        temp.setMobile(faculty.getMobile());
+        temp.setMemo(faculty.getMemo());
+        return this.facultyService.updateFaculty(temp);
+    }
+
+    @PostMapping(value = "/personal/password/reset")
+    public ResponseResult personalPasswordReset(@RequestBody Map<String, Object> map, HttpServletRequest request) {
+        JSONObject jsonObject = new JSONObject();
+        String userID = null;
+        String token = request.getHeader("token");
+//        解析token
+        try {
+            userID = (String) JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject()).get("userID");
+        } catch (Exception e) {
+            throw new RuntimeException("token parse 错误");
+        }
+        String password = (String) map.get("password");
+        String oldPassword = (String) map.get("oldPassword");
+        if (!Strings.hasText(password) || !Strings.hasText(oldPassword) || !Strings.hasText(userID)) {
+            jsonObject.put("msg", "参数缺失");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        return this.facultyService.resetPassword(userID, oldPassword, password);
+    }
+
 }

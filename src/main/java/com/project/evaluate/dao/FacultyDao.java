@@ -11,15 +11,17 @@ import java.util.List;
 public interface FacultyDao {
     Faculty selectByUserID(String userID);
 
-    int insertFaculty(Faculty faculty);
+    Integer insertFaculty(Faculty faculty);
 
-    int updateFaculty(Faculty faculty);
+    Integer updateFaculty(Faculty faculty);
 
-    int resetFaculty(String userID, String password);
+    Integer resetFaculty(String userID, String password);
 
     List<Faculty> selectPageFaculty(Faculty faculty);
 
-    int deletePageFaculty(String userID);
+    Integer deletePageFaculty(String userID);
 
-    int banFaculty(String userID);
+    Integer banFaculty(String userID);
+
+    Integer resetPassword(String userID, String password, String oldPassword);
 }

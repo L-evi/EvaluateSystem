@@ -149,7 +149,7 @@ class EvaluateApplicationTests {
 
     @Test
     public void testMd5() {
-        Md5Hash md5Hash = new Md5Hash("teacher", "teacher", 1024);
+        Md5Hash md5Hash = new Md5Hash("admin123", "admin", 1024);
         System.out.println(md5Hash.toHex());
     }
 

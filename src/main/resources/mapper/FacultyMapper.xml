@@ -39,7 +39,7 @@
                 email = #{email},
             </if>
             <if test="status != null">
-                status = #{status},
+                `status` = #{status},
             </if>
             <if test="isInitPwd != null">
                 isInitPwd = #{isInitPwd},
@@ -124,5 +124,11 @@
     <update id="banFaculty">
         UPDATE faculty
         SET status = 1
+    </update>
+    <update id="resetPassword">
+        UPDATE faculty
+        SET password = #{password}
+        WHERE userID = #{userID}
+          AND password = #{oldPassword}
     </update>
 </mapper>

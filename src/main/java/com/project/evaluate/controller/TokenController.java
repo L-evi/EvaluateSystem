@@ -1,12 +1,10 @@
 package com.project.evaluate.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.service.TokenService;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,11 +27,12 @@ public class TokenController {
     @Resource
     private TokenService tokenService;
 
+
     @RequestMapping(value = "/token/getMessage", method = RequestMethod.GET)
     public ResponseResult getTokenMessage(HttpServletRequest request) {
         String token = request.getHeader("token");
         if (Strings.hasText(token)) {
-            return tokenService.getTokenMessage(token);
+            return this.tokenService.getTokenMessage(token);
         } else {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "token获取失败");

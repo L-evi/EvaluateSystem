@@ -10,6 +10,7 @@ import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.Claims;
+import org.apache.shiro.authc.UnknownAccountException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,44 +35,46 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public ResponseResult getTokenMessage(String token) {
+        JSONObject jsonObject = new JSONObject();
 //        解析Token
         try {
 //            查看token是否过期
             if (JwtUtil.isTimeout(token)) {
-                JSONObject jsonObject = new JSONObject();
                 jsonObject.put("msg", "token已过期");
                 return new ResponseResult(ResultCode.LOGIN_TIMEOUT, jsonObject);
             }
             Claims claims = JwtUtil.parseJwt(token);
-            JSONObject jsonObject = JSONObject.parseObject(claims.getSubject());
+            jsonObject = JSONObject.parseObject(claims.getSubject());
             if (jsonObject.containsKey("userID")) {
                 String userID = jsonObject.get("userID").toString();
+                jsonObject.clear();
+//                查看redis中是否有这个token
+                if (!token.equals(this.redisCache.getCacheObject("token:" + userID))) {
+                    jsonObject.put("msg", "登录超时");
+                    return new ResponseResult(ResultCode.LOGIN_TIMEOUT, jsonObject);
+                }
 //                调用redis
                 Faculty faculty = JSONObject.toJavaObject(this.redisCache.getCacheObject("Faculty:" + userID), Faculty.class);
                 if (Objects.isNull(faculty)) {
                     faculty = this.facultyDao.selectByUserID(userID);
-                }
-//                如果对象为空则返回错误
-                if (!Objects.isNull(faculty)) {
-                    jsonObject = JSONObject.parseObject(JSON.toJSONString(faculty));
-//                    去掉用户密码
-                    if (jsonObject.containsKey("password")) {
-                        jsonObject.remove("password");
+                    if (Objects.isNull(faculty)) {
+                        throw new UnknownAccountException("账户不存在");
                     }
-                    jsonObject.put("msg", "token获取信息成功");
-//                    将信息放入redis中：根据过期时间设置redis中的token过期时间
-                    int seconds = (int) (claims.getExpiration().getTime() - (new Date()).getTime());
-                    this.redisCache.setCacheObject("Faculty:" + userID, faculty, seconds, TimeUnit.MILLISECONDS);
-                    return new ResponseResult(ResultCode.SUCCESS, jsonObject);
-                } else {
-                    jsonObject = new JSONObject();
-                    jsonObject.put("msg", "无法查询到该" + userID + "的信息");
-                    return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+                    this.redisCache.setCacheObject("Faculty:" + userID, faculty, 1, TimeUnit.DAYS);
                 }
+                jsonObject = JSONObject.parseObject(JSON.toJSONString(faculty));
+//                    去掉用户密码
+                if (jsonObject.containsKey("password")) {
+                    jsonObject.remove("password");
+                }
+                jsonObject.put("msg", "token获取信息成功");
+//                    将token放入redis中：根据过期时间设置redis中的token过期时间
+                int seconds = (int) (claims.getExpiration().getTime() - (new Date()).getTime());
+                this.redisCache.setCacheObject("token:" + userID, token, seconds, TimeUnit.MILLISECONDS);
+                return new ResponseResult(ResultCode.SUCCESS, jsonObject);
             }
         } catch (Exception e) {
             System.out.println("TokenService Token的Parse失败");
-            JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "Token 的解析失败");
             return new ResponseResult(ResultCode.SERVER_ERROR, jsonObject);
         }

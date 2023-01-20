@@ -17,6 +17,6 @@ public interface FacultyService {
     ResponseResult selectPageFaculty(Faculty faculty, Integer page, Integer pageSize, String orderBy);
 
     ResponseResult deleteFaculty(String userID);
-    
 
+    ResponseResult resetPassword(String userID, String oldPassword, String password);
 }
