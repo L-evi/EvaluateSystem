@@ -22,10 +22,7 @@ import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 ;
@@ -290,5 +287,34 @@ class EvaluateApplicationTests {
 //        System.out.println(docShareDao.deleteDocShare(3));
     }
 
+    @Resource
+    private SyslogDao syslogDao;
+
+    @Test
+    public void testSyslog() {
+        Syslog syslog = new Syslog();
+        syslog.setOperator("admin");
+        syslog.setConditions("test conditions");
+        syslog.setModule("test module");
+        syslog.setAction("test action");
+        syslog.setLogTime(new Date());
+        syslog.setResult("test result");
+        syslog.setStatus(1);
+//        System.out.println(this.syslogDao.insertSyslog(syslog));
+
+//        System.out.println(this.syslogDao.selectByID(1));
+        System.out.println("-------------------------");
+        PageHelper.startPage(0, 2);
+//        PageInfo<Syslog> pageInfo = new PageInfo<>(this.syslogDao.selectPageSysLog(syslog, null, null));
+//        pageInfo.getList().forEach(System.out::println);
+//        System.out.println(this.syslogDao.deleteSyslogByID(1));
+        List<Integer> list = new ArrayList<>();
+        list.add(3);
+        list.add(2);
+        list.add(5);
+//        System.out.println(this.syslogDao.deletePageSyslog(list));
+
+
+    }
 }
 

@@ -16,6 +16,10 @@ spring:
       filter:
         #        开启put和delete请求
         enabled: true
+  #        开启aop
+  aop:
+    auto: true
+#  开启aop
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 server:

@@ -111,7 +111,7 @@ public class BulletinServiceImpl implements BulletinService {
         JSONObject jsonObject = new JSONObject();
 //        更新数据库
         Long num = this.bulletinDao.updateBulletin(bulletin);
-        if (num < 0) {
+        if (num < 1) {
             jsonObject.put("msg", "更新数据失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }

@@ -2,6 +2,7 @@ package com.project.evaluate.controller;
 
 import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
 import com.project.evaluate.util.IPUtil;
@@ -38,6 +39,7 @@ public class FacultyController {
     @Resource
     private FacultyService facultyService;
 
+    @DataLog(modelName = "用户登录", operationType = "login")
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
     public ResponseResult userLogin(@RequestBody Map<String, Object> dataMap, HttpServletRequest request) {
 //        获取其中的数据
@@ -120,6 +122,7 @@ public class FacultyController {
 
     @GetMapping("/manage/get/page")
     @RequiresRoles("1")
+    @DataLog(modelName = "用户管理", operationType = "select")
     public ResponseResult selectPageFaculty(Faculty faculty, Integer page, Integer pageSize, String orderBy) {
         if (Objects.isNull(page)) {
             page = 0;
