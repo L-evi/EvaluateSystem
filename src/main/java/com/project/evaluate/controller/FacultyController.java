@@ -79,6 +79,7 @@ public class FacultyController {
 
     @PostMapping("/manage/add")
     @RequiresRoles("1")
+    @DataLog(modelName = "添加用户帐号", operationType = "insert")
     public ResponseResult addFaculty(@RequestBody Faculty faculty) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(faculty)
@@ -98,6 +99,7 @@ public class FacultyController {
 
     @PutMapping("/manage/update")
     @RequiresRoles("1")
+    @DataLog(modelName = "修改用户帐号", operationType = "update")
     public ResponseResult updateFaculty(@RequestBody Faculty faculty) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(faculty)
@@ -111,6 +113,7 @@ public class FacultyController {
 
     @PutMapping("/manage/reset")
     @RequiresRoles("1")
+    @DataLog(modelName = "重置用户帐号", operationType = "update")
     public ResponseResult resetFaculty(String userID) {
         JSONObject jsonObject = new JSONObject();
         if (!Strings.hasText(userID)) {
@@ -122,7 +125,7 @@ public class FacultyController {
 
     @GetMapping("/manage/get/page")
     @RequiresRoles("1")
-    @DataLog(modelName = "用户管理", operationType = "select")
+    @DataLog(modelName = "分页查询用户帐号", operationType = "select")
     public ResponseResult selectPageFaculty(Faculty faculty, Integer page, Integer pageSize, String orderBy) {
         if (Objects.isNull(page)) {
             page = 0;
@@ -138,6 +141,7 @@ public class FacultyController {
 
     @DeleteMapping("/manage/delete")
     @RequiresRoles("1")
+    @DataLog(modelName = "删除用户帐号", operationType = "delete")
     public ResponseResult deleteFaculty(String userID) {
         JSONObject jsonObject = new JSONObject();
         if (!Strings.hasText(userID)) {
@@ -148,6 +152,7 @@ public class FacultyController {
     }
 
     @PostMapping(value = "/personal/update")
+    @DataLog(modelName = "个人资料管理", operationType = "update")
     public ResponseResult personalMessageUpdate(@RequestBody Faculty faculty, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         String token = request.getHeader("token");
@@ -175,6 +180,7 @@ public class FacultyController {
     }
 
     @PostMapping(value = "/personal/password/reset")
+    @DataLog(modelName = "个人重置密码", operationType = "update")
     public ResponseResult personalPasswordReset(@RequestBody Map<String, Object> map, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         String userID = null;

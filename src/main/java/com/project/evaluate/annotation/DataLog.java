@@ -8,8 +8,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DataLog {
     //    模块名
-    String modelName() default "null";
+    String modelName();
 
     //    操作类型
-    String operationType() default "null";
+    String operationType();
 }

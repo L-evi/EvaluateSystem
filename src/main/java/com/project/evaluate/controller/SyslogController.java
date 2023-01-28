@@ -1,11 +1,14 @@
 package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.entity.Syslog;
 import com.project.evaluate.service.SyslogService;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +34,8 @@ public class SyslogController {
     private SyslogService syslogService;
 
     @GetMapping("/get/page")
+    @RequiresRoles(value = "1", logical = Logical.OR)
+    @DataLog(modelName = "分页查询系统日志", operationType = "select")
     ResponseResult selectPageSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, String beforeTime, String afterTime) {
         if (Objects.isNull(page)) {
             page = 0;
@@ -57,6 +62,8 @@ public class SyslogController {
 
 
     @GetMapping("/get/single")
+    @RequiresRoles(value = "1", logical = Logical.OR)
+    @DataLog(modelName = "查询系统日志详情", operationType = "select")
     ResponseResult selectSyslog(Integer ID) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(ID) || ID == 0) {
@@ -67,6 +74,8 @@ public class SyslogController {
     }
 
     @DeleteMapping(value = "/delete/single")
+    @RequiresRoles(value = "1", logical = Logical.OR)
+    @DataLog(modelName = "删除单个系统日志", operationType = "delete")
     ResponseResult deleteSyslog(Integer ID) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(ID) || ID <= 0) {
@@ -77,6 +86,8 @@ public class SyslogController {
     }
 
     @DeleteMapping(value = "/delete/page")
+    @RequiresRoles(value = "1", logical = Logical.OR)
+    @DataLog(modelName = "批量删除系统日志", operationType = "delete")
     ResponseResult deletePageSyslog(String ids) {
         JSONObject jsonObject = new JSONObject();
         if (!Strings.hasText(ids)) {
