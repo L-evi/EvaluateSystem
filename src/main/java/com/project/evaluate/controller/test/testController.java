@@ -16,11 +16,10 @@ public class testController {
     @Resource
     private FacultyDao facultyDao;
 
+    //    @RateLimiter(value = 1.0, timeout = 100)
     @RequestMapping(value = "/hello", method = RequestMethod.POST)
     public Map<String, Object> testHelloWorld(@RequestBody Map<String, Object> getMessage) {
         Map<String, Object> res = new HashMap<>();
-//        打印出请求数据
-        System.out.println(getMessage);
 //        将getMessage中的所有内容加入到res中
         getMessage.forEach((key, value) -> res.putIfAbsent(key, value));
         res.put("mag", "Hello World!");
