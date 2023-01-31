@@ -14,4 +14,6 @@ public interface SyslogService {
     ResponseResult deleteSyslog(Integer ID);
 
     ResponseResult deletePageSyslog(List<Integer> list);
+
+    ResponseResult exportSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime);
 }

@@ -135,6 +135,12 @@
             <artifactId>guava</artifactId>
             <version>31.1-jre</version>
         </dependency>
+        <!-- 导出成Excel的依赖 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>2.2.10</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

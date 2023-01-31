@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -106,4 +109,61 @@ public class SyslogController {
         return this.syslogService.deletePageSyslog(list);
     }
 
+    //    导出EXCEL
+    @GetMapping(value = "/export")
+    @RequiresRoles(value = "1", logical = Logical.OR)
+    @DataLog(operationType = "select", modelName = "导出日志为EXCEL")
+    public ResponseResult exportSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, String beforeTime, String afterTime) {
+        if (Objects.isNull(page)) {
+            page = 0;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        if (!Strings.hasText(orderBy)) {
+            orderBy = "logTime DESC";
+        }
+        if (Objects.isNull(syslog)) {
+            syslog = new Syslog();
+        }
+        Date before = null;
+        Date after = null;
+        if (Strings.hasText(beforeTime)) {
+            before = new Date(Long.parseLong(beforeTime));
+        }
+        if (Strings.hasText(afterTime)) {
+            after = new Date(Long.parseLong(afterTime));
+        }
+        return this.syslogService.exportSyslog(syslog, page, pageSize, orderBy, before, after);
+    }
+
+    //    下载日志EXCEL
+    @GetMapping(value = "/download")
+    @RequiresRoles(value = "1", logical = Logical.OR)
+    public void downloadSyslog(String filename, HttpServletResponse response) {
+        File file = new File(filename);
+        if (file.exists()) {
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("utf-8");
+            try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
+                 BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
+            ) {
+                // 这里URLEncoder.encode可以防止中文乱码
+                String fileName = URLEncoder.encode(file.getName(), "UTF-8").replaceAll("\\+", "%20");
+                response.setHeader("Content-disposition", "attachment; filename*=utf-8''" + fileName);
+//                输出到网页中
+                byte[] bytes = new byte[1024];
+                int len = 0;
+                while ((len = bufferedInputStream.read(bytes)) > 0) {
+                    bufferedOutputStream.write(bytes, 0, len);
+                }
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return;
+        }
+    }
 }

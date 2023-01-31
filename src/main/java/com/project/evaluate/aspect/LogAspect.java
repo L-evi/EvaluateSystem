@@ -79,7 +79,6 @@ public class LogAspect {
         if (args.length > 1) {
             paramJSON = JSONObject.parseObject(JSON.toJSONString(args[0]));
         }
-        System.out.println(paramJSON);
 
 //        获取响应参数
         JSONObject resultJSON = JSONObject.parseObject(JSON.toJSONString(proceed));

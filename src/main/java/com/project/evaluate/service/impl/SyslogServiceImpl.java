@@ -1,5 +1,6 @@
 package com.project.evaluate.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -11,9 +12,11 @@ import com.project.evaluate.service.SyslogService;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +34,9 @@ public class SyslogServiceImpl implements SyslogService {
 
     @Resource
     private SyslogDao syslogDao;
+
+    @Value("${file.temp-pre-path}")
+    private String tempPrePath;
 
     @Override
     public ResponseResult selectPageSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime) {
@@ -97,5 +103,35 @@ public class SyslogServiceImpl implements SyslogService {
         jsonObject.put("msg", "删除成功");
         jsonObject.put("num", num);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+    }
+
+    @Override
+    public ResponseResult exportSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime) {
+        JSONObject jsonObject = new JSONObject();
+        if (pageSize != 0) {
+            PageHelper.startPage(page, pageSize, orderBy);
+        } else {
+//            pageSize == 0 时返回所有结果
+            PageHelper.startPage(page, pageSize, false, null, true);
+        }
+        List<Syslog> syslogs = this.syslogDao.selectPageSysLog(syslog, beforeTime, afterTime);
+        if (Objects.isNull(syslogs) || syslogs.isEmpty()) {
+            jsonObject.put("msg", "查询结果为空");
+            return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+        }
+        PageInfo<Syslog> pageInfo = new PageInfo<>(syslogs);
+        List<Syslog> list = pageInfo.getList();
+//        导出为excel
+        String filename = this.tempPrePath + File.separator + System.currentTimeMillis() + ".xlsx";
+        EasyExcel.write(filename, Syslog.class).sheet("系统日志").doWrite(list);
+        File file = new File(filename);
+        if (file.exists()) {
+            jsonObject.put("msg", "导出成功");
+            jsonObject.put("filename", filename);
+            return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+        } else {
+            jsonObject.put("msg", "导出失败");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        }
     }
 }
