@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.dao.SyslogDao;
 import com.project.evaluate.entity.Syslog;
+import com.project.evaluate.util.IPUtil;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.lang.Strings;
@@ -18,6 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
@@ -76,8 +78,9 @@ public class LogAspect {
 //        获取请求参数
         Object[] args = proceedingJoinPoint.getArgs();
         JSONObject paramJSON = new JSONObject();
+        System.out.println(Arrays.toString(args));
         if (args.length > 1) {
-            paramJSON = JSONObject.parseObject(JSON.toJSONString(args[0]));
+//            paramJSON = JSONObject.parseObject(JSON.toJSONString(args[0]));
         }
 
 //        获取响应参数
@@ -112,6 +115,7 @@ public class LogAspect {
         }
         syslog.setConditions(paramJSON.toJSONString());
         syslog.setResult(result.toJSONString());
+        syslog.setIP(IPUtil.getIPAddress(request));
         this.syslogDao.insertSyslog(syslog);
         return proceed;
     }
