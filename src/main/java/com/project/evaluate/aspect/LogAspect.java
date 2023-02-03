@@ -13,11 +13,15 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.CodeSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Date;
@@ -77,12 +81,17 @@ public class LogAspect {
 
 //        获取请求参数
         Object[] args = proceedingJoinPoint.getArgs();
+        String[] names = ((CodeSignature) proceedingJoinPoint.getSignature()).getParameterNames();
         JSONObject paramJSON = new JSONObject();
-        System.out.println(Arrays.toString(args));
-        if (args.length > 1) {
-//            paramJSON = JSONObject.parseObject(JSON.toJSONString(args[0]));
+        for (int i = 0; i < names.length; i++) {
+            if (args[i] instanceof ServletRequest || args[i] instanceof ServletResponse || args[i] instanceof MultipartFile) {
+                //ServletRequest不能序列化，从入参里排除，否则报异常：java.lang.IllegalStateException: It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
+                //ServletResponse不能序列化 从入参里排除，否则报异常：java.lang.IllegalStateException: getOutputStream() has already been called for this response
+                continue;
+            }
+            paramJSON.put(names[i], args[i]);
         }
-
+//        System.out.println(paramJSON);
 //        获取响应参数
         JSONObject resultJSON = JSONObject.parseObject(JSON.toJSONString(proceed));
         syslog.setStatus((Integer) resultJSON.get("status"));
