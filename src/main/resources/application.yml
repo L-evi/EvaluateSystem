@@ -39,7 +39,6 @@ file:
   #  pre-path: /Users/apple/Library/CloudStorage/OneDrive-个人/Program/Java/EvaluateSystem/src/main/resources/static/upload
   #  temp-pre-path: /root/upload/temp
   temp-pre-path: /Users/apple/Library/CloudStorage/OneDrive-个人/Program/Java/EvaluateSystem/src/main/resources/temp
-  pre-path: /root/upload
   character-set: utf-8
   # 分片文件大小 5 * 1024 * 1024 * 1024 bit 即 5MB
   file-size-max: 5368709120
@@ -49,11 +48,3 @@ file:
   threshold-size: 1024
   # 共享文件文件架
   share-pre-path: /root/upload/share
-
-test:
-  str: 测试test
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"

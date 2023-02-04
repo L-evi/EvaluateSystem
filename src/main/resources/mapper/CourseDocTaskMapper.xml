@@ -3,6 +3,51 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.dao.CourseDocTaskDao">
+    <update id="updateCourseDocTask">
+        UPDATE coursedoctask
+        <set>
+            <if test="courseID != null and course != ''">
+                courseID = #{courseID},
+            </if>
+            <if test="teacher != null and teacher != ''">
+                teacher = #{teacher},
+            </if>
+            <if test="schoolStartYear != null">
+                schoolStartYear = #{schoolStartYear},
+            </if>
+            <if test="schoolEndYear != null">
+                schoolEndYear = #{schoolEndYear},
+            </if>
+            <if test="schoolTerm != null">
+                schoolTerm = #{schoolTerm},
+            </if>
+            <if test="grades != null and grades != ''">
+                grades = #{grades},
+            </if>
+            <if test="studentNum != null">
+                studentNum = #{studentNum},
+            </if>
+            <if test="issueTime != null">
+                issueTime = #{issueTime},
+            </if>
+            <if test="deadTime != null">
+                deadline = #{deadline},
+            </if>
+            <if test="taskStatus != null">
+                taskStatus = #{taskStatus},
+            </if>
+            <if test="closeTask != null">
+                closeTask = #{closeTask},
+            </if>
+            <if test="operator != null and operator != ''">
+                operator = #{operator},
+            </if>
+            <if test="memo != null and memo != ''">
+                memo = #{memo}
+            </if>
+        </set>
+        WHERE ID = #{ID}
+    </update>
 
     <delete id="deleteTaskByID">
         DELETE
@@ -46,7 +91,7 @@
         course.courseName
         FROM coursedoctask
         LEFT JOIN course
-        ON course.courseID = coursedoctask.courseid
+        ON course.courseID = coursedoctask.courseID
         <where>
             <if test="teacher != null and teacher != ''">
                 coursedoctask.teacher = #{teacher}
@@ -70,5 +115,26 @@
                 AND coursedoctask.closeTask = #{closeTask}
             </if>
         </where>
+    </select>
+    <select id="selectPageID" resultType="com.project.evaluate.entity.CourseDocTask">
+        SELECT ID,
+        courseID,
+        teacher,
+        schoolStartYear,
+        schoolEndYear,
+        schoolTerm,
+        grades,
+        studentNum,
+        issueTime,
+        deadline,
+        taskStatus,
+        closeTask,
+        operator,
+        memo
+        FROM coursedoctask
+        WHERE ID IN
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
     </select>
 </mapper>

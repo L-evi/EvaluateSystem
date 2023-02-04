@@ -7,6 +7,7 @@ import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,4 +80,13 @@ public class CourseDocTaskController {
         return courseDocTaskService.submitDocument(map);
     }
 
+    @PutMapping("/update")
+    public ResponseResult updateCourseDocTask(@RequestBody CourseDocTask courseDocTask) {
+        JSONObject jsonObject = new JSONObject();
+        if (Objects.isNull(courseDocTask) || Objects.isNull(courseDocTask.getID())) {
+            jsonObject.put("msg", "参数缺失");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        return courseDocTaskService.updateCourseDocTask(courseDocTask);
+    }
 }

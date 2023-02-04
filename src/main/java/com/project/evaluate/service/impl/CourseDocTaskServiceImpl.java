@@ -1,5 +1,6 @@
 package com.project.evaluate.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -17,6 +18,7 @@ import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.events.Event;
 
 import javax.annotation.Resource;
 import java.io.*;
@@ -37,13 +39,11 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
     @Resource
     private CourseDao courseDao;
 
-
     @Resource
     private CourseDocDetailDao courseDocDetailDao;
 
     @Resource
     private RedisCache redisCache;
-
 
     @Value("${file.temp-pre-path}")
     private String tempPrePath;
@@ -95,6 +95,42 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
         }
         return new ResponseResult(ResultCode.DATABASE_ERROR);
     }
+
+    @Override
+    public ResponseResult exportTeachingDocuments(List<Integer> ids) {
+        JSONObject jsonObject = new JSONObject();
+        List<CourseDocTask> courseDocTasks = courseDocTaskDao.selectPageID(ids);
+        if (Objects.isNull(courseDocTasks) || courseDocTasks.isEmpty()) {
+            jsonObject.put("msg", "查询结果为空");
+            return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+        }
+//        导出为excel
+        String filename = this.tempPrePath + File.separator + System.currentTimeMillis() + ".xlsx";
+        EasyExcel.write(filename, CourseDocTask.class).sheet("教学文档任务清单").doWrite(courseDocTasks);
+        File file = new File(filename);
+        if (file.exists()) {
+            jsonObject.put("msg", "导出成功");
+            jsonObject.put("filename", filename);
+            return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+        }
+        jsonObject.put("msg", "导出失败");
+        return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+    }
+
+    @Override
+    public ResponseResult updateCourseDocTask(CourseDocTask courseDocTask) {
+        JSONObject jsonObject = new JSONObject();
+
+        Boolean isUpdate = courseDocTaskDao.updateCourseDocTask(courseDocTask);
+        if (!isUpdate) {
+            jsonObject.put("msg", "更新数据失败");
+            return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+        }
+        jsonObject.put("msg", "更新数据成功");
+        redisCache.setCacheObject("CourseDocTask:" + courseDocTask.getID(), courseDocTask, 1, TimeUnit.DAYS);
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+    }
+
 
     @Override
     public ResponseResult submitDocument(Map<String, Object> map) {
