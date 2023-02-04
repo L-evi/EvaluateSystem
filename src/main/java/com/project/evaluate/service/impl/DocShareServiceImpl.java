@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.DocShareDao;
-import com.project.evaluate.entity.Config;
 import com.project.evaluate.entity.DocShare;
 import com.project.evaluate.service.DocShareService;
 import com.project.evaluate.util.JwtUtil;
