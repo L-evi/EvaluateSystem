@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: dev
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
@@ -48,4 +50,10 @@ file:
   # 共享文件文件架
   share-pre-path: /root/upload/share
 
-  
+test:
+  str: 测试test
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

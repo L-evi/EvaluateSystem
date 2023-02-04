@@ -1,8 +1,13 @@
-package com.project.evaluate.controller.test;
+package com.project.evaluate.test;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.dao.FacultyDao;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.util.response.ResponseResult;
+import com.project.evaluate.util.response.ResultCode;
+import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -39,5 +44,15 @@ public class testController {
     @RequestMapping(value = "/helloget", method = RequestMethod.GET)
     public ResponseResult testGet() {
         return ResponseResult.success();
+    }
+
+    @Value("${test.str}")
+    private String str;
+
+    @RequestMapping(value = "/config", method = RequestMethod.GET)
+    public ResponseResult testConfig() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("test", str);
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 }
