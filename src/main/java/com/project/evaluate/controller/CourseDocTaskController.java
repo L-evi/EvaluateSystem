@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -66,4 +68,15 @@ public class CourseDocTaskController {
         }
         return this.courseDocTaskService.deleteTeachingDocuments(Integer.parseInt(ID));
     }
+
+    @RequestMapping(value = "/submit", method = RequestMethod.POST)
+    public ResponseResult submit(@RequestBody Map<String, Object> map) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        if (!map.containsKey("FileName") || !map.containsKey("taskID") || !map.containsKey("teachingDocRoot")) {
+            jsonObject.put("msg", "参数缺失");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        return courseDocTaskService.submitDocument(map);
+    }
+
 }

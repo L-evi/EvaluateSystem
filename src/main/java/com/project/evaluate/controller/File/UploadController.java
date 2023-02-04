@@ -54,16 +54,16 @@ class UploadController {
 
     @Resource
     private CourseDao courseDao;
+
     //    编码格式
     @Value("${file.character-set}")
     private String character;
+
     //    缓存文件前缀
     @Value("${file.temp-pre-path}")
     private String tempPrePath;
-    //    文件前缀
-    @Value("${file.pre-path}")
-    private String prePath;
-    //    缓冲区大小阈值 TODO 无法读取到
+
+    //    缓冲区大小阈值
     @Value("${file.threshold-size}")
     private String sizeThreshold;
 
@@ -71,7 +71,7 @@ class UploadController {
     @Value("${file.file-size-max}")
     private String fileSizeMax;
 
-    //
+    //      请求最大值
     @Value("${file.request-size-max}")
     private String requestSizeMax;
 
@@ -229,7 +229,6 @@ class UploadController {
             this.tempPrePath = "~";
         }
     }
-
     private static void deleteFile(int index, String name, String filePath) {
         for (int i = 0; i < index; i++) {
             File file = new File(filePath, i + "_" + name);
@@ -238,85 +237,4 @@ class UploadController {
             }
         }
     }
-
-
-    @RequestMapping(value = "/submit", method = RequestMethod.POST)
-    public ResponseResult submit(@RequestBody Map<String, Object> map) throws IOException {
-        JSONObject jsonObject = new JSONObject();
-        if (!map.containsKey("FileName") || !map.containsKey("taskID")) {
-            jsonObject.put("msg", "缺少文件名FileName或TaskID");
-            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
-        }
-        String fileName = (String) map.get("FileName");
-        Integer taskID = (Integer) map.get("taskID");
-//        获取CourseDocTask信息
-        CourseDocTask courseDocTask = null;
-//        从redis中获取CourseDocTask信息
-        courseDocTask = JSONObject.toJavaObject(this.redisCache.getCacheObject("CourseDocTask:" + taskID), CourseDocTask.class);
-        if (Objects.isNull(courseDocTask)) {
-            courseDocTask = this.courseDocTaskDao.selectByID(taskID);
-            if (Objects.isNull(courseDocTask)) {
-                jsonObject.put("msg", "找不到课程文档任务信息");
-                return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
-            } else {
-//                将信息放入redis中
-                this.redisCache.setCacheObject("CourseDocTask:" + taskID, courseDocTask, 1, TimeUnit.DAYS);
-            }
-        }
-//        获取Course信息
-        Course course = null;
-//        从redis中获取
-        course = JSONObject.toJavaObject(this.redisCache.getCacheObject("Course:" + courseDocTask.getCourseID()), Course.class);
-        if (Objects.isNull(course)) {
-            course = this.courseDao.selectByCourseID(courseDocTask.getCourseID());
-            if (Objects.isNull(course)) {
-                jsonObject.put("msg", "找不到课程信息");
-                return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
-            } else {
-//                将信息放入redis中
-                this.redisCache.setCacheObject("Course:" + course.getCourseID(), course, 1, TimeUnit.DAYS);
-            }
-        }
-//        根据CourseDocTask信息构建文件目录
-        String fileDir = courseDocTask.getSchoolStartYear() + "-" + courseDocTask.getSchoolEndYear() + "-" + courseDocTask.getSchoolTerm() + File.separator + courseDocTask.getCourseID() + "_" + course.getCourseName() + File.separator;
-        File tempFileDir = new File(this.prePath + File.separator + fileDir);
-        if (!tempFileDir.exists()) {
-            if (!tempFileDir.mkdirs()) {
-                jsonObject.put("msg", "文件夹新建失败");
-                return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
-            }
-        }
-//        构建新的文件以及缓存文件
-        File file = new File(tempFileDir.getAbsolutePath(), fileName);
-        File tempFile = new File(this.tempPrePath, fileName);
-        if (!tempFile.exists()) {
-            jsonObject.put("msg", "文件不存在，无法提交");
-            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
-        }
-//        复制文件
-        try (InputStream inputStream = new FileInputStream(tempFile); OutputStream outputStream = new FileOutputStream(file)) {
-            byte[] bytes = new byte[1024];
-            int length;
-            while ((length = inputStream.read(bytes)) > 0) {
-                outputStream.write(bytes, 0, length);
-            }
-        } catch (FileNotFoundException e) {
-            jsonObject.put("msg", "文件无法找到");
-            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
-        } catch (IOException e) {
-            jsonObject.put("msg", "IO操作错误");
-            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
-        }
-        CourseDocDetail courseDocDetail = new CourseDocDetail();
-        courseDocDetail.setTaskID(courseDocTask.getID());
-        courseDocDetail.setDocPath(fileDir + fileName);
-        courseDocDetail.setUploadTime(new Date());
-        courseDocDetail.setSubmitter("test");
-        courseDocDetail.setDocTypeID(1);
-//        Long num = courseDocDetailMapper.insertCourseDocDetail(courseDocDetail);
-//        TODO 上传数据库
-        return new ResponseResult(ResultCode.SUCCESS, courseDocDetail);
-    }
-
-
 }
