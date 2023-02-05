@@ -7,6 +7,8 @@ import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.*;
 import com.project.evaluate.entity.*;
 import com.project.evaluate.util.JwtUtil;
+import com.project.evaluate.util.bloom.BloomFilterHelper;
+import com.project.evaluate.util.bloom.RedisBloomFilter;
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;
 import org.apache.shiro.crypto.hash.Md5Hash;
@@ -306,8 +308,32 @@ class EvaluateApplicationTests {
         list.add(2);
         list.add(5);
 //        System.out.println(this.syslogDao.deletePageSyslog(list));
-
-
     }
+
+    @Autowired
+    private RedisBloomFilter redisBloomFilter;
+
+    @Autowired
+    private BloomFilterHelper bloomFilterHelper;
+
+    @Test
+    public void redisBloomFilter() {
+        List<String> allResourceId = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            allResourceId.add(String.valueOf(i));
+        }
+        for (String id : allResourceId) {
+            //将所有的资源id放入到布隆过滤器中
+            redisBloomFilter.addByBloomFilter(bloomFilterHelper, "bloom", id);
+        }
+//        数据加入完成
+        boolean mightContain = redisBloomFilter.includeByBloomFilter(bloomFilterHelper, "bloom", "2");
+        if (!mightContain) {
+            System.out.println("数据不存在");
+        } else {
+            System.out.println("数据存在");
+        }
+    }
+
 }
 
