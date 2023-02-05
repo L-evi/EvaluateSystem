@@ -37,24 +37,12 @@ import java.util.concurrent.TimeUnit;
  * @description
  * @since 2022/12/16 15:22
  */
-@RequestMapping("/api/common")
+@RequestMapping("/api/common/file")
 @ResponseBody
 @Controller
 @CrossOrigin("*")
 @PropertySource("classpath:application.yml")
 class UploadController {
-    @Resource
-    private CourseDocTaskDao courseDocTaskDao;
-
-    @Resource
-    private RedisCache redisCache;
-
-    @Resource
-    private CourseDocDetailDao courseDocDetailDao;
-
-    @Resource
-    private CourseDao courseDao;
-
     //    编码格式
     @Value("${file.character-set}")
     private String character;
@@ -183,10 +171,10 @@ class UploadController {
                 } else {
                     //                返回成功信息
                     response.setHeader("msg", "file upload success");
-                    response.setHeader("FileName", name);
+                    response.setHeader("filename", name);
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("msg", "file upload success");
-                    jsonObject.put("FileName", name);
+                    jsonObject.put("filename", name);
                     return new ResponseResult(ResultCode.SUCCESS, jsonObject);
                 }
             }
@@ -229,6 +217,7 @@ class UploadController {
             this.tempPrePath = "~";
         }
     }
+
     private static void deleteFile(int index, String name, String filePath) {
         for (int i = 0; i < index; i++) {
             File file = new File(filePath, i + "_" + name);

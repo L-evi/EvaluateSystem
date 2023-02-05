@@ -137,33 +137,4 @@ public class SyslogController {
         return this.syslogService.exportSyslog(syslog, page, pageSize, orderBy, before, after);
     }
 
-    //    下载日志EXCEL
-    @GetMapping(value = "/download")
-    @RequiresRoles(value = "1", logical = Logical.OR)
-    public void downloadSyslog(String filename, HttpServletResponse response) {
-        File file = new File(filename);
-        if (file.exists()) {
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setCharacterEncoding("utf-8");
-            try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
-                 BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
-            ) {
-                // 这里URLEncoder.encode可以防止中文乱码
-                String fileName = URLEncoder.encode(file.getName(), "UTF-8").replaceAll("\\+", "%20");
-                response.setHeader("Content-disposition", "attachment; filename*=utf-8''" + fileName);
-//                输出到网页中
-                byte[] bytes = new byte[1024];
-                int len = 0;
-                while ((len = bufferedInputStream.read(bytes)) > 0) {
-                    bufferedOutputStream.write(bytes, 0, len);
-                }
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return;
-        }
-    }
 }

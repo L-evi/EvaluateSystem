@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Levi
@@ -67,7 +68,7 @@ public class SyslogServiceImpl implements SyslogService {
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             }
 //           存入redis中
-            this.redisCache.setCacheObject("Syslog:" + ID, syslog);
+            this.redisCache.setCacheObject("Syslog:" + ID, syslog, 1, TimeUnit.DAYS);
         }
         jsonObject = JSONObject.parseObject(JSON.toJSONString(syslog));
         jsonObject.put("msg", "查询成功");
