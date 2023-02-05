@@ -6,7 +6,7 @@ import com.project.evaluate.util.response.ResponseResult;
 public interface BulletinService {
     ResponseResult insertBulletin(Bulletin bulletin);
 
-    ResponseResult selectPageBulletin(Bulletin bulletin, String role, Integer page, Integer pageSize, String orderBy);
+    ResponseResult selectPageBulletin(Bulletin bulletin,Integer role, Integer page, Integer pageSize, String orderBy);
 
     ResponseResult selectSingleBulletin(Integer ID);
 

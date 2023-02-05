@@ -76,8 +76,6 @@ class EvaluateApplicationTests {
     @Autowired
     private Environment environment;
 
-    @Value("${file.pre-path}")
-    private String path;
 
     @Test
     void testValue() {
@@ -101,12 +99,7 @@ class EvaluateApplicationTests {
     //    编码格式
     @Value("${file.character-set}")
     private String character;
-    //    文件前缀
-    @Value("${file.pre-path}")
-    private static String prePath;
-    //    缓冲区大小阈值 TODO 无法读取到
-    @Value("${file.threshold-size")
-    private String sizeThreshold;
+
 
     //    文件分片最大值
     @Value("${file.file-size-max}")
@@ -119,7 +112,7 @@ class EvaluateApplicationTests {
     @Test
     void testGetValue() {
         System.out.println("character:" + this.character);
-        System.out.println(this.sizeThreshold);
+//        System.out.println(this.sizeThreshold);
         System.out.println("file-size-max:" + Long.parseLong(this.fileSizeMax));
         System.out.println("request-size-max:" + Long.parseLong(this.requestSizeMax));
     }

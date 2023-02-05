@@ -46,13 +46,9 @@ public class testController {
         return ResponseResult.success();
     }
 
-    @Value("${test.str}")
-    private String str;
-
     @RequestMapping(value = "/config", method = RequestMethod.GET)
     public ResponseResult testConfig() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("test", str);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 }

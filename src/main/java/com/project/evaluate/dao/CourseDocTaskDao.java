@@ -1,7 +1,6 @@
 package com.project.evaluate.dao;
 
 import com.project.evaluate.entity.CourseDocTask;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;

@@ -52,11 +52,11 @@ public class BulletinServiceImpl implements BulletinService {
     }
 
     @Override
-    public ResponseResult selectPageBulletin(Bulletin bulletin, String role, Integer page, Integer pageSize, String orderBy) {
+    public ResponseResult selectPageBulletin(Bulletin bulletin, Integer role, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         Date date = null;
 //        教师和认证专家只能看到未过期的
-        if (role == "0" || role == "3") {
+        if (role == 0 || role == 3) {
             date = new Date();
         }
         PageHelper.startPage(page, pageSize, orderBy);

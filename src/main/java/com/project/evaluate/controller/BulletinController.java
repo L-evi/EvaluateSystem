@@ -81,11 +81,11 @@ public class BulletinController {
             bulletin = new Bulletin();
         }
         String token = request.getHeader("token");
-        String role = null;
+        Integer role = null;
         try {
             jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
-            role = (String) jsonObject.get("roleType");
-            if (Objects.isNull(role) || !Strings.hasText(role)) {
+            role = (Integer) jsonObject.get("roleType");
+            if (Objects.isNull(role)) {
                 jsonObject.clear();
                 jsonObject.put("msg", "参数缺失");
                 return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
