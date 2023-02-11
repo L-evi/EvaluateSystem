@@ -10,7 +10,7 @@ public interface CourseDocTaskService {
 
     ResponseResult selectPageCourseDocTask(CourseDocTask courseDocTask, Integer page, Integer pageSize, String orderBy);
 
-    ResponseResult deleteTeachingDocuments(int ID);
+    ResponseResult deleteTeachingDocuments(Integer ID);
 
     ResponseResult exportTeachingDocuments(List<Integer> ids);
 

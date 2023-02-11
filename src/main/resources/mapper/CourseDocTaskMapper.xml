@@ -46,7 +46,7 @@
                 memo = #{memo}
             </if>
         </set>
-        WHERE ID = #{ID}
+        WHERE ID = #{ID} AND closeTask = 0
     </update>
 
     <delete id="deleteTaskByID">

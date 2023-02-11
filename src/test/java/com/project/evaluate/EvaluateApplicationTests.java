@@ -164,11 +164,7 @@ class EvaluateApplicationTests {
 //        System.out.println(this.courseDocDetailMapper.deleteByTaskID(2));
 //        List<CourseDocDetail> details = this.courseDocDetailMapper.selectByTaskID(2);
 //        details.forEach(System.out::println);
-        Map<String, Object> map = new HashMap<>();
-        map.put("taskID", 2);
-        map.put("page", 1);
-        map.put("pageSize", 10);
-        List<CourseDocDetail> courseDocDetails = this.courseDocDetailDao.selectByTaskID(map);
+        List<CourseDocDetail> courseDocDetails = this.courseDocDetailDao.selectByTaskID(2);
         courseDocDetails.forEach(System.out::println);
     }
 

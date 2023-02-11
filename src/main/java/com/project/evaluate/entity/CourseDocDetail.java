@@ -34,15 +34,15 @@ public class CourseDocDetail {
     /**
      * 文件标识：自增
      */
-    private int ID;
+    private Integer ID;
     /**
      * 文档所属的提交任务
      */
-    private int taskID;
+    private Integer taskID;
     /**
      * 文件类型ID
      */
-    private int docTypeID;
+    private Integer docTypeID;
     /**
      * 文件存储位置
      */

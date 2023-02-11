@@ -1,19 +1,23 @@
 package com.project.evaluate.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.service.CourseDocDetailService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.jsonwebtoken.lang.Strings;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Levi
@@ -50,14 +54,50 @@ public class CourseDocDetailController {
         }
     }
 
-    @RequestMapping(value = "/search/task-id")
-    public ResponseResult selectByTaskID(@RequestBody Map<String, Object> map) {
+    @RequiresRoles(value = {"0", "2"}, logical = Logical.OR)
+    @DeleteMapping("/delete/id")
+    @DataLog(modelName = "删除课程文档", operationType = "delete")
+    public ResponseResult deleteByID(Integer ID, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
-        if (!map.containsKey("taskID")) {
-            jsonObject.put("msg", "taskID缺失");
+        if (Objects.isNull(ID)) {
+            jsonObject.put("msg", "ID缺失，无法删除");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        return this.courseDocDetailService.selectByTaskID(map);
+        String token = request.getHeader("token");
+        String userID = null;
+        Integer roleType = null;
+        try {
+            jsonObject = JSONObject.parseObject(JSON.toJSONString(JwtUtil.parseJwt(token).getSubject()));
+            userID = (String) jsonObject.get("userID");
+            roleType = (Integer) jsonObject.get("roleType");
+            if (!Strings.hasText(userID) || Objects.isNull(roleType)) {
+                jsonObject.clear();
+                jsonObject.put("msg", "参数缺失");
+                return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("token parse 错误");
+        }
+        return this.courseDocDetailService.deleteByID(ID, roleType, userID);
+    }
+
+    @GetMapping(value = "/search/task-id")
+    public ResponseResult selectByTaskID(Integer taskID, Integer page, Integer pageSize, String orderBy) {
+        JSONObject jsonObject = new JSONObject();
+        if (Objects.isNull(taskID)) {
+            jsonObject.put("msg", "参数缺失");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        if (Objects.isNull(page)) {
+            page = 0;
+        }
+        if (Objects.isNull(pageSize) || pageSize == 0) {
+            pageSize = 10;
+        }
+        if (Objects.isNull(orderBy)) {
+            orderBy = "ID ASC";
+        }
+        return this.courseDocDetailService.selectByTaskID(taskID, page, pageSize, orderBy);
     }
 
 }

@@ -67,22 +67,16 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
     }
 
     @Override
-    public ResponseResult deleteTeachingDocuments(int ID) {
+    public ResponseResult deleteTeachingDocuments(Integer ID) {
         JSONObject jsonObject = new JSONObject();
-        Map<String, Object> map = new HashMap<>();
-        map.put("taskID", ID);
-        map.put("page", 1);
-        map.put("pageSize", 10);
-        List<CourseDocDetail> courseDocDetails = this.courseDocDetailDao.selectByTaskID(map);
-//        教学文档任务已经上传文件了
-        if (!courseDocDetails.isEmpty()) {
-            jsonObject.put("msg", "教学文档文件已上传文件，无法删除");
+        CourseDocDetail courseDocDetail = this.courseDocDetailDao.selectOneByTaskID(ID);
+        if (Objects.nonNull(courseDocDetail)) {
+            jsonObject.put("msg", "该任务已经提交了文档，无法删除");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
         CourseDocTask courseDocTask = this.courseDocTaskDao.selectByID(ID);
-        Date now = new Date();
 //        如果任务超时 或者 任务已经关闭了
-        if (now.after(courseDocTask.getDeadline()) || courseDocTask.getCloseTask() == 1) {
+        if (courseDocTask.getDeadline().before(new Date()) || courseDocTask.getCloseTask() == 1) {
             jsonObject.put("msg", "任务已经过期或已经关闭，无法删除");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
@@ -90,10 +84,11 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
         Long num = this.courseDocTaskDao.deleteTaskByID(ID);
         if (num > 0) {
             jsonObject.put("msg", "删除成功");
-            jsonObject.put("count", num);
+            jsonObject.put("num", num);
             return new ResponseResult(ResultCode.SUCCESS, jsonObject);
         }
-        return new ResponseResult(ResultCode.DATABASE_ERROR);
+        jsonObject.put("msg", "删除失败");
+        return new ResponseResult(ResultCode.DATABASE_ERROR, jsonObject);
     }
 
     @Override

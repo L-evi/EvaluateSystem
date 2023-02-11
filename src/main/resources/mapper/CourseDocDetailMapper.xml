@@ -15,6 +15,16 @@
             </if>
         </where>
     </delete>
+    <delete id="deleteByID">
+        DELETE
+        FROM courseDocDetail
+        <where>
+            ID = #{ID}
+            <if test="userID != null and userID != ''">
+                AND submitter = #{userID}
+            </if>
+        </where>
+    </delete>
 
     <select id="selectByTaskID" resultType="com.project.evaluate.entity.CourseDocDetail"
             parameterType="java.util.Map">
@@ -26,11 +36,31 @@
                submitter
         FROM coursedocdetail
         WHERE taskID = #{taskID}
-        LIMIT #{page}, #{pageSize}
     </select>
     <select id="getAll" resultType="com.project.evaluate.entity.CourseDocDetail">
         select *
         FROM coursedocdetail
+    </select>
+    <select id="selectByID" resultType="com.project.evaluate.entity.CourseDocDetail">
+        SELECT ID,
+               taskID,
+               docTypeID,
+               docPath,
+               uploadTime,
+               submitter
+        FROM coursedocdetail
+        WHERE ID = #{ID}
+    </select>
+    <select id="selectOneByTaskID" resultType="com.project.evaluate.entity.CourseDocDetail">
+        SELECT ID,
+               taskID,
+               docTypeID,
+               docPath,
+               uploadTime,
+               submitter
+        FROM coursedocdetail
+        WHERE taskID = #{taskID}
+        LIMIT 1
     </select>
 
     <insert id="insertCourseDocDetail"

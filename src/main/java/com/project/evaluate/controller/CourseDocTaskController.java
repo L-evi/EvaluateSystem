@@ -59,15 +59,14 @@ public class CourseDocTaskController {
 
     //    只有文档管理员才能删除
     @RequiresRoles("2")
-    @RequestMapping(value = "/delete")
-    public ResponseResult deleteTeachingDocuments(@RequestBody JSONObject jsonObject) {
-        String ID = (String) jsonObject.get("ID");
-        if (!Strings.hasText(ID)) {
-            jsonObject.clear();
-            jsonObject.put("msg", "缺少必要参数ID");
+    @DeleteMapping(value = "/delete")
+    public ResponseResult deleteTeachingDocuments(Integer ID) {
+        JSONObject jsonObject = new JSONObject();
+        if (Objects.isNull(ID) || ID == 0) {
+            jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        return this.courseDocTaskService.deleteTeachingDocuments(Integer.parseInt(ID));
+        return this.courseDocTaskService.deleteTeachingDocuments(ID);
     }
 
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
@@ -89,4 +88,5 @@ public class CourseDocTaskController {
         }
         return courseDocTaskService.updateCourseDocTask(courseDocTask);
     }
+
 }
