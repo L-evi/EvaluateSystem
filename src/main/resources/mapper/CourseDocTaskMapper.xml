@@ -30,14 +30,11 @@
             <if test="issueTime != null">
                 issueTime = #{issueTime},
             </if>
-            <if test="deadTime != null">
+            <if test="deadline != null">
                 deadline = #{deadline},
             </if>
             <if test="taskStatus != null">
                 taskStatus = #{taskStatus},
-            </if>
-            <if test="closeTask != null">
-                closeTask = #{closeTask},
             </if>
             <if test="operator != null and operator != ''">
                 operator = #{operator},
@@ -47,6 +44,11 @@
             </if>
         </set>
         WHERE ID = #{ID} AND closeTask = 0
+    </update>
+    <update id="updateCourseDocTaskStatus">
+        UPDATE coursedoctask
+        SET closeTask = #{status}
+        WHERE ID = #{ID}
     </update>
 
     <delete id="deleteTaskByID">

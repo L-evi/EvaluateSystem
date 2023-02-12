@@ -1,13 +1,14 @@
 package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.service.CourseDocTaskService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
-import io.netty.handler.codec.serialization.ObjectEncoder;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,17 +70,10 @@ public class CourseDocTaskController {
         return this.courseDocTaskService.deleteTeachingDocuments(ID);
     }
 
-    @RequestMapping(value = "/submit", method = RequestMethod.POST)
-    public ResponseResult submit(@RequestBody Map<String, Object> map) throws IOException {
-        JSONObject jsonObject = new JSONObject();
-        if (!map.containsKey("FileName") || !map.containsKey("taskID") || !map.containsKey("teachingDocRoot")) {
-            jsonObject.put("msg", "参数缺失");
-            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
-        }
-        return courseDocTaskService.submitDocument(map);
-    }
 
     @PutMapping("/update")
+    @RequiresRoles(value = {"2"}, logical = Logical.OR)
+    @DataLog(operationType = "update", modelName = "修改文档上传任务")
     public ResponseResult updateCourseDocTask(@RequestBody CourseDocTask courseDocTask) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(courseDocTask) || Objects.isNull(courseDocTask.getID())) {
@@ -89,4 +83,15 @@ public class CourseDocTaskController {
         return courseDocTaskService.updateCourseDocTask(courseDocTask);
     }
 
+    @RequiresRoles(value = "2", logical = Logical.OR)
+    @PutMapping("/reset")
+    @DataLog(modelName = "重启文档上传任务", operationType = "update")
+    public ResponseResult resetCourseDocTask(Integer ID, Integer status) {
+        JSONObject jsonObject = new JSONObject();
+        if (Objects.isNull(ID) || ID == 0) {
+            jsonObject.put("msg", "参数缺失");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        return courseDocTaskService.resetCourseDocTask(ID, status);
+    }
 }

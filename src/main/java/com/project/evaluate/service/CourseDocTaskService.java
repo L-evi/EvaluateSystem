@@ -16,5 +16,5 @@ public interface CourseDocTaskService {
 
     ResponseResult updateCourseDocTask(CourseDocTask courseDocTask);
 
-    ResponseResult submitDocument(Map<String, Object> map);
+    ResponseResult resetCourseDocTask(Integer ID,Integer status);
 }

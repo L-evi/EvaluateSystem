@@ -1,6 +1,5 @@
 package com.project.evaluate.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.entity.CourseDocDetail;
@@ -9,13 +8,13 @@ import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
-import org.apache.ibatis.annotations.Delete;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -32,7 +31,9 @@ public class CourseDocDetailController {
     @Resource
     private CourseDocDetailService courseDocDetailService;
 
-    @RequestMapping(value = "/delete/taskID")
+    @DeleteMapping(value = "/delete/taskID")
+    @RequiresRoles(value = {"0", "2"}, logical = Logical.OR)
+    @DataLog(modelName = "根据任务ID删除课程文档", operationType = "delete")
     public ResponseResult deleteByTaskID(@RequestBody CourseDocDetail courseDocDetail, HttpServletRequest request) {
         String token = request.getHeader("token");
         String userID = null;
@@ -67,7 +68,7 @@ public class CourseDocDetailController {
         String userID = null;
         Integer roleType = null;
         try {
-            jsonObject = JSONObject.parseObject(JSON.toJSONString(JwtUtil.parseJwt(token).getSubject()));
+            jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
             userID = (String) jsonObject.get("userID");
             roleType = (Integer) jsonObject.get("roleType");
             if (!Strings.hasText(userID) || Objects.isNull(roleType)) {
@@ -82,6 +83,7 @@ public class CourseDocDetailController {
     }
 
     @GetMapping(value = "/search/task-id")
+    @DataLog(modelName = "根据任务ID查询课程文档", operationType = "select")
     public ResponseResult selectByTaskID(Integer taskID, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(taskID)) {
@@ -98,6 +100,19 @@ public class CourseDocDetailController {
             orderBy = "ID ASC";
         }
         return this.courseDocDetailService.selectByTaskID(taskID, page, pageSize, orderBy);
+    }
+
+    @PostMapping(value = "/submit")
+    @DataLog(operationType = "insert", modelName = "提交文档上传任务")
+    public ResponseResult submit(@RequestBody Map<String, Object> map) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        if (!map.containsKey("FileName") || !map.containsKey("taskID") || !map.containsKey("teachingDocRoot")) {
+            jsonObject.put("msg", "参数缺失");
+            return new
+
+                    ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        return courseDocDetailService.submitDocument(map);
     }
 
 }

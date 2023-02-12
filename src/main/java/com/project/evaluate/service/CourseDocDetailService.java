@@ -11,4 +11,6 @@ public interface CourseDocDetailService {
     ResponseResult deleteByID(Integer ID, Integer roleType, String userID);
 
     ResponseResult selectByTaskID(Integer taskID, Integer page, Integer pageSize, String orderBy);
+
+    ResponseResult submitDocument(Map<String, Object> map);
 }

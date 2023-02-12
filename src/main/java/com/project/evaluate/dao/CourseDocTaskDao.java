@@ -21,4 +21,6 @@ public interface CourseDocTaskDao {
     List<CourseDocTask> selectPageID(@Param("ids") List<Integer> ids);
 
     Boolean updateCourseDocTask(CourseDocTask courseDocTask);
+
+    Boolean updateCourseDocTaskStatus(Integer ID,Integer status);
 }

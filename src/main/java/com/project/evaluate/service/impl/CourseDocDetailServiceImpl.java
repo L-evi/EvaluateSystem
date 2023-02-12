@@ -5,8 +5,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.project.evaluate.dao.CourseDao;
 import com.project.evaluate.dao.CourseDocDetailDao;
 import com.project.evaluate.dao.CourseDocTaskDao;
+import com.project.evaluate.entity.Course;
 import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.entity.Faculty;
@@ -15,14 +17,16 @@ import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.File;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Levi
@@ -40,7 +44,13 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
     private RedisCache redisCache;
 
     @Resource
+    private CourseDao courseDao;
+
+    @Resource
     private CourseDocTaskDao courseDocTaskDao;
+
+    @Value("${file.temp-pre-path}")
+    private String tempPrePath;
 
     @Override
     public ResponseResult deleteByTaskID(Integer taskID, String userID) {
@@ -117,5 +127,79 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
         return new ResponseResult<>(ResultCode.SUCCESS, jsonObject);
     }
 
+    @Override
+    public ResponseResult submitDocument(Map<String, Object> map) {
+        JSONObject jsonObject = new JSONObject();
+//        获取prePath
+        String prePath = (String) map.get("teachingDocRoot");
+        String fileName = (String) map.get("FileName");
+        Integer taskID = (Integer) map.get("taskID");
+//        获取CourseDocTask信息
+//        从redis中获取CourseDocTask信息
+        CourseDocTask courseDocTask = JSONObject.toJavaObject(this.redisCache.getCacheObject("CourseDocTask:" + taskID), CourseDocTask.class);
+        if (Objects.isNull(courseDocTask)) {
+            courseDocTask = this.courseDocTaskDao.selectByID(taskID);
+            if (Objects.isNull(courseDocTask)) {
+                jsonObject.put("msg", "找不到课程文档任务信息");
+                return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+            } else {
+//                将信息放入redis中
+                this.redisCache.setCacheObject("CourseDocTask:" + taskID, courseDocTask, 1, TimeUnit.DAYS);
+            }
+        }
+//        获取Course信息
+//        从redis中获取
+        Course course = JSONObject.toJavaObject(this.redisCache.getCacheObject("Course:" + courseDocTask.getCourseID()), Course.class);
+        if (Objects.isNull(course)) {
+            course = this.courseDao.selectByCourseID(courseDocTask.getCourseID());
+            if (Objects.isNull(course)) {
+                jsonObject.put("msg", "找不到课程信息");
+                return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+            } else {
+//                将信息放入redis中
+                this.redisCache.setCacheObject("Course:" + course.getCourseID(), course, 1, TimeUnit.DAYS);
+            }
+        }
+//        根据CourseDocTask信息构建文件目录
+        String fileDir = courseDocTask.getSchoolStartYear() + "-" + courseDocTask.getSchoolEndYear() + "-" + courseDocTask.getSchoolTerm() + File.separator + courseDocTask.getCourseID() + "_" + course.getCourseName() + File.separator;
+        File tempFileDir = new File(prePath + File.separator + fileDir);
+        if (!tempFileDir.exists()) {
+            if (!tempFileDir.mkdirs()) {
+                jsonObject.put("msg", "文件夹新建失败");
+                return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+            }
+        }
+//        构建新的文件以及缓存文件
+        File file = new File(tempFileDir.getAbsolutePath(), fileName);
+        File tempFile = new File(this.tempPrePath, fileName);
+        if (!tempFile.exists()) {
+            jsonObject.put("msg", "文件不存在，无法提交");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        }
+//        复制文件
+        try (InputStream inputStream = new FileInputStream(tempFile); OutputStream outputStream = new FileOutputStream(file)) {
+            byte[] bytes = new byte[1024];
+            int length;
+            while ((length = inputStream.read(bytes)) > 0) {
+                outputStream.write(bytes, 0, length);
+            }
+        } catch (FileNotFoundException e) {
+            jsonObject.put("msg", "文件无法找到");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        } catch (IOException e) {
+            jsonObject.put("msg", "IO操作错误");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        }
+        CourseDocDetail courseDocDetail = new CourseDocDetail();
+        courseDocDetail.setTaskID(courseDocTask.getID());
+        courseDocDetail.setDocPath(fileDir + fileName);
+        courseDocDetail.setUploadTime(new Date());
+        courseDocDetail.setSubmitter("test");
+        courseDocDetail.setDocTypeID(1);
+        Long num = courseDocDetailDao.insertCourseDocDetail(courseDocDetail);
+        jsonObject = JSONObject.parseObject(JSON.toJSONString(courseDocDetail));
+        jsonObject.put("msg", "提交成功");
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+    }
 
 }
