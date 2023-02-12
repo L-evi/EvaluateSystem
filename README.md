@@ -64,7 +64,7 @@
 
 ## API文档
 
-文档地址：[本科自考报考系统接口文档](https://console-docs.apipost.cn/preview/7f3788b6d8d22a45/744e5156fbdf169c)
+文档地址：[教学文档管理中心](https://console-docs.apipost.cn/preview/87327b6fd6408173/14b79967c33ea967)
 
 ## 亮点说明
 
