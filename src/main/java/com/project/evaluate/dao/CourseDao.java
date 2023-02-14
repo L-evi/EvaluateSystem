@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface CourseDao {
 
-    List<Course> getPageCourse(int start, int end);
+    List<Course> selectPageCourse(Course course);
 
     Integer countCourse();
 

@@ -136,4 +136,10 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
         jsonObject.put("msg", "更新数据成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
+
+    @Override
+    public ResponseResult insertCourseDocTask(CourseDocTask courseDocTask) {
+        return null;
+    }
+
 }

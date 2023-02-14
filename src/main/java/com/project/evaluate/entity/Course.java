@@ -20,7 +20,7 @@ public class Course implements Serializable {
     /**
      * ID：自增
      */
-    int ID;
+    Integer ID;
     /**
      * 课程名称
      */
@@ -43,12 +43,12 @@ public class Course implements Serializable {
     /**
      * 大纲课程类型：外键，关联EducationType的ID
      */
-    int educationType;
+    Integer educationType;
 
     /**
      * 课程类型：外键，关联CourseType的ID
      */
-    int courseType;
+    Integer courseType;
 
     /**
      * 学分：精确到一位小数
@@ -63,11 +63,11 @@ public class Course implements Serializable {
     /**
      * 适用专业：外键，关联Major的ID
      */
-    int major;
+    Integer major;
 
     /**
      * 学期：有效值：1~8
      */
-    int courseTerm;
+    Integer courseTerm;
 
 }

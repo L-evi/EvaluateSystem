@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -93,5 +94,16 @@ public class CourseDocTaskController {
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
         return courseDocTaskService.resetCourseDocTask(ID, status);
+    }
+
+    @PostMapping("/add")
+    public ResponseResult insertCourseDocTask(@RequestBody List<CourseDocTask> courseDocTasks) {
+        JSONObject jsonObject = new JSONObject();
+        if (Objects.isNull(courseDocTasks) || courseDocTasks.isEmpty()) {
+            jsonObject.put("msg", "参数缺失");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        courseDocTasks.forEach(System.out::println);
+        return ResponseResult.success();
     }
 }

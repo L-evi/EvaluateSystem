@@ -3,21 +3,51 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.dao.CourseDao">
-    <select id="getPageCourse" resultType="com.project.evaluate.entity.Course">
+    <select id="selectPageCourse" resultType="com.project.evaluate.entity.Course">
         SELECT ID,
-               courseID,
-               courseName,
-               courseProperty,
-               testType,
-               educationType,
-               courseType,
-               credit,
-               teamLeader,
-               major,
-               courseType
+        courseID,
+        courseName,
+        courseProperty,
+        testType,
+        educationType,
+        courseType,
+        credit,
+        teamLeader,
+        major,
+        courseTerm
         FROM course
-        ORDER BY ID
-        LIMIT #{start},#{end}
+        <where>
+            <if test="courseID != null and courseID != ''">
+                courseID = #{courseID}
+            </if>
+            <if test="courseName != null and courseName != ''">
+                AND courseName = #{courseName}
+            </if>
+            <if test="courseProperty != null and courseProperty != ''">
+                AND courseProperty = #{courseProperty}
+            </if>
+            <if test="testType != null and testType != ''">
+                AND testType = #{testType}
+            </if>
+            <if test="educationType != null">
+                AND educationType = #{educationType}
+            </if>
+            <if test="courseType != null">
+                AND courseType = #{courseType}
+            </if>
+            <if test="credit != null">
+                AND credit = #{credit}
+            </if>
+            <if test="teamLeader != null and teamLeader !=''">
+                AND teamLeader = #{teamLeader}
+            </if>
+            <if test="major != null">
+                AND major != #{major}
+            </if>
+            <if test="courseTerm != null">
+                AND courseTerm = #{courseTerm}
+            </if>
+        </where>
     </select>
 
     <select id="countCourse" resultType="java.lang.Integer">
