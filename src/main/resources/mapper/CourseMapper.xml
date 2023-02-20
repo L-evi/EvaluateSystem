@@ -3,6 +3,17 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.dao.CourseDao">
+    <insert id="insertCourse" useGeneratedKeys="true" parameterType="com.project.evaluate.entity.Course">
+        INSERT INTO Course(courseID, courseName, courseProperty, testType, educationType,
+                           courseType, credit, teamLeader, major, courseTerm)
+        VALUES (#{courseID}, #{courseName}, #{courseProperty}, #{testType},
+                #{educationType}, #{courseType}, #{credit}, #{teamLeader},
+                #{major}, #{courseTerm})
+    </insert>
+    <delete id="deletaByID">
+        DELETE FROM course
+        WHERE ID = #{ID}
+    </delete>
     <select id="selectPageCourse" resultType="com.project.evaluate.entity.Course">
         SELECT ID,
         courseID,

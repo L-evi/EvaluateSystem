@@ -1,5 +1,9 @@
 package com.project.evaluate.service.impl;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.metadata.CellExtra;
+import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -14,7 +18,9 @@ import com.project.evaluate.util.response.ResultCode;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -46,5 +52,16 @@ public class CourseServiceImpl implements CourseService {
         jsonObject.put("pages", coursesInfo.getPages());
         jsonObject.put("array", jsonArray);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+    }
+
+    @Override
+    public ResponseResult importExcelCourse(String filename) {
+        JSONObject jsonObject = new JSONObject();
+        if (!new File(filename).exists()) {
+            jsonObject.put("msg", "参数错误，无法读取文件");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        }
+        // todo: 使用EasyExcel读取文件
+        return null;
     }
 }

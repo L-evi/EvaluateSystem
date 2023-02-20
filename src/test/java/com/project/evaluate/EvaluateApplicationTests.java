@@ -1,5 +1,7 @@
 package com.project.evaluate;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -11,8 +13,12 @@ import com.project.evaluate.util.bloom.BloomFilterHelper;
 import com.project.evaluate.util.bloom.RedisBloomFilter;
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.junit.jupiter.api.Test;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,11 +33,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-;
-
 @SpringBootTest
 @PropertySource("classpath:application.yml")
 @ComponentScan("classpath:mapper/*.xml")
+@Slf4j
 class EvaluateApplicationTests {
 
     @Test
@@ -148,11 +153,44 @@ class EvaluateApplicationTests {
     @Resource
     private CourseDao courseDao;
 
+    @Autowired
+    private SqlSessionTemplate sqlSessionTemplate;
+
     @Test
     public void testCourseMapper() {
 //        List<Course> pageCourse = this.courseMapper.getPageCourse(0, 2);
 //        pageCourse.forEach(System.out::println);
-        System.out.println(this.courseDao.selectByCourseID("1"));
+        List<Course> courses = courseDao.selectPageCourse(new Course());
+        courses.forEach(System.out::println);
+//        for (Course course : courses) {
+//            Boolean aBoolean = courseDao.deletaByID(course.getID());
+//            System.out.println(aBoolean);
+//            Integer integer = courseDao.insertCourse(course);
+//            System.out.println(integer);
+//        }
+//        新获取一个模式为BATCH，自动提交为false的session
+//        如果自动提交设置为true,将无法控制提交的条数，改为最后统一提交，可能导致内存溢出
+//        SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
+////        通过新的session获取mapper
+//        CourseDao courseMapper = session.getMapper(CourseDao.class);
+//        int size = courses.size();
+//        try {
+//            for (int i = 0; i < size; i++) {
+//                courseMapper.insertCourse(courses.get(i));
+//                if (i == size - 1) {
+////                    手动每1000个一提交，提交后无法回滚
+//                    session.commit();
+//                    System.out.println("commit complete");
+////                    清理缓存，防止溢出
+//                    session.clearCache();
+//                }
+//            }
+//        } catch (Exception e) {
+////            没有提交的数据可以回滚
+//            session.rollback();
+//        } finally {
+//            session.close();
+//        }
     }
 
 
@@ -330,6 +368,21 @@ class EvaluateApplicationTests {
             System.out.println("数据存在");
         }
     }
+
+    @Test
+    public void importCourseExcel() {
+        // 写法1：JDK8+ ,不用额外写一个DemoDataListener
+        // since: 3.0.0-beta1
+        String fileName = "";
+        // 这里默认每次会读取100条数据 然后返回过来 直接调用使用数据就行
+        // 具体需要返回多少行可以在`PageReadListener`的构造函数设置
+        EasyExcel.read(fileName, Course.class, new PageReadListener<Course>(dataList -> {
+            for (Course course : dataList) {
+                log.info("读取到一条数据{}", JSON.toJSONString(course));
+            }
+        })).sheet().doRead();
+    }
+
 
 }
 

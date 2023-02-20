@@ -5,4 +5,6 @@ import com.project.evaluate.util.response.ResponseResult;
 
 public interface CourseService {
     ResponseResult selectPageCourse(Course course, Integer page, Integer pageSize, String orderBy);
+
+    ResponseResult importExcelCourse(String filename);
 }
