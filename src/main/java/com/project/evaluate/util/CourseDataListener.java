@@ -5,14 +5,9 @@ import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSON;
 import com.project.evaluate.dao.CourseDao;
-import com.project.evaluate.entity.Course;
+import com.project.evaluate.entity.AO.CourseAO;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
-import org.mybatis.spring.SqlSessionTemplate;
 
-
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -22,14 +17,12 @@ import java.util.List;
  * @since 2023/2/17 13:21
  */
 @Slf4j
-public class CourseDataListener implements ReadListener<Course> {
+public class CourseDataListener implements ReadListener<CourseAO> {
 
-    @Resource
-    private SqlSessionTemplate sqlSessionTemplate;
 
     private static final int BATCH_COUNT = 100;
 
-    private List<Course> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
+    private List<CourseAO> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
 
     private CourseDao courseDao;
 
@@ -38,9 +31,9 @@ public class CourseDataListener implements ReadListener<Course> {
     }
 
     @Override
-    public void invoke(Course course, AnalysisContext analysisContext) {
-        log.info("解析到一条数据：{}", JSON.toJSONString(course));
-        cachedDataList.add(course);
+    public void invoke(CourseAO courseAO, AnalysisContext analysisContext) {
+        log.info("解析到一条数据：{}", JSON.toJSONString(courseAO));
+        cachedDataList.add(courseAO);
         // 达到BATCH_COUNT了，就要存储一次数据库，防止OOM
         if (cachedDataList.size() == BATCH_COUNT) {
             saveData();
@@ -72,26 +65,7 @@ public class CourseDataListener implements ReadListener<Course> {
      */
     private void saveData() {
         log.info("{}条数据，开始存储数据库", cachedDataList.size());
-//        自动提交设置为false，自定义提交条数防止OOM，模式为BATCH
-        SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
-//        获取Dao
-        CourseDao courseMapper = session.getMapper(CourseDao.class);
-        try {
-            for (int i = 0; i < cachedDataList.size(); i++) {
-                courseMapper.insertCourse(cachedDataList.get(i));
-                if (i == cachedDataList.size() - 1) {
-//                    提交
-                    session.commit();
-                    session.clearCache();
-                }
-            }
-        } catch (Exception e) {
-//            异常回滚
-            session.rollback();
-        } finally {
-//            关闭session
-            session.close();
-        }
+        
         log.info("存储数据库完成！");
     }
 }

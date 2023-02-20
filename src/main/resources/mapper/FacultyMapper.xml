@@ -8,23 +8,23 @@
 <mapper namespace="com.project.evaluate.dao.FacultyDao">
 
     <select id="selectByUserID"
-            resultType="com.project.evaluate.entity.Faculty">
+            resultType="com.project.evaluate.entity.DO.FacultyDO">
         select *
-        from faculty
+        from facultyDO
         where userID = #{0};
     </select>
 
 
     <insert id="insertFaculty"
-            parameterType="com.project.evaluate.entity.Faculty">
-        insert into faculty(userID, userName, password, roleType, mobile, email, status, isInitPwd, lastLoginIP,
+            parameterType="com.project.evaluate.entity.DO.FacultyDO">
+        insert into facultyDO(userID, userName, password, roleType, mobile, email, status, isInitPwd, lastLoginIP,
                             lastLoginTime, loginIP, loginTime)
         values (#{userID}, #{userName}, #{password}, #{roleType}, #{mobile}, #{email}, #{status}, #{isInitPwd},
                 #{lastLoginIP}, #{lastLoginTime}, #{loginIP}, #{loginTime})
     </insert>
 
-    <update id="updateFaculty" parameterType="com.project.evaluate.entity.Faculty">
-        update faculty
+    <update id="updateFaculty" parameterType="com.project.evaluate.entity.DO.FacultyDO">
+        update facultyDO
         <set>
             <if test="userName != null and userName != ''">
                 userName = #{userName},
@@ -60,13 +60,13 @@
         where userID = #{userID}
     </update>
     <update id="resetFaculty">
-        UPDATE faculty
+        UPDATE facultyDO
         SET password  = #{password},
             isInitPwd = 1
         WHERE userID = #{userID}
     </update>
 
-    <select id="selectPageFaculty" resultType="com.project.evaluate.entity.Faculty">
+    <select id="selectPageFaculty" resultType="com.project.evaluate.entity.DO.FacultyDO">
         SELECT USERID,
         USERNAME,
         ROLETYPE,
@@ -79,7 +79,7 @@
         LOGINIP,
         LOGINTIME,
         MEMO
-        FROM faculty
+        FROM facultyDO
         <where>
             <if test="userName != null and userName != ''">
                 userName = #{userName}
@@ -118,15 +118,15 @@
     </select>
     <delete id="deletePageFaculty">
         DELETE
-        FROM faculty
+        FROM facultyDO
         WHERE userID = #{userID}
     </delete>
     <update id="banFaculty">
-        UPDATE faculty
+        UPDATE facultyDO
         SET status = 1
     </update>
     <update id="resetPassword">
-        UPDATE faculty
+        UPDATE facultyDO
         SET password = #{password}
         WHERE userID = #{userID}
           AND password = #{oldPassword}

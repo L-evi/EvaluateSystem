@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.dao.CourseDao">
-    <insert id="insertCourse" useGeneratedKeys="true" parameterType="com.project.evaluate.entity.Course">
+    <insert id="insertCourse" useGeneratedKeys="true" parameterType="com.project.evaluate.entity.DO.CourseDO">
         INSERT INTO Course(courseID, courseName, courseProperty, testType, educationType,
                            courseType, credit, teamLeader, major, courseTerm)
         VALUES (#{courseID}, #{courseName}, #{courseProperty}, #{testType},
@@ -11,10 +11,10 @@
                 #{major}, #{courseTerm})
     </insert>
     <delete id="deletaByID">
-        DELETE FROM course
+        DELETE FROM courseDO
         WHERE ID = #{ID}
     </delete>
-    <select id="selectPageCourse" resultType="com.project.evaluate.entity.Course">
+    <select id="selectPageCourse" resultType="com.project.evaluate.entity.DO.CourseDO">
         SELECT ID,
         courseID,
         courseName,
@@ -26,7 +26,7 @@
         teamLeader,
         major,
         courseTerm
-        FROM course
+        FROM courseDO
         <where>
             <if test="courseID != null and courseID != ''">
                 courseID = #{courseID}
@@ -66,7 +66,7 @@
         FROM Course
     </select>
 
-    <select id="selectByCourseID" resultType="com.project.evaluate.entity.Course">
+    <select id="selectByCourseID" resultType="com.project.evaluate.entity.DO.CourseDO">
         SELECT ID,
                courseID,
                courseName,
@@ -78,7 +78,7 @@
                teamLeader,
                major,
                courseType
-        FROM course
+        FROM courseDO
         WHERE courseID = #{courseID}
     </select>
 </mapper>

@@ -3,7 +3,7 @@ package com.project.evaluate.controller;
 import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
-import com.project.evaluate.entity.Faculty;
+import com.project.evaluate.entity.DO.FacultyDO;
 import com.project.evaluate.service.FacultyService;
 import com.project.evaluate.util.IPUtil;
 import com.project.evaluate.util.JwtUtil;
@@ -43,12 +43,12 @@ public class FacultyController {
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
     public ResponseResult userLogin(@RequestBody Map<String, Object> dataMap, HttpServletRequest request) {
 //        获取其中的数据
-        Faculty faculty = new Faculty();
-        faculty.setUserID((String) dataMap.get("userID"));
-        faculty.setPassword((String) dataMap.get("password"));
-        faculty.setLoginIP(IPUtil.getIPAddress(request));
+        FacultyDO facultyDO = new FacultyDO();
+        facultyDO.setUserID((String) dataMap.get("userID"));
+        facultyDO.setPassword((String) dataMap.get("password"));
+        facultyDO.setLoginIP(IPUtil.getIPAddress(request));
 //        调用Service服务进行认证
-        return this.facultyService.userLogin(faculty);
+        return this.facultyService.userLogin(facultyDO);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
@@ -56,59 +56,59 @@ public class FacultyController {
         Subject subject = SecurityUtils.getSubject();
         System.out.println("principal: " + subject.getPrincipal());
         String userID = (String) subject.getPrincipal();
-        this.redisCache.deleteObject("Faculty:" + userID);
+        this.redisCache.deleteObject("FacultyDO:" + userID);
         this.redisCache.deleteObject("token:" + userID);
         subject.logout();
         return new ResponseResult(ResultCode.SUCCESS);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json")
-    public ResponseResult userRegister(@RequestBody Faculty faculty, HttpServletRequest request) {
-        if (!Strings.hasText(faculty.getUserID()) || !Strings.hasText(faculty.getPassword())) {
+    public ResponseResult userRegister(@RequestBody FacultyDO facultyDO, HttpServletRequest request) {
+        if (!Strings.hasText(facultyDO.getUserID()) || !Strings.hasText(facultyDO.getPassword())) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "账号或密码不能为空");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        faculty.setLastLoginIP(IPUtil.getIPAddress(request));
-        faculty.setLastLoginTime(new DateTime(TimeZone.getTimeZone("Asia/Shanghai")));
-        faculty.setLoginTime(new DateTime());
-        faculty.setLoginIP(IPUtil.getIPAddress(request));
-        faculty.setIsInitPwd(0);
-        return this.facultyService.userRegister(faculty);
+        facultyDO.setLastLoginIP(IPUtil.getIPAddress(request));
+        facultyDO.setLastLoginTime(new DateTime(TimeZone.getTimeZone("Asia/Shanghai")));
+        facultyDO.setLoginTime(new DateTime());
+        facultyDO.setLoginIP(IPUtil.getIPAddress(request));
+        facultyDO.setIsInitPwd(0);
+        return this.facultyService.userRegister(facultyDO);
     }
 
     @PostMapping("/manage/add")
     @RequiresRoles("1")
     @DataLog(modelName = "添加用户帐号", operationType = "insert")
-    public ResponseResult addFaculty(@RequestBody Faculty faculty) {
+    public ResponseResult addFaculty(@RequestBody FacultyDO facultyDO) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(faculty)
-                || !Strings.hasText(faculty.getUserID())
-                || Objects.isNull(faculty.getRoleType())) {
+        if (Objects.isNull(facultyDO)
+                || !Strings.hasText(facultyDO.getUserID())
+                || Objects.isNull(facultyDO.getRoleType())) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        if (!Strings.hasText(faculty.getUserName())) {
-            faculty.setUserName(faculty.getUserID());
+        if (!Strings.hasText(facultyDO.getUserName())) {
+            facultyDO.setUserName(facultyDO.getUserID());
         }
-        faculty.setPassword(faculty.getUserID());
-        faculty.setStatus(0);
-        faculty.setIsInitPwd(1);
-        return this.facultyService.insertFaculty(faculty);
+        facultyDO.setPassword(facultyDO.getUserID());
+        facultyDO.setStatus(0);
+        facultyDO.setIsInitPwd(1);
+        return this.facultyService.insertFaculty(facultyDO);
     }
 
     @PutMapping("/manage/update")
     @RequiresRoles("1")
     @DataLog(modelName = "修改用户帐号", operationType = "update")
-    public ResponseResult updateFaculty(@RequestBody Faculty faculty) {
+    public ResponseResult updateFaculty(@RequestBody FacultyDO facultyDO) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(faculty)
-                || !Strings.hasText(faculty.getUserID())) {
+        if (Objects.isNull(facultyDO)
+                || !Strings.hasText(facultyDO.getUserID())) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        faculty.setPassword(null);
-        return this.facultyService.updateFaculty(faculty);
+        facultyDO.setPassword(null);
+        return this.facultyService.updateFaculty(facultyDO);
     }
 
     @PutMapping("/manage/reset")
@@ -126,7 +126,7 @@ public class FacultyController {
     @GetMapping("/manage/get/page")
     @RequiresRoles("1")
     @DataLog(modelName = "分页查询用户帐号", operationType = "select")
-    public ResponseResult selectPageFaculty(Faculty faculty, Integer page, Integer pageSize, String orderBy) {
+    public ResponseResult selectPageFaculty(FacultyDO facultyDO, Integer page, Integer pageSize, String orderBy) {
         if (Objects.isNull(page)) {
             page = 0;
         }
@@ -136,7 +136,7 @@ public class FacultyController {
         if (!Strings.hasText(orderBy)) {
             orderBy = "userID ASC";
         }
-        return this.facultyService.selectPageFaculty(faculty, page, pageSize, orderBy);
+        return this.facultyService.selectPageFaculty(facultyDO, page, pageSize, orderBy);
     }
 
     @DeleteMapping("/manage/delete")
@@ -153,10 +153,10 @@ public class FacultyController {
 
     @PostMapping(value = "/personal/update")
     @DataLog(modelName = "个人资料管理", operationType = "update")
-    public ResponseResult personalMessageUpdate(@RequestBody Faculty faculty, HttpServletRequest request) {
+    public ResponseResult personalMessageUpdate(@RequestBody FacultyDO facultyDO, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         String token = request.getHeader("token");
-        if (Objects.isNull(faculty)
+        if (Objects.isNull(facultyDO)
                 || !Strings.hasText(token)) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
@@ -171,11 +171,11 @@ public class FacultyController {
             throw new RuntimeException("token parse失败");
         }
 //        设置只有用户才能更改的数据
-        Faculty temp = new Faculty();
+        FacultyDO temp = new FacultyDO();
         temp.setUserID(userID);
-        temp.setEmail(faculty.getEmail());
-        temp.setMobile(faculty.getMobile());
-        temp.setMemo(faculty.getMemo());
+        temp.setEmail(facultyDO.getEmail());
+        temp.setMobile(facultyDO.getMobile());
+        temp.setMemo(facultyDO.getMemo());
         return this.facultyService.updateFaculty(temp);
     }
 

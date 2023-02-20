@@ -1,26 +1,25 @@
 package com.project.evaluate.service.impl;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.metadata.CellExtra;
-import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.CourseDao;
-import com.project.evaluate.entity.Course;
+import com.project.evaluate.entity.AO.CourseAO;
+import com.project.evaluate.entity.DO.CourseDO;
 import com.project.evaluate.service.CourseService;
+import com.project.evaluate.util.CourseDataListener;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -30,6 +29,7 @@ import java.util.Objects;
  * @since 2023/1/2 22:10
  */
 @Service
+@Slf4j
 public class CourseServiceImpl implements CourseService {
     @Resource
     private CourseDao courseDao;
@@ -38,15 +38,15 @@ public class CourseServiceImpl implements CourseService {
     private RedisCache redisCache;
 
     @Override
-    public ResponseResult selectPageCourse(Course course, Integer page, Integer pageSize, String orderBy) {
+    public ResponseResult selectPageCourse(CourseDO courseDO, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         PageHelper.startPage(page, pageSize, orderBy);
-        List<Course> courses = courseDao.selectPageCourse(course);
-        if (Objects.isNull(courses) || courses.isEmpty()) {
+        List<CourseDO> cours = courseDao.selectPageCourse(courseDO);
+        if (Objects.isNull(cours) || cours.isEmpty()) {
             jsonObject.put("msg", "查询课程失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<Course> coursesInfo = new PageInfo<>(courses);
+        PageInfo<CourseDO> coursesInfo = new PageInfo<>(cours);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(coursesInfo.getList()));
         jsonObject.put("total", coursesInfo.getTotal());
         jsonObject.put("pages", coursesInfo.getPages());
@@ -62,6 +62,19 @@ public class CourseServiceImpl implements CourseService {
             return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
         }
         // todo: 使用EasyExcel读取文件
-        return null;
+/*        EasyExcel.read(filename, CourseAO.class, new PageReadListener<CourseAO>(dataList -> {
+            for (CourseAO course : dataList) {
+                log.info("read one data: {}", JSON.toJSONString(course));
+            }
+        })).sheet().doRead();*/
+        EasyExcel.read(filename, CourseAO.class, new CourseDataListener(courseDao)).sheet().doRead();
+
+/*        List<CourseDO> list = new ArrayList<>();
+        list.add(new CourseDO());
+        EasyExcel.write(filename, CourseDO.class)
+                .sheet()
+                .doWrite(list);*/
+        return new ResponseResult(ResultCode.SUCCESS);
     }
 }
+

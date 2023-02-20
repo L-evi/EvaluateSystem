@@ -7,15 +7,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.*;
-import com.project.evaluate.entity.*;
+import com.project.evaluate.entity.DO.*;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.bloom.BloomFilterHelper;
 import com.project.evaluate.util.bloom.RedisBloomFilter;
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -68,7 +66,7 @@ class EvaluateApplicationTests {
 
     @Test
     void testFacultyDao() throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        this.facultyDao.selectPageFaculty(new Faculty()).forEach(System.out::println);
+        this.facultyDao.selectPageFaculty(new FacultyDO()).forEach(System.out::println);
     }
 
     @Test
@@ -96,9 +94,9 @@ class EvaluateApplicationTests {
 
     @Test
     void testClassToJSONObject() {
-        Faculty faculty = new Faculty();
-        faculty.setUserID("user");
-        JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(faculty));
+        FacultyDO facultyDO = new FacultyDO();
+        facultyDO.setUserID("user");
+        JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(facultyDO));
         System.out.println(jsonObject);
     }
 
@@ -130,18 +128,18 @@ class EvaluateApplicationTests {
 
     @Test
     public void testRedis() {
-        Faculty faculty = new Faculty();
-        faculty.setUserID("admin");
-        faculty.setPassword("admin");
-        this.redisCache.setCacheObject("admin", faculty, 1, TimeUnit.MINUTES);
-//        Faculty admin = JSONObject.parseObject(redisCache.getCacheObject("admin"), Faculty.class);
+        FacultyDO facultyDO = new FacultyDO();
+        facultyDO.setUserID("admin");
+        facultyDO.setPassword("admin");
+        this.redisCache.setCacheObject("admin", facultyDO, 1, TimeUnit.MINUTES);
+//        FacultyDO admin = JSONObject.parseObject(redisCache.getCacheObject("admin"), FacultyDO.class);
         JSONObject jsonObject = this.redisCache.getCacheObject("admin");
-        Faculty admin = JSONObject.toJavaObject(jsonObject, Faculty.class);
+        FacultyDO admin = JSONObject.toJavaObject(jsonObject, FacultyDO.class);
         System.out.println(admin);
         System.out.println(jsonObject.toString());
-//        redisCache.setCacheObject("Faculty" + admin.getUserID(), admin);
-//        Faculty faculty = redisCache.getCacheObject("Faculty" + admin.getUserID());
-//        System.out.println(faculty);
+//        redisCache.setCacheObject("FacultyDO" + admin.getUserID(), admin);
+//        FacultyDO facultyDO = redisCache.getCacheObject("FacultyDO" + admin.getUserID());
+//        System.out.println(facultyDO);
     }
 
     @Test
@@ -158,11 +156,11 @@ class EvaluateApplicationTests {
 
     @Test
     public void testCourseMapper() {
-//        List<Course> pageCourse = this.courseMapper.getPageCourse(0, 2);
+//        List<CourseDO> pageCourse = this.courseMapper.getPageCourse(0, 2);
 //        pageCourse.forEach(System.out::println);
-        List<Course> courses = courseDao.selectPageCourse(new Course());
-        courses.forEach(System.out::println);
-//        for (Course course : courses) {
+        List<CourseDO> cours = courseDao.selectPageCourse(new CourseDO());
+        cours.forEach(System.out::println);
+//        for (CourseDO course : cours) {
 //            Boolean aBoolean = courseDao.deletaByID(course.getID());
 //            System.out.println(aBoolean);
 //            Integer integer = courseDao.insertCourse(course);
@@ -173,10 +171,10 @@ class EvaluateApplicationTests {
 //        SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
 ////        通过新的session获取mapper
 //        CourseDao courseMapper = session.getMapper(CourseDao.class);
-//        int size = courses.size();
+//        int size = cours.size();
 //        try {
 //            for (int i = 0; i < size; i++) {
-//                courseMapper.insertCourse(courses.get(i));
+//                courseMapper.insertCourse(cours.get(i));
 //                if (i == size - 1) {
 ////                    手动每1000个一提交，提交后无法回滚
 //                    session.commit();
@@ -200,10 +198,10 @@ class EvaluateApplicationTests {
     @Test
     public void testCourseDocDetailMapper() {
 //        System.out.println(this.courseDocDetailMapper.deleteByTaskID(2));
-//        List<CourseDocDetail> details = this.courseDocDetailMapper.selectByTaskID(2);
+//        List<CourseDocDetailDO> details = this.courseDocDetailMapper.selectByTaskID(2);
 //        details.forEach(System.out::println);
-        List<CourseDocDetail> courseDocDetails = this.courseDocDetailDao.selectByTaskID(2);
-        courseDocDetails.forEach(System.out::println);
+        List<CourseDocDetailDO> courseDocDetailDOS = this.courseDocDetailDao.selectByTaskID(2);
+        courseDocDetailDOS.forEach(System.out::println);
     }
 
     @Resource
@@ -216,20 +214,20 @@ class EvaluateApplicationTests {
 //        map.put("end", 10);
 //        map.put("teacher", "teacher");
 //        map.put("schoolEndYear", 2);
-//        CourseDocTask courseDocTask = JSON.parseObject(JSONObject.toJSONString(map), CourseDocTask.class);
-//        System.out.println(courseDocTask.toString());
+//        CourseDocTaskDO courseDocTaskDO = JSON.parseObject(JSONObject.toJSONString(map), CourseDocTaskDO.class);
+//        System.out.println(courseDocTaskDO.toString());
 //        System.out.println("-----------------");
-//        Map<String, Object> objectMap = JSON.parseObject(JSON.toJSONString(courseDocTask), Map.class);
+//        Map<String, Object> objectMap = JSON.parseObject(JSON.toJSONString(courseDocTaskDO), Map.class);
 //        objectMap.put("index", 0);
 //        objectMap.put("pageSize", 3);
 //        System.out.println(objectMap.toString());
 //        System.out.println("---------");
-//        List<CourseDocTask> courseDocTasks = this.courseDocTaskDao.screenTeacherCourseDocTask(objectMap);
+//        List<CourseDocTaskDO> courseDocTasks = this.courseDocTaskDao.screenTeacherCourseDocTask(objectMap);
 //        courseDocTasks.forEach(System.out::println);
-        CourseDocTask courseDocTask = new CourseDocTask();
-        courseDocTask.setID(3);
+        CourseDocTaskDO courseDocTaskDO = new CourseDocTaskDO();
+        courseDocTaskDO.setID(3);
         PageHelper.startPage(0, 5, "ID DESC");
-        List<Map<String, Object>> courseDocTasks = this.courseDocTaskDao.selectPageCourseDocTask(courseDocTask);
+        List<Map<String, Object>> courseDocTasks = this.courseDocTaskDao.selectPageCourseDocTask(courseDocTaskDO);
         PageInfo<Map<String, Object>> courseDocTaskPageInfo = new PageInfo<>(courseDocTasks);
         List<Map<String, Object>> list = courseDocTaskPageInfo.getList();
         list.forEach(System.out::println);
@@ -242,9 +240,9 @@ class EvaluateApplicationTests {
     public void testPageHelper() {
         PageHelper.startPage(0, 5);
         PageHelper.orderBy("taskID DESC");
-        List<CourseDocDetail> all = this.courseDocDetailDao.getAll();
-        PageInfo<CourseDocDetail> pageInfo = new PageInfo<CourseDocDetail>(all);
-        List<CourseDocDetail> list = pageInfo.getList();
+        List<CourseDocDetailDO> all = this.courseDocDetailDao.getAll();
+        PageInfo<CourseDocDetailDO> pageInfo = new PageInfo<CourseDocDetailDO>(all);
+        List<CourseDocDetailDO> list = pageInfo.getList();
         list.forEach(System.out::println);
         long endRow = pageInfo.getEndRow();
         System.out.println("end row:" + endRow);
@@ -256,18 +254,18 @@ class EvaluateApplicationTests {
 
     @Test
     public void testFeedbackDao() {
-//        this.feedbackDao.insert(new Feedback(null, "反馈标题", "反馈内容：测试内容", new Date(), "teach"));
+//        this.feedbackDao.insert(new FeedbackDO(null, "反馈标题", "反馈内容：测试内容", new Date(), "teach"));
 //        System.out.println(this.feedbackDao.selectByID(9));
-        Feedback feedback = new Feedback();
+        FeedbackDO feedbackDO = new FeedbackDO();
         PageHelper.startPage(0, 15, "ID ASC");
-        List<Feedback> feedbacks = this.feedbackDao.selectByFeedback(feedback);
-        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbacks);
+        List<FeedbackDO> feedbackDOS = this.feedbackDao.selectByFeedback(feedbackDO);
+        PageInfo<FeedbackDO> pageInfo = new PageInfo<>(feedbackDOS);
 //        System.out.println(pageInfo.getNextPage());
 //        pageInfo.calcByNavigatePages(2);
         pageInfo.getList().forEach(System.out::println);
         System.out.println(pageInfo.getPages());
         System.out.println(pageInfo.getTotal());
-//        System.out.println(feedbacks.toString());
+//        System.out.println(feedbackDOS.toString());
 //        System.out.println(this.feedbackDao.delete(1));
     }
 
@@ -283,8 +281,8 @@ class EvaluateApplicationTests {
 //        System.out.println(aLong);
 //        Boolean aBoolean = this.bulletinDao.deleteByID(1);
 //        System.out.println(aBoolean);
-        List<Bulletin> bulletins = this.bulletinDao.selectByBulletin(new Bulletin(), null);
-        bulletins.forEach(System.out::println);
+        List<BulletinDO> bulletinDOS = this.bulletinDao.selectByBulletin(new BulletinDO(), null);
+        bulletinDOS.forEach(System.out::println);
     }
 
     @Resource
@@ -292,7 +290,7 @@ class EvaluateApplicationTests {
 
     @Test
     public void testDocShareDao() {
-//        DocShare docShare = new DocShare();
+//        DocShareDO docShare = new DocShareDO();
 //        docShare.setTitle("文档分享标题2");
 //        docShare.setDesc("文档分享描述2");
 //        docShare.setSubmitter("admin");
@@ -305,7 +303,7 @@ class EvaluateApplicationTests {
 //        System.out.println(this.docShareDao.selectDocShare(2).toString());
 //        分页查询
         PageHelper.startPage(0, 2);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(this.docShareDao.selectPageDocShare(new DocShare()));
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(this.docShareDao.selectPageDocShare(new DocShareDO()));
         pageInfo.getList().forEach(System.out::println);
 //        修改
 //        docShare.setID(3);
@@ -321,20 +319,20 @@ class EvaluateApplicationTests {
 
     @Test
     public void testSyslog() {
-        Syslog syslog = new Syslog();
-        syslog.setOperator("admin");
-        syslog.setConditions("test conditions");
-        syslog.setModule("test module");
-        syslog.setAction("test action");
-        syslog.setLogTime(new Date());
-        syslog.setResult("test result");
-        syslog.setStatus(1);
-//        System.out.println(this.syslogDao.insertSyslog(syslog));
+        SyslogDO syslogDO = new SyslogDO();
+        syslogDO.setOperator("admin");
+        syslogDO.setConditions("test conditions");
+        syslogDO.setModule("test module");
+        syslogDO.setAction("test action");
+        syslogDO.setLogTime(new Date());
+        syslogDO.setResult("test result");
+        syslogDO.setStatus(1);
+//        System.out.println(this.syslogDao.insertSyslog(syslogDO));
 
 //        System.out.println(this.syslogDao.selectByID(1));
         System.out.println("-------------------------");
         PageHelper.startPage(0, 2);
-//        PageInfo<Syslog> pageInfo = new PageInfo<>(this.syslogDao.selectPageSysLog(syslog, null, null));
+//        PageInfo<SyslogDO> pageInfo = new PageInfo<>(this.syslogDao.selectPageSysLog(syslogDO, null, null));
 //        pageInfo.getList().forEach(System.out::println);
 //        System.out.println(this.syslogDao.deleteSyslogByID(1));
         List<Integer> list = new ArrayList<>();
@@ -376,9 +374,9 @@ class EvaluateApplicationTests {
         String fileName = "";
         // 这里默认每次会读取100条数据 然后返回过来 直接调用使用数据就行
         // 具体需要返回多少行可以在`PageReadListener`的构造函数设置
-        EasyExcel.read(fileName, Course.class, new PageReadListener<Course>(dataList -> {
-            for (Course course : dataList) {
-                log.info("读取到一条数据{}", JSON.toJSONString(course));
+        EasyExcel.read(fileName, CourseDO.class, new PageReadListener<CourseDO>(dataList -> {
+            for (CourseDO courseDO : dataList) {
+                log.info("读取到一条数据{}", JSON.toJSONString(courseDO));
             }
         })).sheet().doRead();
     }

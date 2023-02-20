@@ -6,14 +6,14 @@
     <insert id="insertConfig"
             useGeneratedKeys="true"
             keyProperty="ID"
-            parameterType="com.project.evaluate.entity.Config">
-        INSERT INTO config(ID, teachingDocRoot, shareDocRoot, maxDocStorage, maxFileSize, allowFileType, pwdForgotTips,
+            parameterType="com.project.evaluate.entity.DO.ConfigDO">
+        INSERT INTO configDO(ID, teachingDocRoot, shareDocRoot, maxDocStorage, maxFileSize, allowFileType, pwdForgotTips,
                            userID)
         VALUES (#{ID}, #{teachingDocRoot}, #{shareDocRoot}, #{maxDocStorage}, #{maxFileSize}, #{allowFileType},
                 #{pwdForgotTips}, #{userID})
     </insert>
     <update id="updateConfig">
-        UPDATE config
+        UPDATE configDO
         <set>
             <if test="teachingDocRoot != null and teachingDocRoot != ''">
                 teachingDocRoot = #{teachingDocRoot},
@@ -41,12 +41,12 @@
     </update>
     <delete id="deleteConfig">
         DELETE
-        FROM config
+        FROM configDO
         WHERE ID = #{ID}
           AND userID = #{userID}
     </delete>
 
-    <select id="selectByID" resultType="com.project.evaluate.entity.Config">
+    <select id="selectByID" resultType="com.project.evaluate.entity.DO.ConfigDO">
         SELECT ID,
                teachingDocRoot,
                shareDocRoot,
@@ -55,10 +55,10 @@
                allowFileType,
                pwdForgotTips,
                userID
-        FROM config
+        FROM configDO
         WHERE ID = #{ID}
     </select>
-    <select id="selectPageConfig" resultType="com.project.evaluate.entity.Config">
+    <select id="selectPageConfig" resultType="com.project.evaluate.entity.DO.ConfigDO">
         SELECT ID,
                teachingDocRoot,
                shareDocRoot,
@@ -67,9 +67,9 @@
                allowFileType,
                pwdForgotTips,
                userID
-        FROM config
+        FROM configDO
     </select>
-    <select id="selectByUserID" resultType="com.project.evaluate.entity.Config">
+    <select id="selectByUserID" resultType="com.project.evaluate.entity.DO.ConfigDO">
         SELECT ID,
                teachingDocRoot,
                shareDocRoot,
@@ -78,10 +78,10 @@
                allowFileType,
                pwdForgotTips,
                userID
-        FROM config
+        FROM configDO
         WHERE userID = #{userID}
     </select>
-    <select id="selectDefault" resultType="com.project.evaluate.entity.Config">
+    <select id="selectDefault" resultType="com.project.evaluate.entity.DO.ConfigDO">
         SELECT ID,
                teachingDocRoot,
                shareDocRoot,
@@ -90,7 +90,7 @@
                allowFileType,
                pwdForgotTips,
                userID
-        FROM config
+        FROM configDO
         WHERE userID IS NULL
         ORDER BY ID DESC
         LIMIT 1

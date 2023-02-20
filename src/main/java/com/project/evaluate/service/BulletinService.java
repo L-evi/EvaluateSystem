@@ -1,16 +1,16 @@
 package com.project.evaluate.service;
 
-import com.project.evaluate.entity.Bulletin;
+import com.project.evaluate.entity.DO.BulletinDO;
 import com.project.evaluate.util.response.ResponseResult;
 
 public interface BulletinService {
-    ResponseResult insertBulletin(Bulletin bulletin);
+    ResponseResult insertBulletin(BulletinDO bulletinDO);
 
-    ResponseResult selectPageBulletin(Bulletin bulletin,Integer role, Integer page, Integer pageSize, String orderBy);
+    ResponseResult selectPageBulletin(BulletinDO bulletinDO, Integer role, Integer page, Integer pageSize, String orderBy);
 
     ResponseResult selectSingleBulletin(Integer ID);
 
-    ResponseResult updateBulletin(Bulletin bulletin);
+    ResponseResult updateBulletin(BulletinDO bulletinDO);
 
     ResponseResult deleteBulletin(Integer ID);
 }

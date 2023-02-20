@@ -17,7 +17,7 @@
     </delete>
     <delete id="deleteByID">
         DELETE
-        FROM courseDocDetail
+        FROM courseDocDetailDO
         <where>
             ID = #{ID}
             <if test="userID != null and userID != ''">
@@ -26,7 +26,7 @@
         </where>
     </delete>
 
-    <select id="selectByTaskID" resultType="com.project.evaluate.entity.CourseDocDetail"
+    <select id="selectByTaskID" resultType="com.project.evaluate.entity.DO.CourseDocDetailDO"
             parameterType="java.util.Map">
         SELECT ID,
                taskID,
@@ -37,11 +37,11 @@
         FROM coursedocdetail
         WHERE taskID = #{taskID}
     </select>
-    <select id="getAll" resultType="com.project.evaluate.entity.CourseDocDetail">
+    <select id="getAll" resultType="com.project.evaluate.entity.DO.CourseDocDetailDO">
         select *
         FROM coursedocdetail
     </select>
-    <select id="selectByID" resultType="com.project.evaluate.entity.CourseDocDetail">
+    <select id="selectByID" resultType="com.project.evaluate.entity.DO.CourseDocDetailDO">
         SELECT ID,
                taskID,
                docTypeID,
@@ -51,7 +51,7 @@
         FROM coursedocdetail
         WHERE ID = #{ID}
     </select>
-    <select id="selectOneByTaskID" resultType="com.project.evaluate.entity.CourseDocDetail">
+    <select id="selectOneByTaskID" resultType="com.project.evaluate.entity.DO.CourseDocDetailDO">
         SELECT ID,
                taskID,
                docTypeID,
@@ -64,7 +64,7 @@
     </select>
 
     <insert id="insertCourseDocDetail"
-            parameterType="com.project.evaluate.entity.CourseDocDetail"
+            parameterType="com.project.evaluate.entity.DO.CourseDocDetailDO"
             useGeneratedKeys="true"
             keyProperty="ID">
         insert into coursedocdetail (taskID, docTypeID, docPath, uploadTime, submitter)

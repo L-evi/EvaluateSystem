@@ -8,10 +8,9 @@ import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.CourseDao;
 import com.project.evaluate.dao.CourseDocDetailDao;
 import com.project.evaluate.dao.CourseDocTaskDao;
-import com.project.evaluate.entity.Course;
-import com.project.evaluate.entity.CourseDocDetail;
-import com.project.evaluate.entity.CourseDocTask;
-import com.project.evaluate.entity.Faculty;
+import com.project.evaluate.entity.DO.CourseDO;
+import com.project.evaluate.entity.DO.CourseDocDetailDO;
+import com.project.evaluate.entity.DO.CourseDocTaskDO;
 import com.project.evaluate.service.CourseDocDetailService;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
@@ -71,13 +70,13 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
     @Override
     public ResponseResult deleteByID(Integer ID, Integer roleType, String userID) {
         JSONObject jsonObject = new JSONObject();
-        CourseDocDetail courseDocDetail = this.courseDocDetailDao.selectByID(ID);
-        CourseDocTask courseDocTask = courseDocTaskDao.selectByID(courseDocDetail.getTaskID());
-        if (!Objects.isNull(courseDocTask) && (courseDocTask.getCloseTask() == 1 || courseDocTask.getDeadline().before(new Date()))) {
+        CourseDocDetailDO courseDocDetailDO = this.courseDocDetailDao.selectByID(ID);
+        CourseDocTaskDO courseDocTaskDO = courseDocTaskDao.selectByID(courseDocDetailDO.getTaskID());
+        if (!Objects.isNull(courseDocTaskDO) && (courseDocTaskDO.getCloseTask() == 1 || courseDocTaskDO.getDeadline().before(new Date()))) {
             jsonObject.put("msg", "删除失败，任务已关闭或已过期");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        if (Objects.isNull(courseDocDetail)) {
+        if (Objects.isNull(courseDocDetailDO)) {
             jsonObject.put("msg", "删除失败，暂无数据可删除");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
@@ -91,7 +90,7 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
         if (num > 0) {
             jsonObject.put("msg", "删除成功");
             jsonObject.put("num", num);
-            deleteFile(courseDocDetail.getDocPath());
+            deleteFile(courseDocDetailDO.getDocPath());
             return new ResponseResult(ResultCode.SUCCESS, jsonObject);
         }
         jsonObject.put("msg", "删除失败，暂无数据可删除");
@@ -113,12 +112,12 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
     public ResponseResult selectByTaskID(Integer taskID, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         PageHelper.startPage(page, pageSize, orderBy);
-        List<CourseDocDetail> courseDocDetails = this.courseDocDetailDao.selectByTaskID(taskID);
-        if (Objects.isNull(courseDocDetails) || courseDocDetails.isEmpty()) {
+        List<CourseDocDetailDO> courseDocDetailDOS = this.courseDocDetailDao.selectByTaskID(taskID);
+        if (Objects.isNull(courseDocDetailDOS) || courseDocDetailDOS.isEmpty()) {
             jsonObject.put("msg", "暂无数据");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<CourseDocDetail> pageInfo = new PageInfo<>(courseDocDetails);
+        PageInfo<CourseDocDetailDO> pageInfo = new PageInfo<>(courseDocDetailDOS);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(pageInfo.getList()));
         jsonObject.put("msg", "查询成功");
         jsonObject.put("total", pageInfo.getTotal());
@@ -136,32 +135,32 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
         Integer taskID = (Integer) map.get("taskID");
 //        获取CourseDocTask信息
 //        从redis中获取CourseDocTask信息
-        CourseDocTask courseDocTask = JSONObject.toJavaObject(this.redisCache.getCacheObject("CourseDocTask:" + taskID), CourseDocTask.class);
-        if (Objects.isNull(courseDocTask)) {
-            courseDocTask = this.courseDocTaskDao.selectByID(taskID);
-            if (Objects.isNull(courseDocTask)) {
+        CourseDocTaskDO courseDocTaskDO = JSONObject.toJavaObject(this.redisCache.getCacheObject("CourseDocTaskDO:" + taskID), CourseDocTaskDO.class);
+        if (Objects.isNull(courseDocTaskDO)) {
+            courseDocTaskDO = this.courseDocTaskDao.selectByID(taskID);
+            if (Objects.isNull(courseDocTaskDO)) {
                 jsonObject.put("msg", "找不到课程文档任务信息");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             } else {
 //                将信息放入redis中
-                this.redisCache.setCacheObject("CourseDocTask:" + taskID, courseDocTask, 1, TimeUnit.DAYS);
+                this.redisCache.setCacheObject("CourseDocTaskDO:" + taskID, courseDocTaskDO, 1, TimeUnit.DAYS);
             }
         }
 //        获取Course信息
 //        从redis中获取
-        Course course = JSONObject.toJavaObject(this.redisCache.getCacheObject("Course:" + courseDocTask.getCourseID()), Course.class);
-        if (Objects.isNull(course)) {
-            course = this.courseDao.selectByCourseID(courseDocTask.getCourseID());
-            if (Objects.isNull(course)) {
+        CourseDO courseDO = JSONObject.toJavaObject(this.redisCache.getCacheObject("CourseDO:" + courseDocTaskDO.getCourseID()), CourseDO.class);
+        if (Objects.isNull(courseDO)) {
+            courseDO = this.courseDao.selectByCourseID(courseDocTaskDO.getCourseID());
+            if (Objects.isNull(courseDO)) {
                 jsonObject.put("msg", "找不到课程信息");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             } else {
 //                将信息放入redis中
-                this.redisCache.setCacheObject("Course:" + course.getCourseID(), course, 1, TimeUnit.DAYS);
+                this.redisCache.setCacheObject("CourseDO:" + courseDO.getCourseID(), courseDO, 1, TimeUnit.DAYS);
             }
         }
 //        根据CourseDocTask信息构建文件目录
-        String fileDir = courseDocTask.getSchoolStartYear() + "-" + courseDocTask.getSchoolEndYear() + "-" + courseDocTask.getSchoolTerm() + File.separator + courseDocTask.getCourseID() + "_" + course.getCourseName() + File.separator;
+        String fileDir = courseDocTaskDO.getSchoolStartYear() + "-" + courseDocTaskDO.getSchoolEndYear() + "-" + courseDocTaskDO.getSchoolTerm() + File.separator + courseDocTaskDO.getCourseID() + "_" + courseDO.getCourseName() + File.separator;
         File tempFileDir = new File(prePath + File.separator + fileDir);
         if (!tempFileDir.exists()) {
             if (!tempFileDir.mkdirs()) {
@@ -190,14 +189,14 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
             jsonObject.put("msg", "IO操作错误");
             return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
         }
-        CourseDocDetail courseDocDetail = new CourseDocDetail();
-        courseDocDetail.setTaskID(courseDocTask.getID());
-        courseDocDetail.setDocPath(fileDir + fileName);
-        courseDocDetail.setUploadTime(new Date());
-        courseDocDetail.setSubmitter("test");
-        courseDocDetail.setDocTypeID(1);
-        Long num = courseDocDetailDao.insertCourseDocDetail(courseDocDetail);
-        jsonObject = JSONObject.parseObject(JSON.toJSONString(courseDocDetail));
+        CourseDocDetailDO courseDocDetailDO = new CourseDocDetailDO();
+        courseDocDetailDO.setTaskID(courseDocTaskDO.getID());
+        courseDocDetailDO.setDocPath(fileDir + fileName);
+        courseDocDetailDO.setUploadTime(new Date());
+        courseDocDetailDO.setSubmitter("test");
+        courseDocDetailDO.setDocTypeID(1);
+        Long num = courseDocDetailDao.insertCourseDocDetail(courseDocDetailDO);
+        jsonObject = JSONObject.parseObject(JSON.toJSONString(courseDocDetailDO));
         jsonObject.put("msg", "提交成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }

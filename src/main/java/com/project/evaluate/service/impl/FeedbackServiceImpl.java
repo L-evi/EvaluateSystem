@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.FeedbackDao;
-import com.project.evaluate.entity.Feedback;
+import com.project.evaluate.entity.DO.FeedbackDO;
 import com.project.evaluate.service.FeedbackService;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
@@ -33,9 +33,9 @@ public class FeedbackServiceImpl implements FeedbackService {
     private RedisCache redisCache;
 
     @Override
-    public ResponseResult insertFeedback(Feedback feedback) {
+    public ResponseResult insertFeedback(FeedbackDO feedbackDO) {
         JSONObject jsonObject = new JSONObject();
-        Long num = this.feedbackDao.insert(feedback);
+        Long num = this.feedbackDao.insert(feedbackDO);
         if (num < 1) {
             jsonObject.put("msg", "添加数据失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
@@ -49,30 +49,30 @@ public class FeedbackServiceImpl implements FeedbackService {
     public ResponseResult selectSingleFeedback(Integer ID) {
         JSONObject jsonObject = new JSONObject();
 //        从redis中查询
-        Feedback feedback = JSONObject.toJavaObject(this.redisCache.getCacheObject("Feedback:" + ID), Feedback.class);
-        if (Objects.isNull(feedback)) {
-            feedback = this.feedbackDao.selectByID(ID);
-            if (Objects.isNull(feedback)) {
+        FeedbackDO feedbackDO = JSONObject.toJavaObject(this.redisCache.getCacheObject("FeedbackDO:" + ID), FeedbackDO.class);
+        if (Objects.isNull(feedbackDO)) {
+            feedbackDO = this.feedbackDao.selectByID(ID);
+            if (Objects.isNull(feedbackDO)) {
                 jsonObject.put("msg", "查询失败");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             }
-            this.redisCache.setCacheObject("Feedback:" + feedback.getID(), feedback, 1, TimeUnit.DAYS);
+            this.redisCache.setCacheObject("FeedbackDO:" + feedbackDO.getID(), feedbackDO, 1, TimeUnit.DAYS);
         }
-        jsonObject = JSONObject.parseObject(JSON.toJSONString(feedback));
+        jsonObject = JSONObject.parseObject(JSON.toJSONString(feedbackDO));
         jsonObject.put("msg", "查询成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
     @Override
-    public ResponseResult selectFeedbacks(Feedback feedback, Integer page, Integer pageSize, String orderBy) {
+    public ResponseResult selectFeedbacks(FeedbackDO feedbackDO, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         PageHelper.startPage(page, pageSize, orderBy);
-        List<Feedback> feedbacks = this.feedbackDao.selectByFeedback(feedback);
-        if (feedbacks == null || feedbacks.isEmpty()) {
+        List<FeedbackDO> feedbackDOS = this.feedbackDao.selectByFeedback(feedbackDO);
+        if (feedbackDOS == null || feedbackDOS.isEmpty()) {
             jsonObject.put("msg", "查询结果为空");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbacks);
+        PageInfo<FeedbackDO> pageInfo = new PageInfo<>(feedbackDOS);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(pageInfo.getList()));
         jsonObject.put("array", jsonArray);
         jsonObject.put("total", pageInfo.getTotal());
@@ -89,7 +89,7 @@ public class FeedbackServiceImpl implements FeedbackService {
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        从redis中删除
-        this.redisCache.deleteObject("Feedback:" + ID);
+        this.redisCache.deleteObject("FeedbackDO:" + ID);
         jsonObject.put("msg", "删除成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }

@@ -5,12 +5,12 @@
 <mapper namespace="com.project.evaluate.dao.BulletinDao">
     <insert id="insertBulletin"
             useGeneratedKeys="true"
-            parameterType="com.project.evaluate.entity.Bulletin">
-        INSERT INTO bulletin(ID, subject, content, createTime, issueTime, expiredTime, operator)
+            parameterType="com.project.evaluate.entity.DO.BulletinDO">
+        INSERT INTO bulletinDO(ID, subject, content, createTime, issueTime, expiredTime, operator)
         VALUES (#{ID}, #{subject}, #{content}, #{createTime}, #{issueTime}, #{expiredTime}, #{operator})
     </insert>
     <update id="updateBulletin">
-        UPDATE bulletin
+        UPDATE bulletinDO
 
         <set>
             <if test="subject != null and subject != ''">
@@ -36,32 +36,32 @@
     </update>
     <delete id="deleteByID">
         DELETE
-        FROM bulletin
+        FROM bulletinDO
         WHERE ID = #{ID}
     </delete>
 
-    <select id="selectByID" resultType="com.project.evaluate.entity.Bulletin">
+    <select id="selectByID" resultType="com.project.evaluate.entity.DO.BulletinDO">
         SELECT ID, subject, content, createTime, issueTime, expiredTime, operator
-        FROM bulletin
+        FROM bulletinDO
         WHERE ID = #{ID}
     </select>
     <select id="selectByBulletin"
-            resultType="com.project.evaluate.entity.Bulletin"
-            parameterType="com.project.evaluate.entity.Bulletin">
+            resultType="com.project.evaluate.entity.DO.BulletinDO"
+            parameterType="com.project.evaluate.entity.DO.BulletinDO">
         SELECT ID, subject, content, createTime, issueTime, expiredTime, operator
-        FROM bulletin
+        FROM bulletinDO
         <where>
-            <if test="bulletin.ID != null and bulletin.ID != 0">
-                ID = #{bulletin.ID}
+            <if test="bulletinDO.ID != null and bulletinDO.ID != 0">
+                ID = #{bulletinDO.ID}
             </if>
-            <if test="bulletin.subject != null and bulletin.subject != ''">
-                AND subject = #{bulletin.subject}
+            <if test="bulletinDO.subject != null and bulletinDO.subject != ''">
+                AND subject = #{bulletinDO.subject}
             </if>
-            <if test="bulletin.content != null and bulletin.content != ''">
-                AND content = #{bulletin.content}
+            <if test="bulletinDO.content != null and bulletinDO.content != ''">
+                AND content = #{bulletinDO.content}
             </if>
-            <if test="bulletin.operator != null and bulletin.operator != ''">
-                AND operator != #{bulletin.operator}
+            <if test="bulletinDO.operator != null and bulletinDO.operator != ''">
+                AND operator != #{bulletinDO.operator}
             </if>
             <if test="date != null">
                 AND #{date} BETWEEN issueTime AND expiredTime

@@ -1,4 +1,4 @@
-package com.project.evaluate.entity;
+package com.project.evaluate.entity.DO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * (Config)实体类
+ * (ConfigDO)实体类
  *
  * @author makejava
  * @since 2023-02-03 13:41:10
@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Config implements Serializable {
+public class ConfigDO implements Serializable {
     private static final long serialVersionUID = 991785607513246898L;
     
     private Integer ID;

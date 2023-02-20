@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.DocShareDao;
-import com.project.evaluate.entity.DocShare;
+import com.project.evaluate.entity.DO.DocShareDO;
 import com.project.evaluate.service.DocShareService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
@@ -50,8 +50,8 @@ public class DocShareServiceImpl implements DocShareService {
     private DocShareDao docShareDao;
 
     @Override
-    public ResponseResult addDocShare(DocShare docShare) {
-        Long num = this.docShareDao.insertDocShare(docShare);
+    public ResponseResult addDocShare(DocShareDO docShareDO) {
+        Long num = this.docShareDao.insertDocShare(docShareDO);
         JSONObject jsonObject = new JSONObject();
         if (num < 1) {
             jsonObject.put("msg", "插入数据失败");
@@ -65,25 +65,25 @@ public class DocShareServiceImpl implements DocShareService {
     @Override
     public ResponseResult selectDocShareByID(Integer ID) {
         JSONObject jsonObject = new JSONObject();
-        DocShare docShare = JSONObject.toJavaObject(this.redisCache.getCacheObject("DocShare:" + ID), DocShare.class);
-        if (Objects.isNull(docShare)) {
-            docShare = this.docShareDao.selectDocShare(ID);
-            if (Objects.isNull(docShare)) {
+        DocShareDO docShareDO = JSONObject.toJavaObject(this.redisCache.getCacheObject("DocShareDO:" + ID), DocShareDO.class);
+        if (Objects.isNull(docShareDO)) {
+            docShareDO = this.docShareDao.selectDocShare(ID);
+            if (Objects.isNull(docShareDO)) {
                 jsonObject.put("msg", "查询失败");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             }
-            this.redisCache.setCacheObject("DocShare:" + ID, docShare, 1, TimeUnit.DAYS);
+            this.redisCache.setCacheObject("DocShareDO:" + ID, docShareDO, 1, TimeUnit.DAYS);
         }
-        jsonObject = JSONObject.parseObject(JSON.toJSONString(docShare));
+        jsonObject = JSONObject.parseObject(JSON.toJSONString(docShareDO));
         jsonObject.put("msg", "查询成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
     @Override
-    public ResponseResult selectPageDocShare(DocShare docShare, Integer page, Integer pageSize, String orderBy) {
+    public ResponseResult selectPageDocShare(DocShareDO docShareDO, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         PageHelper.startPage(page, pageSize, orderBy);
-        List<Map<String, Object>> docShares = this.docShareDao.selectPageDocShare(docShare);
+        List<Map<String, Object>> docShares = this.docShareDao.selectPageDocShare(docShareDO);
         if (Objects.isNull(docShares) || docShares.isEmpty()) {
             jsonObject.put("msg", "查询结果为空");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
@@ -97,7 +97,7 @@ public class DocShareServiceImpl implements DocShareService {
     }
 
     @Override
-    public ResponseResult updateDocShare(DocShare docShare, String token) {
+    public ResponseResult updateDocShare(DocShareDO docShareDO, String token) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
@@ -105,20 +105,20 @@ public class DocShareServiceImpl implements DocShareService {
             String userID = (String) jsonObject.get("userID");
             if ("2".equals(roleType)) {
 //                文档管理员：只能修改自己发布的分享文档
-                docShare.setSubmitter(userID);
+                docShareDO.setSubmitter(userID);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        Long num = this.docShareDao.updateDocShare(docShare);
+        Long num = this.docShareDao.updateDocShare(docShareDO);
         jsonObject.clear();
         if (num < 1) {
             jsonObject.put("msg", "修改失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        存入redis中
-        docShare = this.docShareDao.selectDocShare(docShare.getID());
-        this.redisCache.setCacheObject("DocShare:" + docShare.getID(), docShare, 1, TimeUnit.DAYS);
+        docShareDO = this.docShareDao.selectDocShare(docShareDO.getID());
+        this.redisCache.setCacheObject("DocShareDO:" + docShareDO.getID(), docShareDO, 1, TimeUnit.DAYS);
         jsonObject.put("msg", "修改成功");
         jsonObject.put("num", num);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
@@ -145,23 +145,23 @@ public class DocShareServiceImpl implements DocShareService {
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        从redis中删除
-        this.redisCache.deleteObject("DocShare:" + ID);
+        this.redisCache.deleteObject("DocShareDO:" + ID);
         jsonObject.put("msg", "删除成功");
         jsonObject.put("num", num);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
     @Override
-    public ResponseResult submitDocument(DocShare docShare) {
+    public ResponseResult submitDocument(DocShareDO docShareDO) {
         JSONObject jsonObject = new JSONObject();
 //        根据文件路径去找临时文件是否存在
-        File tempShareFile = new File(this.tempPrePath + File.separator, docShare.getDocPath());
+        File tempShareFile = new File(this.tempPrePath + File.separator, docShareDO.getDocPath());
         if (!tempShareFile.exists()) {
             jsonObject.put("msg", "文件不存在");
             return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
         }
 //        把文件放入share文件夹中
-        File file = new File(this.sharePrePath + File.separator, docShare.getDocPath());
+        File file = new File(this.sharePrePath + File.separator, docShareDO.getDocPath());
         try (InputStream inputStream = new FileInputStream(tempShareFile);
              OutputStream outputStream = new FileOutputStream(file)) {
             byte[] bytes = new byte[1024];
@@ -176,7 +176,7 @@ public class DocShareServiceImpl implements DocShareService {
             jsonObject.put("msg", "IO操作错误");
             return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
         }
-        jsonObject.put("DocPath", this.sharePrePath + File.separator + docShare.getDocPath());
+        jsonObject.put("DocPath", this.sharePrePath + File.separator + docShareDO.getDocPath());
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 }

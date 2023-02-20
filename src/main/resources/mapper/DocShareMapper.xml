@@ -43,8 +43,8 @@
     </delete>
     <select id="selectPageDocShare" resultType="java.util.Map">
         SELECT docshare.ID, docshare.title, docshare.`desc`, docshare.docPath, docshare.docSize, docshare.uploadTime,
-        docshare.submitter, faculty.userName
-        FROM docshare LEFT JOIN faculty ON docshare.submitter = faculty.userID
+        docshare.submitter, facultyDO.userName
+        FROM docshare LEFT JOIN facultyDO ON docshare.submitter = facultyDO.userID
         <where>
             <if test="ID != null and ID != ''">
                 ID = #{ID}
@@ -69,7 +69,7 @@
             </if>
         </where>
     </select>
-    <select id="selectDocShare" resultType="com.project.evaluate.entity.DocShare">
+    <select id="selectDocShare" resultType="com.project.evaluate.entity.DO.DocShareDO">
         SELECT ID, title, `desc`, docPath, docSize, uploadTime, submitter
         FROM docshare
         WHERE ID = #{ID}

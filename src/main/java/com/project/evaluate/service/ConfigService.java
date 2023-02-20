@@ -1,9 +1,7 @@
 package com.project.evaluate.service;
 
-import com.project.evaluate.entity.Config;
+import com.project.evaluate.entity.DO.ConfigDO;
 import com.project.evaluate.util.response.ResponseResult;
-import org.apache.coyote.Response;
-import org.springframework.web.multipart.commons.CommonsFileUploadSupport;
 
 public interface ConfigService {
     ResponseResult selectByID(Integer ID);
@@ -12,9 +10,9 @@ public interface ConfigService {
 
     ResponseResult selectPageConfig(Integer page, Integer pageSize, String orderBy);
 
-    ResponseResult insertConfig(Config config);
+    ResponseResult insertConfig(ConfigDO configDO);
 
     ResponseResult deleteConfig(Integer ID, String userID);
 
-    ResponseResult updateConfig(Config config);
+    ResponseResult updateConfig(ConfigDO configDO);
 }

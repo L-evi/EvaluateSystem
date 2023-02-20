@@ -1,9 +1,8 @@
 package com.project.evaluate.dao;
 
 
-import com.project.evaluate.entity.Course;
+import com.project.evaluate.entity.DO.CourseDO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,13 +11,13 @@ import java.util.List;
 @Mapper
 public interface CourseDao {
 
-    List<Course> selectPageCourse(Course course);
+    List<CourseDO> selectPageCourse(CourseDO courseDO);
 
     Integer countCourse();
 
-    Course selectByCourseID(String courseID);
+    CourseDO selectByCourseID(String courseID);
 
-    Integer insertCourse(Course course);
+    Integer insertCourse(CourseDO courseDO);
 
     Boolean deletaByID(Integer ID);
 }
