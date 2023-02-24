@@ -4,6 +4,8 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Funnel;
 import com.project.evaluate.util.bloom.BloomFilterHelper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

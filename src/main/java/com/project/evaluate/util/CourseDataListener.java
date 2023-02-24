@@ -11,7 +11,6 @@ import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 
-
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -31,10 +30,8 @@ public class CourseDataListener implements ReadListener<Course> {
 
     private List<Course> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
 
-    private CourseDao courseDao;
 
-    public CourseDataListener(CourseDao courseDao) {
-        this.courseDao = courseDao;
+    public CourseDataListener() {
     }
 
     @Override
@@ -75,15 +72,23 @@ public class CourseDataListener implements ReadListener<Course> {
 //        自动提交设置为false，自定义提交条数防止OOM，模式为BATCH
         SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
 //        获取Dao
-        CourseDao courseMapper = session.getMapper(CourseDao.class);
+        CourseDao courseDao = session.getMapper(CourseDao.class);
+        int size = cachedDataList.size();
+        int batchCount = 10;
+        int count = size % batchCount == 0 ? size / batchCount : size / batchCount + 1;
         try {
-            for (int i = 0; i < cachedDataList.size(); i++) {
-                courseMapper.insertCourse(cachedDataList.get(i));
-                if (i == cachedDataList.size() - 1) {
-//                    提交
-                    session.commit();
-                    session.clearCache();
+            for (int i = 0; i < count; i++) {
+                int fromIndex = i * batchCount;
+                int toIndex = (i + 1) * batchCount;
+                // 超过了界限就等于界限好了
+                if (toIndex > size) {
+                    toIndex = size;
                 }
+                List<Course> batchList = cachedDataList.subList(fromIndex, toIndex);
+                courseDao.insertPageCourse(batchList);
+                session.commit();
+                session.clearCache();
+                log.info("第{}次提交", i + 1);
             }
         } catch (Exception e) {
 //            异常回滚

@@ -11,7 +11,6 @@ import java.util.List;
 @Repository
 @Mapper
 public interface CourseDao {
-
     List<Course> selectPageCourse(Course course);
 
     Integer countCourse();
@@ -19,6 +18,8 @@ public interface CourseDao {
     Course selectByCourseID(String courseID);
 
     Integer insertCourse(Course course);
+
+    Integer insertPageCourse(@Param("courses") List<Course> courses);
 
     Boolean deletaByID(Integer ID);
 }

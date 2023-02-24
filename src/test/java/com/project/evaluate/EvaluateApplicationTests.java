@@ -14,8 +14,6 @@ import com.project.evaluate.util.bloom.RedisBloomFilter;
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -383,6 +381,13 @@ class EvaluateApplicationTests {
         })).sheet().doRead();
     }
 
+    @Test
+    public void testInsertPageCourse() {
+        List<Course> list = courseDao.selectPageCourse(new Course());
+        list.forEach(System.out::println);
+ /*       Integer integer = courseDao.insertPageCourse(list);
+        log.info("插入了{}条数据",integer);*/
+    }
 
 }
 

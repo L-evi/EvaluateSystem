@@ -11,7 +11,6 @@ import com.project.evaluate.dao.CourseDocTaskDao;
 import com.project.evaluate.entity.Course;
 import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.entity.CourseDocTask;
-import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.CourseDocDetailService;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;

@@ -10,8 +10,18 @@
                 #{educationType}, #{courseType}, #{credit}, #{teamLeader},
                 #{major}, #{courseTerm})
     </insert>
+    <insert id="insertPageCourse" useGeneratedKeys="true" keyProperty="ID">
+        INSERT INTO Course(courseID, courseName, courseProperty, testType, educationType,
+        courseType, credit,teamLeader, major, courseTerm)
+        VALUES
+        <foreach collection="courses" item="course" separator=",">
+            (#{course.courseID},#{course.courseName},#{course.courseProperty},#{course.testType},#{course.educationType},
+            #{course.courseType},#{course.credit},#{course.teamLeader},#{course.major},#{course.courseTerm})
+        </foreach>
+    </insert>
     <delete id="deletaByID">
-        DELETE FROM course
+        DELETE
+        FROM course
         WHERE ID = #{ID}
     </delete>
     <select id="selectPageCourse" resultType="com.project.evaluate.entity.Course">
