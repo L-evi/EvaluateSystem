@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.FacultyDao;
-import com.project.evaluate.entity.Faculty;
+import com.project.evaluate.entity.DO.FacultyDO;
 import com.project.evaluate.service.FacultyService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
@@ -40,11 +40,11 @@ public class FacultyServiceImpl implements FacultyService {
     private RedisCache redisCache;
 
     @Override
-    public ResponseResult userLogin(Faculty faculty) {
+    public ResponseResult userLogin(FacultyDO facultyDO) {
 //        从redis中获取信息
-        Faculty tmp = JSONObject.toJavaObject(this.redisCache.getCacheObject("Faculty:" + faculty.getUserID()), Faculty.class);
+        FacultyDO tmp = JSONObject.toJavaObject(this.redisCache.getCacheObject("FacultyDO:" + facultyDO.getUserID()), FacultyDO.class);
         if (Objects.isNull(tmp)) {
-            tmp = this.facultyDao.selectByUserID(faculty.getUserID());
+            tmp = this.facultyDao.selectByUserID(facultyDO.getUserID());
             if (Objects.isNull(tmp)) {
                 throw new UnknownAccountException("用户不存在");
             }
@@ -56,7 +56,7 @@ public class FacultyServiceImpl implements FacultyService {
             return new ResponseResult(ResultCode.ACCOUNT_ERROR, jsonObject);
         }
         try {
-            Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserID(), 1024);
+            Md5Hash md5Hash = new Md5Hash(facultyDO.getPassword(), facultyDO.getUserID(), 1024);
             String password = md5Hash.toHex();
             if (password.equals(tmp.getPassword())) {
                 jsonObject.clear();
@@ -64,11 +64,11 @@ public class FacultyServiceImpl implements FacultyService {
                 jsonObject.put("roleType", tmp.getRoleType());
                 String token = JwtUtil.createJwt(String.valueOf(jsonObject), 60 * 60 * 1000 * 3L);
                 //                更新登录信息
-                this.updateLoginState(tmp, faculty.getLoginIP());
+                this.updateLoginState(tmp, facultyDO.getLoginIP());
                 jsonObject.clear();
                 jsonObject = JSONObject.parseObject(JSON.toJSONString(tmp));
 //                放入到redis中
-                this.redisCache.setCacheObject("Faculty:" + tmp.getUserID(), tmp, 1, TimeUnit.DAYS);
+                this.redisCache.setCacheObject("FacultyDO:" + tmp.getUserID(), tmp, 1, TimeUnit.DAYS);
                 this.redisCache.setCacheObject("token:" + tmp.getUserID(), token, 3, TimeUnit.HOURS);
                 jsonObject.put("token", token);
                 jsonObject.put("msg", "登录成功");
@@ -90,29 +90,29 @@ public class FacultyServiceImpl implements FacultyService {
         }
     }
 
-    public void updateLoginState(Faculty faculty, String ip) {
-        faculty.setLastLoginIP(faculty.getLoginIP());
-        faculty.setLastLoginTime(faculty.getLoginTime());
-        faculty.setLoginIP(ip);
-        faculty.setLoginTime(new Date());
-        this.facultyDao.updateFaculty(faculty);
+    public void updateLoginState(FacultyDO facultyDO, String ip) {
+        facultyDO.setLastLoginIP(facultyDO.getLoginIP());
+        facultyDO.setLastLoginTime(facultyDO.getLoginTime());
+        facultyDO.setLoginIP(ip);
+        facultyDO.setLoginTime(new Date());
+        this.facultyDao.updateFaculty(facultyDO);
     }
 
     @Override
-    public ResponseResult userRegister(Faculty faculty) {
+    public ResponseResult userRegister(FacultyDO facultyDO) {
 //        如果在redis和数据库中找到了该数据，则说明已经注册了
 
-        if (this.facultyDao.selectByUserID(faculty.getUserID()) != null) {
+        if (this.facultyDao.selectByUserID(facultyDO.getUserID()) != null) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "用户已注册");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        明文密码进行MD5 + salt + 散列，盐就用userID
-        Md5Hash md5Hash = new Md5Hash(faculty.getPassword(), faculty.getUserID(), 1024);
-        faculty.setPassword(md5Hash.toHex());
-        if (this.facultyDao.insertFaculty(faculty) == 1) {
+        Md5Hash md5Hash = new Md5Hash(facultyDO.getPassword(), facultyDO.getUserID(), 1024);
+        facultyDO.setPassword(md5Hash.toHex());
+        if (this.facultyDao.insertFaculty(facultyDO) == 1) {
 //            将信息放入redis中
-            this.redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty, 1, TimeUnit.DAYS);
+            this.redisCache.setCacheObject("FacultyDO:" + facultyDO.getUserID(), facultyDO, 1, TimeUnit.DAYS);
             return new ResponseResult(ResultCode.SUCCESS);
         } else {
             return new ResponseResult(ResultCode.DATABASE_ERROR);
@@ -120,33 +120,33 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public ResponseResult insertFaculty(Faculty faculty) {
+    public ResponseResult insertFaculty(FacultyDO facultyDO) {
         JSONObject jsonObject = new JSONObject();
 //        密码加密
-        faculty.setPassword(new Md5Hash(faculty.getPassword(), faculty.getUserID(), 1024).toHex());
-        int num = this.facultyDao.insertFaculty(faculty);
+        facultyDO.setPassword(new Md5Hash(facultyDO.getPassword(), facultyDO.getUserID(), 1024).toHex());
+        int num = this.facultyDao.insertFaculty(facultyDO);
         if (num < 1) {
             jsonObject.put("msg", "插入数据失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        存入redis中
-        this.redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty, 1, TimeUnit.DAYS);
+        this.redisCache.setCacheObject("FacultyDO:" + facultyDO.getUserID(), facultyDO, 1, TimeUnit.DAYS);
         jsonObject.put("msg", "插入数据成功");
         jsonObject.put("num", num);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
     @Override
-    public ResponseResult updateFaculty(Faculty faculty) {
+    public ResponseResult updateFaculty(FacultyDO facultyDO) {
         JSONObject jsonObject = new JSONObject();
-        int num = this.facultyDao.updateFaculty(faculty);
+        int num = this.facultyDao.updateFaculty(facultyDO);
         if (num < 1) {
             jsonObject.put("msg", "更新数据失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        更新redis中的数据
-        faculty = this.facultyDao.selectByUserID(faculty.getUserID());
-        this.redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty, 1, TimeUnit.DAYS);
+        facultyDO = this.facultyDao.selectByUserID(facultyDO.getUserID());
+        this.redisCache.setCacheObject("FacultyDO:" + facultyDO.getUserID(), facultyDO, 1, TimeUnit.DAYS);
         jsonObject.put("msg", "更新数据成功");
         jsonObject.put("num", num);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
@@ -163,11 +163,11 @@ public class FacultyServiceImpl implements FacultyService {
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        更新redis中的数据
-        Faculty faculty = JSONObject.toJavaObject(this.redisCache.getCacheObject("Faculty:" + userID), Faculty.class);
-        if (!Objects.isNull(faculty)) {
-            faculty.setPassword(password);
-            faculty.setIsInitPwd(1);
-            this.redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty, 1, TimeUnit.DAYS);
+        FacultyDO facultyDO = JSONObject.toJavaObject(this.redisCache.getCacheObject("FacultyDO:" + userID), FacultyDO.class);
+        if (!Objects.isNull(facultyDO)) {
+            facultyDO.setPassword(password);
+            facultyDO.setIsInitPwd(1);
+            this.redisCache.setCacheObject("FacultyDO:" + facultyDO.getUserID(), facultyDO, 1, TimeUnit.DAYS);
         }
         jsonObject.put("num", num);
         jsonObject.put("msg", "重置密码成功");
@@ -175,15 +175,15 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public ResponseResult selectPageFaculty(Faculty faculty, Integer page, Integer pageSize, String orderBy) {
+    public ResponseResult selectPageFaculty(FacultyDO facultyDO, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         PageHelper.startPage(page, pageSize);
-        List<Faculty> faculties = this.facultyDao.selectPageFaculty(faculty);
+        List<FacultyDO> faculties = this.facultyDao.selectPageFaculty(facultyDO);
         if (Objects.isNull(faculties) || faculties.isEmpty()) {
             jsonObject.put("msg", "查询结果为空");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<Faculty> facultyPageInfo = new PageInfo<>(faculties);
+        PageInfo<FacultyDO> facultyPageInfo = new PageInfo<>(faculties);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(facultyPageInfo.getList()));
         jsonObject.put("total", facultyPageInfo.getTotal());
         jsonObject.put("pages", facultyPageInfo.getPages());
@@ -200,7 +200,7 @@ public class FacultyServiceImpl implements FacultyService {
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        从redis中删除对应信息
-        this.redisCache.deleteObject("Faculty:" + userID);
+        this.redisCache.deleteObject("FacultyDO:" + userID);
         jsonObject.put("msg", "删除成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
@@ -217,7 +217,7 @@ public class FacultyServiceImpl implements FacultyService {
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        更新到redis中
-        this.redisCache.setCacheObject("Faculty:" + userID, this.facultyDao.selectByUserID(userID), 1, TimeUnit.DAYS);
+        this.redisCache.setCacheObject("FacultyDO:" + userID, this.facultyDao.selectByUserID(userID), 1, TimeUnit.DAYS);
 //        删除redis中的token，重新登陆
         this.redisCache.deleteObject("token:" + userID);
         jsonObject.put("msg", "数据更新成功");

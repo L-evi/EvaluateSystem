@@ -2,13 +2,6 @@ package com.project.evaluate.controller.File;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.project.evaluate.dao.CourseDao;
-import com.project.evaluate.dao.CourseDocDetailDao;
-import com.project.evaluate.dao.CourseDocTaskDao;
-import com.project.evaluate.entity.Course;
-import com.project.evaluate.entity.CourseDocDetail;
-import com.project.evaluate.entity.CourseDocTask;
-import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
@@ -21,15 +14,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Levi

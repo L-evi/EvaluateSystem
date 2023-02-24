@@ -1,4 +1,4 @@
-package com.project.evaluate.entity;
+package com.project.evaluate.entity.DO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Bulletin implements Serializable {
+public class BulletinDO implements Serializable {
     private static final long serialVersionUID = -39987790457267163L;
     /**
      * ID

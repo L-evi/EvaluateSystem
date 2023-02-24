@@ -1,7 +1,7 @@
 package com.project.evaluate.dao;
 
 
-import com.project.evaluate.entity.Bulletin;
+import com.project.evaluate.entity.DO.BulletinDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -12,13 +12,13 @@ import java.util.List;
 @Mapper
 @Repository
 public interface BulletinDao {
-    Bulletin selectByID(Integer ID);
+    BulletinDO selectByID(Integer ID);
 
-    List<Bulletin> selectByBulletin(@Param("bulletin") Bulletin bulletin, @Param("date") Date date);
+    List<BulletinDO> selectByBulletin(@Param("bulletin") BulletinDO bulletinDO, @Param("date") Date date);
 
-    Long updateBulletin(Bulletin bulletin);
+    Long updateBulletin(BulletinDO bulletinDO);
 
-    Long insertBulletin(Bulletin bulletin);
+    Long insertBulletin(BulletinDO bulletinDO);
 
     Boolean deleteByID(Integer ID);
 

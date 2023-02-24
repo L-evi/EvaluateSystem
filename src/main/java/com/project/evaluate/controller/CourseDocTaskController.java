@@ -2,7 +2,7 @@ package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
-import com.project.evaluate.entity.CourseDocTask;
+import com.project.evaluate.entity.DO.CourseDocTaskDO;
 import com.project.evaluate.service.CourseDocTaskService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -34,7 +32,7 @@ public class CourseDocTaskController {
     private CourseDocTaskService courseDocTaskService;
 
     @GetMapping(value = "/search")
-    public ResponseResult selectPageCourseDocTask(CourseDocTask courseDocTask, Integer page, Integer pageSize, String orderBy, HttpServletRequest request) {
+    public ResponseResult selectPageCourseDocTask(CourseDocTaskDO courseDocTaskDO, Integer page, Integer pageSize, String orderBy, HttpServletRequest request) {
         if (Objects.isNull(page)) {
             page = 0;
         }
@@ -50,13 +48,13 @@ public class CourseDocTaskController {
                 JSONObject jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
                 String roleType = (String) jsonObject.get("roleType");
                 if (roleType.equals("0")) {
-                    courseDocTask.setTeacher((String) jsonObject.get("userID"));
+                    courseDocTaskDO.setTeacher((String) jsonObject.get("userID"));
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Parse token  错误");
             }
         }
-        return this.courseDocTaskService.selectPageCourseDocTask(courseDocTask, page, pageSize, orderBy);
+        return this.courseDocTaskService.selectPageCourseDocTask(courseDocTaskDO, page, pageSize, orderBy);
     }
 
     //    只有文档管理员才能删除
@@ -75,13 +73,13 @@ public class CourseDocTaskController {
     @PutMapping("/update")
     @RequiresRoles(value = {"2"}, logical = Logical.OR)
     @DataLog(operationType = "update", modelName = "修改文档上传任务")
-    public ResponseResult updateCourseDocTask(@RequestBody CourseDocTask courseDocTask) {
+    public ResponseResult updateCourseDocTask(@RequestBody CourseDocTaskDO courseDocTaskDO) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(courseDocTask) || Objects.isNull(courseDocTask.getID())) {
+        if (Objects.isNull(courseDocTaskDO) || Objects.isNull(courseDocTaskDO.getID())) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        return courseDocTaskService.updateCourseDocTask(courseDocTask);
+        return courseDocTaskService.updateCourseDocTask(courseDocTaskDO);
     }
 
     @RequiresRoles(value = "2", logical = Logical.OR)
@@ -97,13 +95,13 @@ public class CourseDocTaskController {
     }
 
     @PostMapping("/add")
-    public ResponseResult insertCourseDocTask(@RequestBody List<CourseDocTask> courseDocTasks) {
+    public ResponseResult insertCourseDocTask(@RequestBody List<CourseDocTaskDO> courseDocTaskDOS) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(courseDocTasks) || courseDocTasks.isEmpty()) {
+        if (Objects.isNull(courseDocTaskDOS) || courseDocTaskDOS.isEmpty()) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        courseDocTasks.forEach(System.out::println);
+        courseDocTaskDOS.forEach(System.out::println);
         return ResponseResult.success();
     }
 }

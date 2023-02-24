@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnknownAccountException.class)
     public ResponseResult UnknownAccountExceptionHandler(UnknownAccountException e) {
         System.out.println("登录账号错误");
-        e.printStackTrace();
+//        e.printStackTrace();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", "登录账号不存在，请重试");
         jsonObject.put("error", e.getMessage());
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IncorrectCredentialsException.class)
     public ResponseResult IncorrectCredentialsExceptionHandler(IncorrectCredentialsException e) {
         System.out.println("登录密码错误");
-        e.printStackTrace();
+//        e.printStackTrace();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", "登录密码错误，请重试");
         jsonObject.put("error", e.getMessage());
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseResult AuthenticationExceptionHandler(AuthenticationException e) {
         System.out.println("Token 错误");
-        e.printStackTrace();
+//        e.printStackTrace();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", "token 错误");
         jsonObject.put("error", e.getMessage());
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseResult RuntimeExceptionHandler(RuntimeException e) {
         System.out.println("RuntimeException：" + e.getMessage());
-        e.printStackTrace();
+//        e.printStackTrace();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", "Runtime Exception");
         jsonObject.put("error", e.getMessage());

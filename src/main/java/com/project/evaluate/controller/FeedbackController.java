@@ -2,7 +2,7 @@ package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
-import com.project.evaluate.entity.Feedback;
+import com.project.evaluate.entity.DO.FeedbackDO;
 import com.project.evaluate.service.FeedbackService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
@@ -33,9 +33,9 @@ public class FeedbackController {
 
     @PostMapping("/add")
     @DataLog(modelName = "提交反馈意见", operationType = "insert")
-    public ResponseResult insertFeedback(@RequestBody Feedback feedback, HttpServletRequest request) {
+    public ResponseResult insertFeedback(@RequestBody FeedbackDO feedbackDO, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(feedback)) {
+        if (Objects.isNull(feedbackDO)) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
@@ -43,12 +43,12 @@ public class FeedbackController {
         try {
             jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
             String userID = (String) jsonObject.get("userID");
-            feedback.setUserID(userID);
-            feedback.setFeedBackTime(new Date());
+            feedbackDO.setUserID(userID);
+            feedbackDO.setFeedBackTime(new Date());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return this.feedbackService.insertFeedback(feedback);
+        return this.feedbackService.insertFeedback(feedbackDO);
     }
 
     @GetMapping("/get/single")
@@ -64,14 +64,14 @@ public class FeedbackController {
 
     @GetMapping("/get/page")
     @DataLog(modelName = "分页查看反馈意见", operationType = "select")
-    public ResponseResult getPageFeedback(Integer page, Integer pageSize, @DefaultValue("ID ASC") String orderBy, Feedback feedback) {
+    public ResponseResult getPageFeedback(Integer page, Integer pageSize, @DefaultValue("ID ASC") String orderBy, FeedbackDO feedbackDO) {
         if (Objects.isNull(page)) {
             page = 0;
         }
         if (Objects.isNull(pageSize) || pageSize == 0) {
             pageSize = 10;
         }
-        return this.feedbackService.selectFeedbacks(feedback, page, pageSize, orderBy);
+        return this.feedbackService.selectFeedbacks(feedbackDO, page, pageSize, orderBy);
     }
 
     @RequiresRoles(value = "1", logical = Logical.OR)

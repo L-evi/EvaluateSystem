@@ -1,7 +1,7 @@
 package com.project.evaluate.dao;
 
 
-import com.project.evaluate.entity.DocShare;
+import com.project.evaluate.entity.DO.DocShareDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -11,13 +11,13 @@ import java.util.Map;
 @Mapper
 @Repository
 public interface DocShareDao {
-    Long insertDocShare(DocShare docShare);
+    Long insertDocShare(DocShareDO docShareDO);
 
-    List<Map<String, Object>> selectPageDocShare(DocShare docShare);
+    List<Map<String, Object>> selectPageDocShare(DocShareDO docShareDO);
 
-    DocShare selectDocShare(Integer ID);
+    DocShareDO selectDocShare(Integer ID);
 
-    Long updateDocShare(DocShare docShare);
+    Long updateDocShare(DocShareDO docShareDO);
 
     Long deleteDocShare(Integer ID, String userID);
 }

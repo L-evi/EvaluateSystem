@@ -1,20 +1,20 @@
 package com.project.evaluate.service;
 
-import com.project.evaluate.entity.Faculty;
+import com.project.evaluate.entity.DO.FacultyDO;
 import com.project.evaluate.util.response.ResponseResult;
 
 public interface FacultyService {
-    ResponseResult userLogin(Faculty faculty);
+    ResponseResult userLogin(FacultyDO facultyDO);
 
-    ResponseResult userRegister(Faculty faculty);
+    ResponseResult userRegister(FacultyDO facultyDO);
 
-    ResponseResult insertFaculty(Faculty faculty);
+    ResponseResult insertFaculty(FacultyDO facultyDO);
 
-    ResponseResult updateFaculty(Faculty faculty);
+    ResponseResult updateFaculty(FacultyDO facultyDO);
 
     ResponseResult resetFaculty(String userID);
 
-    ResponseResult selectPageFaculty(Faculty faculty, Integer page, Integer pageSize, String orderBy);
+    ResponseResult selectPageFaculty(FacultyDO facultyDO, Integer page, Integer pageSize, String orderBy);
 
     ResponseResult deleteFaculty(String userID);
 

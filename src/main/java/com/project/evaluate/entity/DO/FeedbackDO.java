@@ -1,4 +1,4 @@
-package com.project.evaluate.entity;
+package com.project.evaluate.entity.DO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * (Feedback)实体类
+ * (FeedbackDO)实体类
  *
  * @author makejava
  * @since 2023-01-09 17:16:18
@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Feedback implements Serializable {
+public class FeedbackDO implements Serializable {
     private static final long serialVersionUID = 948164130695027273L;
     /**
      * ID

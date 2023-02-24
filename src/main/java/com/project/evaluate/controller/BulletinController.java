@@ -2,7 +2,7 @@ package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
-import com.project.evaluate.entity.Bulletin;
+import com.project.evaluate.entity.DO.BulletinDO;
 import com.project.evaluate.service.BulletinService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
@@ -34,26 +34,26 @@ public class BulletinController {
     @PostMapping(value = "/add")
     @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
     @DataLog(modelName = "发布系统公告", operationType = "insert")
-    public ResponseResult insertBulletin(@RequestBody Bulletin bulletin, HttpServletRequest request) {
+    public ResponseResult insertBulletin(@RequestBody BulletinDO bulletinDO, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(bulletin)) {
+        if (Objects.isNull(bulletinDO)) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
 //        如果没有获取operator时候才使用token中的userID
-        if (!Strings.hasText(bulletin.getOperator())) {
+        if (!Strings.hasText(bulletinDO.getOperator())) {
             String token = request.getHeader("token");
             try {
                 jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
                 String userID = (String) jsonObject.get("userID");
-                bulletin.setOperator(userID);
+                bulletinDO.setOperator(userID);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-        bulletin.setCreateTime(new Date());
-        return this.bulletinService.insertBulletin(bulletin);
+        bulletinDO.setCreateTime(new Date());
+        return this.bulletinService.insertBulletin(bulletinDO);
     }
 
     @GetMapping(value = "/get/single")
@@ -69,7 +69,7 @@ public class BulletinController {
 
     @GetMapping(value = "/get/page")
     @DataLog(modelName = "分页查看系统公告", operationType = "select")
-    public ResponseResult selectPageBulletin(HttpServletRequest request, Integer page, Integer pageSize, @DefaultValue("issueTime DESC") String orderBy, Bulletin bulletin) {
+    public ResponseResult selectPageBulletin(HttpServletRequest request, Integer page, Integer pageSize, @DefaultValue("issueTime DESC") String orderBy, BulletinDO bulletinDO) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(page)) {
             page = 0;
@@ -77,8 +77,8 @@ public class BulletinController {
         if (Objects.isNull(pageSize) || pageSize == 0) {
             pageSize = 10;
         }
-        if (Objects.isNull(bulletin)) {
-            bulletin = new Bulletin();
+        if (Objects.isNull(bulletinDO)) {
+            bulletinDO = new BulletinDO();
         }
         String token = request.getHeader("token");
         Integer role = null;
@@ -93,15 +93,15 @@ public class BulletinController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return this.bulletinService.selectPageBulletin(bulletin, role, page, pageSize, orderBy);
+        return this.bulletinService.selectPageBulletin(bulletinDO, role, page, pageSize, orderBy);
     }
 
     @PutMapping(value = "/update")
     @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
     @DataLog(modelName = "修改系统公告", operationType = "update")
-    public ResponseResult updateBulletin(@RequestBody Bulletin bulletin, HttpServletRequest request) {
+    public ResponseResult updateBulletin(@RequestBody BulletinDO bulletinDO, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(bulletin) || Objects.isNull(bulletin.getID()) || bulletin.getID() == 0) {
+        if (Objects.isNull(bulletinDO) || Objects.isNull(bulletinDO.getID()) || bulletinDO.getID() == 0) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
@@ -109,11 +109,11 @@ public class BulletinController {
         try {
             jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
             String userID = (String) jsonObject.get("userID");
-            bulletin.setOperator(userID);
+            bulletinDO.setOperator(userID);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return this.bulletinService.updateBulletin(bulletin);
+        return this.bulletinService.updateBulletin(bulletinDO);
     }
 
     @DeleteMapping(value = "/delete")
