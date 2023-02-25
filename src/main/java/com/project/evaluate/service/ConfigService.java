@@ -1,6 +1,6 @@
 package com.project.evaluate.service;
 
-import com.project.evaluate.entity.DO.ConfigDO;
+import com.project.evaluate.entity.Config;
 import com.project.evaluate.util.response.ResponseResult;
 
 public interface ConfigService {
@@ -10,9 +10,9 @@ public interface ConfigService {
 
     ResponseResult selectPageConfig(Integer page, Integer pageSize, String orderBy);
 
-    ResponseResult insertConfig(ConfigDO configDO);
+    ResponseResult insertConfig(Config config);
 
     ResponseResult deleteConfig(Integer ID, String userID);
 
-    ResponseResult updateConfig(ConfigDO configDO);
+    ResponseResult updateConfig(Config config);
 }

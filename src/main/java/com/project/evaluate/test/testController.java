@@ -2,7 +2,7 @@ package com.project.evaluate.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.dao.FacultyDao;
-import com.project.evaluate.entity.DO.FacultyDO;
+import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 
@@ -31,9 +31,9 @@ public class testController {
 
     @RequestMapping(value = "/update")
     public ResponseResult testUpdate() {
-        FacultyDO facultyDO = this.facultyDao.selectByUserID("user");
-        facultyDO.setLastLoginIP("127.0.0.1");
-        int i = this.facultyDao.updateFaculty(facultyDO);
+        Faculty faculty = this.facultyDao.selectByUserID("user");
+        faculty.setLastLoginIP("127.0.0.1");
+        int i = this.facultyDao.updateFaculty(faculty);
         System.out.println(i);
         return ResponseResult.success();
     }

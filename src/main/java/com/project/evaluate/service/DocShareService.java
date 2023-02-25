@@ -1,19 +1,19 @@
 package com.project.evaluate.service;
 
-import com.project.evaluate.entity.DO.DocShareDO;
+import com.project.evaluate.entity.DocShare;
 import com.project.evaluate.util.response.ResponseResult;
 
 public interface DocShareService {
 
-    ResponseResult addDocShare(DocShareDO docShareDO);
+    ResponseResult addDocShare(DocShare docShare);
 
     ResponseResult selectDocShareByID(Integer ID);
 
-    ResponseResult selectPageDocShare(DocShareDO docShareDO, Integer page, Integer pageSize, String orderBy);
+    ResponseResult selectPageDocShare(DocShare docShare, Integer page, Integer pageSize, String orderBy);
 
-    ResponseResult updateDocShare(DocShareDO docShareDO, String token);
+    ResponseResult updateDocShare(DocShare docShare, String token);
 
     ResponseResult deleteDocShare(Integer ID, String token);
 
-    ResponseResult submitDocument(DocShareDO docShareDO);
+    ResponseResult submitDocument(DocShare docShare);
 }

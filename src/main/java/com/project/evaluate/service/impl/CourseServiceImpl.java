@@ -40,12 +40,12 @@ public class CourseServiceImpl implements CourseService {
     public ResponseResult selectPageCourse(Course course, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         PageHelper.startPage(page, pageSize, orderBy);
-        List<Course> courses = courseDao.selectPageCourse(course);
-        if (Objects.isNull(courses) || courses.isEmpty()) {
+        List<Course> cours = courseDao.selectPageCourse(course);
+        if (Objects.isNull(cours) || cours.isEmpty()) {
             jsonObject.put("msg", "查询课程失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<Course> coursesInfo = new PageInfo<>(courses);
+        PageInfo<Course> coursesInfo = new PageInfo<>(cours);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(coursesInfo.getList()));
         jsonObject.put("total", coursesInfo.getTotal());
         jsonObject.put("pages", coursesInfo.getPages());

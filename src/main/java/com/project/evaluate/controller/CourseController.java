@@ -2,7 +2,7 @@ package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
-import com.project.evaluate.entity.DO.CourseDO;
+import com.project.evaluate.entity.Course;
 import com.project.evaluate.service.CourseService;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
@@ -28,7 +28,7 @@ public class CourseController {
 
     @GetMapping("/get/page")
     @DataLog(modelName = "查询课程信息", operationType = "select")
-    public ResponseResult selectPageCourse(CourseDO courseDO, Integer page, Integer pageSize, String orderBy) {
+    public ResponseResult selectPageCourse(Course course, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(page)) {
             page = 0;
@@ -40,7 +40,7 @@ public class CourseController {
             orderBy = "ID ASC";
         }
 
-        return courseService.selectPageCourse(courseDO, page, pageSize, orderBy);
+        return courseService.selectPageCourse(course, page, pageSize, orderBy);
     }
 
     @PostMapping("/import/excel")

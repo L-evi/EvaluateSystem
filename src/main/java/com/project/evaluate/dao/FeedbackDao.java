@@ -1,7 +1,7 @@
 package com.project.evaluate.dao;
 
 
-import com.project.evaluate.entity.DO.FeedbackDO;
+import com.project.evaluate.entity.Feedback;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -10,11 +10,11 @@ import java.util.List;
 @Mapper
 @Repository
 public interface FeedbackDao {
-    FeedbackDO selectByID(Integer ID);
+    Feedback selectByID(Integer ID);
 
-    List<FeedbackDO> selectByFeedback(FeedbackDO feedbackDO);
+    List<Feedback> selectByFeedback(Feedback feedback);
 
-    Long insert(FeedbackDO feedbackDO);
+    Long insert(Feedback feedback);
 
     Boolean delete(Integer ID);
 }

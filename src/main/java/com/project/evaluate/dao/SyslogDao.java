@@ -1,6 +1,6 @@
 package com.project.evaluate.dao;
 
-import com.project.evaluate.entity.DO.SyslogDO;
+import com.project.evaluate.entity.Syslog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -11,11 +11,11 @@ import java.util.List;
 @Mapper
 @Repository
 public interface SyslogDao {
-    Integer insertSyslog(SyslogDO syslogDO);
+    Integer insertSyslog(Syslog syslog);
 
-    SyslogDO selectByID(Integer ID);
+    Syslog selectByID(Integer ID);
 
-    List<SyslogDO> selectPageSysLog(@Param("syslogDO") SyslogDO syslogDO, Date beforeTime, Date afterTime);
+    List<Syslog> selectPageSysLog(@Param("syslog") Syslog syslog, Date beforeTime, Date afterTime);
 
     Integer deletePageSyslog(@Param("ids") List<Integer> ids);
 

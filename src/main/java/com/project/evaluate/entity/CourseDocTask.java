@@ -1,4 +1,4 @@
-package com.project.evaluate.entity.DO;
+package com.project.evaluate.entity;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
@@ -18,7 +18,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseDocTaskDO implements Serializable {
+public class CourseDocTask implements Serializable {
 
     /**
      * ID：自增

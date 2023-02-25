@@ -1,6 +1,6 @@
 package com.project.evaluate.dao;
 
-import com.project.evaluate.entity.DO.ConfigDO;
+import com.project.evaluate.entity.Config;
 
 
 import org.apache.ibatis.annotations.Mapper;
@@ -17,17 +17,17 @@ import java.util.List;
 @Repository
 @Mapper
 public interface ConfigDao {
-    ConfigDO selectByID(Integer ID);
+    Config selectByID(Integer ID);
 
-    ConfigDO selectByUserID(String userID);
+    Config selectByUserID(String userID);
 
-    ConfigDO selectDefault();
+    Config selectDefault();
 
-    Long insertConfig(ConfigDO configDO);
+    Long insertConfig(Config config);
 
-    List<ConfigDO> selectPageConfig();
+    List<Config> selectPageConfig();
 
     Boolean deleteConfig(Integer ID,String userID);
 
-    Boolean updateConfig(ConfigDO configDO);
+    Boolean updateConfig(Config config);
 }

@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.dao.SyslogDao;
-import com.project.evaluate.entity.DO.SyslogDO;
+import com.project.evaluate.entity.Syslog;
 import com.project.evaluate.util.IPUtil;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
@@ -59,14 +59,14 @@ public class LogAspect {
 
     @Around(value = "controllerAspect() && @annotation(dataLog)")
     public Object around(ProceedingJoinPoint proceedingJoinPoint, DataLog dataLog) throws Throwable {
-        SyslogDO syslogDO = new SyslogDO();
+        Syslog syslog = new Syslog();
 
         Object proceed = proceedingJoinPoint.proceed();
 
 //        参数赋值
-        syslogDO.setModule(dataLog.modelName());
-        syslogDO.setAction(dataLog.operationType());
-        syslogDO.setLogTime(new Date());
+        syslog.setModule(dataLog.modelName());
+        syslog.setAction(dataLog.operationType());
+        syslog.setLogTime(new Date());
 
 //        获取request中的token，并获取其中的userID
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -74,7 +74,7 @@ public class LogAspect {
         String userID = null;
         if (Strings.hasText(token)) {
             userID = (String) JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject()).get("userID");
-            syslogDO.setOperator(userID);
+            syslog.setOperator(userID);
         }
 
 
@@ -93,7 +93,7 @@ public class LogAspect {
 //        System.out.println(paramJSON);
 //        获取响应参数
         JSONObject resultJSON = JSONObject.parseObject(JSON.toJSONString(proceed));
-        syslogDO.setStatus((Integer) resultJSON.get("status"));
+        syslog.setStatus((Integer) resultJSON.get("status"));
         JSONObject result = new JSONObject();
         JSONObject data = null;
         if (resultJSON.containsKey("data")) {
@@ -113,7 +113,7 @@ public class LogAspect {
                 break;
             case "login":
                 paramJSON.remove("password");
-                syslogDO.setOperator((String) paramJSON.get("userID"));
+                syslog.setOperator((String) paramJSON.get("userID"));
                 if (!Objects.isNull(data)) {
                     result.put("msg", data.get("msg"));
                 }
@@ -121,10 +121,10 @@ public class LogAspect {
             default:
                 break;
         }
-        syslogDO.setConditions(paramJSON.toJSONString());
-        syslogDO.setResult(result.toJSONString());
-        syslogDO.setIP(IPUtil.getIPAddress(request));
-        this.syslogDao.insertSyslog(syslogDO);
+        syslog.setConditions(paramJSON.toJSONString());
+        syslog.setResult(result.toJSONString());
+        syslog.setIP(IPUtil.getIPAddress(request));
+        this.syslogDao.insertSyslog(syslog);
         return proceed;
     }
 }

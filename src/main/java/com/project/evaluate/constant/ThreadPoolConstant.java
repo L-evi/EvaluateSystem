@@ -1,6 +1,5 @@
 package com.project.evaluate.constant;
 
-import sun.jvm.hotspot.utilities.AssertionFailure;
 
 public class ThreadPoolConstant {
     /**
@@ -29,7 +28,7 @@ public class ThreadPoolConstant {
     public static final long THREAD_TIME_OUT = 70;
 
     private ThreadPoolConstant() {
-        throw new AssertionFailure(ThreadPoolConstant.class.getName() + ": ERROR!");
+        throw new RuntimeException("ThreadPoolConstant.class can not be instantiated");
     }
 
 }

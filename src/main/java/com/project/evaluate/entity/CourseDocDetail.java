@@ -1,4 +1,4 @@
-package com.project.evaluate.entity.DO;
+package com.project.evaluate.entity;
 
 
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseDocDetailDO {
+public class CourseDocDetail {
     /*
      * 说明:
      * (1)每提交一个文件，则保存为一个文件提交记录。如果所提交的文件数超过该类型 文档的最大文件数，则不能再提交该类型的文档。

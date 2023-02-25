@@ -2,7 +2,7 @@ package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
-import com.project.evaluate.entity.DO.CourseDocDetailDO;
+import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.service.CourseDocDetailService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
@@ -34,7 +34,7 @@ public class CourseDocDetailController {
     @DeleteMapping(value = "/delete/taskID")
     @RequiresRoles(value = {"0", "2"}, logical = Logical.OR)
     @DataLog(modelName = "根据任务ID删除课程文档", operationType = "delete")
-    public ResponseResult deleteByTaskID(@RequestBody CourseDocDetailDO courseDocDetailDO, HttpServletRequest request) {
+    public ResponseResult deleteByTaskID(@RequestBody CourseDocDetail courseDocDetail, HttpServletRequest request) {
         String token = request.getHeader("token");
         String userID = null;
 //        判断是否为教师，如果为教师则只能删除自己的
@@ -46,8 +46,8 @@ public class CourseDocDetailController {
         } catch (Exception e) {
             throw new RuntimeException("token parse 错误");
         }
-        if (courseDocDetailDO.getTaskID() != 0) {
-            return this.courseDocDetailService.deleteByTaskID(courseDocDetailDO.getTaskID(), userID);
+        if (courseDocDetail.getTaskID() != 0) {
+            return this.courseDocDetailService.deleteByTaskID(courseDocDetail.getTaskID(), userID);
         } else {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "TaskID缺失，无法删除");

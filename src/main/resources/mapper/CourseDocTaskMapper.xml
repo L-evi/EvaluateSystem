@@ -6,7 +6,7 @@
     <update id="updateCourseDocTask">
         UPDATE coursedoctask
         <set>
-            <if test="courseID != null and courseDO != ''">
+            <if test="courseID != null and course != ''">
                 courseID = #{courseID},
             </if>
             <if test="teacher != null and teacher != ''">
@@ -57,7 +57,7 @@
         WHERE ID = #{ID}
     </delete>
 
-    <select id="selectByID" resultType="com.project.evaluate.entity.DO.CourseDocTaskDO">
+    <select id="selectByID" resultType="com.project.evaluate.entity.CourseDocTask">
         SELECT ID,
                courseID,
                teacher,
@@ -90,10 +90,10 @@
         coursedoctask.closeTask,
         coursedoctask.operator,
         coursedoctask.memo,
-        courseDO.courseName
+        course.courseName
         FROM coursedoctask
-        LEFT JOIN courseDO
-        ON courseDO.courseID = coursedoctask.courseID
+        LEFT JOIN course
+        ON course.courseID = coursedoctask.courseID
         <where>
             <if test="teacher != null and teacher != ''">
                 coursedoctask.teacher = #{teacher}
@@ -118,7 +118,7 @@
             </if>
         </where>
     </select>
-    <select id="selectPageID" resultType="com.project.evaluate.entity.DO.CourseDocTaskDO">
+    <select id="selectPageID" resultType="com.project.evaluate.entity.CourseDocTask">
         SELECT ID,
         courseID,
         teacher,

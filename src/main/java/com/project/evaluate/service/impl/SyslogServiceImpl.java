@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.SyslogDao;
-import com.project.evaluate.entity.DO.SyslogDO;
+import com.project.evaluate.entity.Syslog;
 import com.project.evaluate.service.SyslogService;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
@@ -40,15 +40,15 @@ public class SyslogServiceImpl implements SyslogService {
     private String tempPrePath;
 
     @Override
-    public ResponseResult selectPageSyslog(SyslogDO syslogDO, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime) {
+    public ResponseResult selectPageSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime) {
         JSONObject jsonObject = new JSONObject();
         PageHelper.startPage(page, pageSize, orderBy);
-        List<SyslogDO> syslogDOS = this.syslogDao.selectPageSysLog(syslogDO, beforeTime, afterTime);
-        if (Objects.isNull(syslogDOS) || syslogDOS.isEmpty()) {
+        List<Syslog> syslogs = this.syslogDao.selectPageSysLog(syslog, beforeTime, afterTime);
+        if (Objects.isNull(syslogs) || syslogs.isEmpty()) {
             jsonObject.put("msg", "查询结果为空");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<SyslogDO> pageInfo = new PageInfo<>(syslogDOS);
+        PageInfo<Syslog> pageInfo = new PageInfo<>(syslogs);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(pageInfo.getList()));
         jsonObject.put("array", jsonArray);
         jsonObject.put("total", pageInfo.getTotal());
@@ -60,17 +60,17 @@ public class SyslogServiceImpl implements SyslogService {
     public ResponseResult selectSyslog(Integer ID) {
         JSONObject jsonObject = new JSONObject();
 //        从redis中获取
-        SyslogDO syslogDO = JSONObject.toJavaObject(this.redisCache.getCacheObject("SyslogDO:" + ID), SyslogDO.class);
-        if (Objects.isNull(syslogDO)) {
-            syslogDO = this.syslogDao.selectByID(ID);
-            if (Objects.isNull(syslogDO)) {
+        Syslog syslog = JSONObject.toJavaObject(this.redisCache.getCacheObject("Syslog:" + ID), Syslog.class);
+        if (Objects.isNull(syslog)) {
+            syslog = this.syslogDao.selectByID(ID);
+            if (Objects.isNull(syslog)) {
                 jsonObject.put("msg", "查询结果为空");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             }
 //           存入redis中
-            this.redisCache.setCacheObject("SyslogDO:" + ID, syslogDO, 1, TimeUnit.DAYS);
+            this.redisCache.setCacheObject("Syslog:" + ID, syslog, 1, TimeUnit.DAYS);
         }
-        jsonObject = JSONObject.parseObject(JSON.toJSONString(syslogDO));
+        jsonObject = JSONObject.parseObject(JSON.toJSONString(syslog));
         jsonObject.put("msg", "查询成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
@@ -84,7 +84,7 @@ public class SyslogServiceImpl implements SyslogService {
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        从redis中删除
-        this.redisCache.deleteObject("SyslogDO:" + ID);
+        this.redisCache.deleteObject("Syslog:" + ID);
         jsonObject.put("msg", "删除成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
@@ -99,7 +99,7 @@ public class SyslogServiceImpl implements SyslogService {
         }
 //        从redis中删除
         for (Integer id : list) {
-            this.redisCache.deleteObject("SyslogDO:" + id);
+            this.redisCache.deleteObject("Syslog:" + id);
         }
         jsonObject.put("msg", "删除成功");
         jsonObject.put("num", num);
@@ -107,7 +107,7 @@ public class SyslogServiceImpl implements SyslogService {
     }
 
     @Override
-    public ResponseResult exportSyslog(SyslogDO syslogDO, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime) {
+    public ResponseResult exportSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime) {
         JSONObject jsonObject = new JSONObject();
         if (pageSize != 0) {
             PageHelper.startPage(page, pageSize, orderBy);
@@ -115,16 +115,16 @@ public class SyslogServiceImpl implements SyslogService {
 //            pageSize == 0 时返回所有结果
             PageHelper.startPage(page, pageSize, false, null, true);
         }
-        List<SyslogDO> syslogDOS = this.syslogDao.selectPageSysLog(syslogDO, beforeTime, afterTime);
-        if (Objects.isNull(syslogDOS) || syslogDOS.isEmpty()) {
+        List<Syslog> syslogs = this.syslogDao.selectPageSysLog(syslog, beforeTime, afterTime);
+        if (Objects.isNull(syslogs) || syslogs.isEmpty()) {
             jsonObject.put("msg", "查询结果为空");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<SyslogDO> pageInfo = new PageInfo<>(syslogDOS);
-        List<SyslogDO> list = pageInfo.getList();
+        PageInfo<Syslog> pageInfo = new PageInfo<>(syslogs);
+        List<Syslog> list = pageInfo.getList();
 //        导出为excel
         String filename = this.tempPrePath + File.separator + System.currentTimeMillis() + ".xlsx";
-        EasyExcel.write(filename, SyslogDO.class).sheet("系统日志").doWrite(list);
+        EasyExcel.write(filename, Syslog.class).sheet("系统日志").doWrite(list);
         File file = new File(filename);
         if (file.exists()) {
             jsonObject.put("msg", "导出成功");

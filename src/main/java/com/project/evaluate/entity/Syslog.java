@@ -1,4 +1,4 @@
-package com.project.evaluate.entity.DO;
+package com.project.evaluate.entity;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * (SyslogDO)实体类
+ * (Syslog)实体类
  *
  * @author makejava
  * @since 2023-01-23 14:28:03
@@ -17,7 +17,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SyslogDO implements Serializable {
+public class Syslog implements Serializable {
     private static final long serialVersionUID = -21139683385465480L;
     /**
      * ID

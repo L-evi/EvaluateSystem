@@ -1,4 +1,4 @@
-package com.project.evaluate.entity.DO;
+package com.project.evaluate.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +17,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FacultyDO implements Serializable {
+public class Faculty implements Serializable {
     /**
      * 登录名
      */

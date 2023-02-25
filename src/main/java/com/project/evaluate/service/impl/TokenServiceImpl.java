@@ -3,7 +3,7 @@ package com.project.evaluate.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.dao.FacultyDao;
-import com.project.evaluate.entity.DO.FacultyDO;
+import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.TokenService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
@@ -54,15 +54,15 @@ public class TokenServiceImpl implements TokenService {
                     return new ResponseResult(ResultCode.LOGIN_TIMEOUT, jsonObject);
                 }
 //                调用redis
-                FacultyDO facultyDO = JSONObject.toJavaObject(this.redisCache.getCacheObject("FacultyDO:" + userID), FacultyDO.class);
-                if (Objects.isNull(facultyDO)) {
-                    facultyDO = this.facultyDao.selectByUserID(userID);
-                    if (Objects.isNull(facultyDO)) {
+                Faculty faculty = JSONObject.toJavaObject(this.redisCache.getCacheObject("Faculty:" + userID), Faculty.class);
+                if (Objects.isNull(faculty)) {
+                    faculty = this.facultyDao.selectByUserID(userID);
+                    if (Objects.isNull(faculty)) {
                         throw new UnknownAccountException("账户不存在");
                     }
-                    this.redisCache.setCacheObject("FacultyDO:" + userID, facultyDO, 1, TimeUnit.DAYS);
+                    this.redisCache.setCacheObject("Faculty:" + userID, faculty, 1, TimeUnit.DAYS);
                 }
-                jsonObject = JSONObject.parseObject(JSON.toJSONString(facultyDO));
+                jsonObject = JSONObject.parseObject(JSON.toJSONString(faculty));
 //                    去掉用户密码
                 if (jsonObject.containsKey("password")) {
                     jsonObject.remove("password");

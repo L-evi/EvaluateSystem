@@ -7,8 +7,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.BulletinDao;
 import com.project.evaluate.dao.FacultyDao;
-import com.project.evaluate.entity.DO.BulletinDO;
-import com.project.evaluate.entity.DO.FacultyDO;
+import com.project.evaluate.entity.Bulletin;
+import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.BulletinService;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
@@ -39,9 +39,9 @@ public class BulletinServiceImpl implements BulletinService {
     private FacultyDao facultyDao;
 
     @Override
-    public ResponseResult insertBulletin(BulletinDO bulletinDO) {
+    public ResponseResult insertBulletin(Bulletin bulletin) {
         JSONObject jsonObject = new JSONObject();
-        Long num = this.bulletinDao.insertBulletin(bulletinDO);
+        Long num = this.bulletinDao.insertBulletin(bulletin);
         if (num < 1) {
             jsonObject.put("msg", "插入错误，数据已存在");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
@@ -52,7 +52,7 @@ public class BulletinServiceImpl implements BulletinService {
     }
 
     @Override
-    public ResponseResult selectPageBulletin(BulletinDO bulletinDO, Integer role, Integer page, Integer pageSize, String orderBy) {
+    public ResponseResult selectPageBulletin(Bulletin bulletin, Integer role, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
         Date date = null;
 //        教师和认证专家只能看到未过期的
@@ -60,12 +60,12 @@ public class BulletinServiceImpl implements BulletinService {
             date = new Date();
         }
         PageHelper.startPage(page, pageSize, orderBy);
-        List<BulletinDO> bulletinDOS = this.bulletinDao.selectByBulletin(bulletinDO, date);
-        if (Objects.isNull(bulletinDOS) || bulletinDOS.isEmpty()) {
+        List<Bulletin> bulletins = this.bulletinDao.selectByBulletin(bulletin, date);
+        if (Objects.isNull(bulletins) || bulletins.isEmpty()) {
             jsonObject.put("msg", "查询结果为空");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<BulletinDO> pageInfo = new PageInfo<BulletinDO>(bulletinDOS);
+        PageInfo<Bulletin> pageInfo = new PageInfo<Bulletin>(bulletins);
         JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(pageInfo.getList()));
         jsonObject.put("array", jsonArray);
         jsonObject.put("total", pageInfo.getTotal());
@@ -77,47 +77,47 @@ public class BulletinServiceImpl implements BulletinService {
     public ResponseResult selectSingleBulletin(Integer ID) {
         JSONObject jsonObject = new JSONObject();
 //        从redis中获取=
-        BulletinDO bulletinDO = JSONObject.toJavaObject(this.redisCache.getCacheObject("Bulletin:" + ID), BulletinDO.class);
-        if (Objects.isNull(bulletinDO)) {
-            bulletinDO = this.bulletinDao.selectByID(ID);
-            if (Objects.isNull(bulletinDO)) {
+        Bulletin bulletin = JSONObject.toJavaObject(this.redisCache.getCacheObject("Bulletin:" + ID), Bulletin.class);
+        if (Objects.isNull(bulletin)) {
+            bulletin = this.bulletinDao.selectByID(ID);
+            if (Objects.isNull(bulletin)) {
                 jsonObject.put("msg", "查询结果为空");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             }
 //            存入redis中
-            this.redisCache.setCacheObject("Bulletin:" + ID, bulletinDO, 1, TimeUnit.DAYS);
+            this.redisCache.setCacheObject("Bulletin:" + ID, bulletin, 1, TimeUnit.DAYS);
         }
 //        查询发布人的username
-        FacultyDO facultyDO = JSONObject.toJavaObject(this.redisCache.getCacheObject("FacultyDO:" + bulletinDO.getOperator()), FacultyDO.class);
-        if (Objects.isNull(facultyDO)) {
-            facultyDO = this.facultyDao.selectByUserID(bulletinDO.getOperator());
-            if (Objects.isNull(facultyDO)) {
+        Faculty faculty = JSONObject.toJavaObject(this.redisCache.getCacheObject("Faculty:" + bulletin.getOperator()), Faculty.class);
+        if (Objects.isNull(faculty)) {
+            faculty = this.facultyDao.selectByUserID(bulletin.getOperator());
+            if (Objects.isNull(faculty)) {
                 jsonObject.put("msg", "查询结果为空");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
             }
 //            存入redis中
-            this.redisCache.setCacheObject("FacultyDO:" + facultyDO.getUserID(), facultyDO, 3, TimeUnit.HOURS);
+            this.redisCache.setCacheObject("Faculty:" + faculty.getUserID(), faculty, 3, TimeUnit.HOURS);
         }
-        jsonObject = JSONObject.parseObject(JSON.toJSONString(bulletinDO));
+        jsonObject = JSONObject.parseObject(JSON.toJSONString(bulletin));
 //        放入操作员名称
-        jsonObject.put("username", facultyDO.getUserName());
+        jsonObject.put("username", faculty.getUserName());
         jsonObject.remove("operator");
         jsonObject.put("msg", "查询成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
     @Override
-    public ResponseResult updateBulletin(BulletinDO bulletinDO) {
+    public ResponseResult updateBulletin(Bulletin bulletin) {
         JSONObject jsonObject = new JSONObject();
 //        更新数据库
-        Long num = this.bulletinDao.updateBulletin(bulletinDO);
+        Long num = this.bulletinDao.updateBulletin(bulletin);
         if (num < 1) {
             jsonObject.put("msg", "更新数据失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
 //        更新redis
-        bulletinDO = this.bulletinDao.selectByID(bulletinDO.getID());
-        this.redisCache.setCacheObject("Bulletin:" + bulletinDO.getID(), bulletinDO, 1, TimeUnit.DAYS);
+        bulletin = this.bulletinDao.selectByID(bulletin.getID());
+        this.redisCache.setCacheObject("Bulletin:" + bulletin.getID(), bulletin, 1, TimeUnit.DAYS);
         jsonObject.put("msg", "更新数据成功");
         jsonObject.put("num", num);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);

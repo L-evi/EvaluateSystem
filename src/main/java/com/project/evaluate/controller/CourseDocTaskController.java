@@ -2,7 +2,7 @@ package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
-import com.project.evaluate.entity.DO.CourseDocTaskDO;
+import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.service.CourseDocTaskService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
@@ -32,7 +32,7 @@ public class CourseDocTaskController {
     private CourseDocTaskService courseDocTaskService;
 
     @GetMapping(value = "/search")
-    public ResponseResult selectPageCourseDocTask(CourseDocTaskDO courseDocTaskDO, Integer page, Integer pageSize, String orderBy, HttpServletRequest request) {
+    public ResponseResult selectPageCourseDocTask(CourseDocTask courseDocTask, Integer page, Integer pageSize, String orderBy, HttpServletRequest request) {
         if (Objects.isNull(page)) {
             page = 0;
         }
@@ -48,13 +48,13 @@ public class CourseDocTaskController {
                 JSONObject jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
                 String roleType = (String) jsonObject.get("roleType");
                 if (roleType.equals("0")) {
-                    courseDocTaskDO.setTeacher((String) jsonObject.get("userID"));
+                    courseDocTask.setTeacher((String) jsonObject.get("userID"));
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Parse token  错误");
             }
         }
-        return this.courseDocTaskService.selectPageCourseDocTask(courseDocTaskDO, page, pageSize, orderBy);
+        return this.courseDocTaskService.selectPageCourseDocTask(courseDocTask, page, pageSize, orderBy);
     }
 
     //    只有文档管理员才能删除
@@ -73,13 +73,13 @@ public class CourseDocTaskController {
     @PutMapping("/update")
     @RequiresRoles(value = {"2"}, logical = Logical.OR)
     @DataLog(operationType = "update", modelName = "修改文档上传任务")
-    public ResponseResult updateCourseDocTask(@RequestBody CourseDocTaskDO courseDocTaskDO) {
+    public ResponseResult updateCourseDocTask(@RequestBody CourseDocTask courseDocTask) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(courseDocTaskDO) || Objects.isNull(courseDocTaskDO.getID())) {
+        if (Objects.isNull(courseDocTask) || Objects.isNull(courseDocTask.getID())) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        return courseDocTaskService.updateCourseDocTask(courseDocTaskDO);
+        return courseDocTaskService.updateCourseDocTask(courseDocTask);
     }
 
     @RequiresRoles(value = "2", logical = Logical.OR)
@@ -95,13 +95,13 @@ public class CourseDocTaskController {
     }
 
     @PostMapping("/add")
-    public ResponseResult insertCourseDocTask(@RequestBody List<CourseDocTaskDO> courseDocTaskDOS) {
+    public ResponseResult insertCourseDocTask(@RequestBody List<CourseDocTask> courseDocTasks) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(courseDocTaskDOS) || courseDocTaskDOS.isEmpty()) {
+        if (Objects.isNull(courseDocTasks) || courseDocTasks.isEmpty()) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        courseDocTaskDOS.forEach(System.out::println);
+        courseDocTasks.forEach(System.out::println);
         return ResponseResult.success();
     }
 }

@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.*;
-import com.project.evaluate.entity.DO.*;
+import com.project.evaluate.entity.*;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.bloom.BloomFilterHelper;
 import com.project.evaluate.util.bloom.RedisBloomFilter;
@@ -66,7 +66,7 @@ class EvaluateApplicationTests {
 
     @Test
     void testFacultyDao() throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        this.facultyDao.selectPageFaculty(new FacultyDO()).forEach(System.out::println);
+        this.facultyDao.selectPageFaculty(new Faculty()).forEach(System.out::println);
     }
 
     @Test
@@ -94,9 +94,9 @@ class EvaluateApplicationTests {
 
     @Test
     void testClassToJSONObject() {
-        FacultyDO facultyDO = new FacultyDO();
-        facultyDO.setUserID("user");
-        JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(facultyDO));
+        Faculty faculty = new Faculty();
+        faculty.setUserID("user");
+        JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(faculty));
         System.out.println(jsonObject);
     }
 
@@ -128,18 +128,18 @@ class EvaluateApplicationTests {
 
     @Test
     public void testRedis() {
-        FacultyDO facultyDO = new FacultyDO();
-        facultyDO.setUserID("admin");
-        facultyDO.setPassword("admin");
-        this.redisCache.setCacheObject("admin", facultyDO, 1, TimeUnit.MINUTES);
-//        FacultyDO admin = JSONObject.parseObject(redisCache.getCacheObject("admin"), FacultyDO.class);
+        Faculty faculty = new Faculty();
+        faculty.setUserID("admin");
+        faculty.setPassword("admin");
+        this.redisCache.setCacheObject("admin", faculty, 1, TimeUnit.MINUTES);
+//        Faculty admin = JSONObject.parseObject(redisCache.getCacheObject("admin"), Faculty.class);
         JSONObject jsonObject = this.redisCache.getCacheObject("admin");
-        FacultyDO admin = JSONObject.toJavaObject(jsonObject, FacultyDO.class);
+        Faculty admin = JSONObject.toJavaObject(jsonObject, Faculty.class);
         System.out.println(admin);
         System.out.println(jsonObject.toString());
-//        redisCache.setCacheObject("FacultyDO" + admin.getUserID(), admin);
-//        FacultyDO facultyDO = redisCache.getCacheObject("FacultyDO" + admin.getUserID());
-//        System.out.println(facultyDO);
+//        redisCache.setCacheObject("Faculty" + admin.getUserID(), admin);
+//        Faculty faculty = redisCache.getCacheObject("Faculty" + admin.getUserID());
+//        System.out.println(faculty);
     }
 
     @Test
@@ -156,11 +156,11 @@ class EvaluateApplicationTests {
 
     @Test
     public void testCourseMapper() {
-//        List<CourseDO> pageCourse = this.courseMapper.getPageCourse(0, 2);
+//        List<Course> pageCourse = this.courseMapper.getPageCourse(0, 2);
 //        pageCourse.forEach(System.out::println);
-        List<CourseDO> cours = courseDao.selectPageCourse(new CourseDO());
+        List<Course> cours = courseDao.selectPageCourse(new Course());
         cours.forEach(System.out::println);
-//        for (CourseDO course : cours) {
+//        for (Course course : cours) {
 //            Boolean aBoolean = courseDao.deletaByID(course.getID());
 //            System.out.println(aBoolean);
 //            Integer integer = courseDao.insertCourse(course);
@@ -198,10 +198,10 @@ class EvaluateApplicationTests {
     @Test
     public void testCourseDocDetailMapper() {
 //        System.out.println(this.courseDocDetailMapper.deleteByTaskID(2));
-//        List<CourseDocDetailDO> details = this.courseDocDetailMapper.selectByTaskID(2);
+//        List<CourseDocDetail> details = this.courseDocDetailMapper.selectByTaskID(2);
 //        details.forEach(System.out::println);
-        List<CourseDocDetailDO> courseDocDetailDOS = this.courseDocDetailDao.selectByTaskID(2);
-        courseDocDetailDOS.forEach(System.out::println);
+        List<CourseDocDetail> courseDocDetails = this.courseDocDetailDao.selectByTaskID(2);
+        courseDocDetails.forEach(System.out::println);
     }
 
     @Resource
@@ -214,20 +214,20 @@ class EvaluateApplicationTests {
 //        map.put("end", 10);
 //        map.put("teacher", "teacher");
 //        map.put("schoolEndYear", 2);
-//        CourseDocTaskDO courseDocTaskDO = JSON.parseObject(JSONObject.toJSONString(map), CourseDocTaskDO.class);
-//        System.out.println(courseDocTaskDO.toString());
+//        CourseDocTask courseDocTask = JSON.parseObject(JSONObject.toJSONString(map), CourseDocTask.class);
+//        System.out.println(courseDocTask.toString());
 //        System.out.println("-----------------");
-//        Map<String, Object> objectMap = JSON.parseObject(JSON.toJSONString(courseDocTaskDO), Map.class);
+//        Map<String, Object> objectMap = JSON.parseObject(JSON.toJSONString(courseDocTask), Map.class);
 //        objectMap.put("index", 0);
 //        objectMap.put("pageSize", 3);
 //        System.out.println(objectMap.toString());
 //        System.out.println("---------");
-//        List<CourseDocTaskDO> courseDocTasks = this.courseDocTaskDao.screenTeacherCourseDocTask(objectMap);
+//        List<CourseDocTask> courseDocTasks = this.courseDocTaskDao.screenTeacherCourseDocTask(objectMap);
 //        courseDocTasks.forEach(System.out::println);
-        CourseDocTaskDO courseDocTaskDO = new CourseDocTaskDO();
-        courseDocTaskDO.setID(3);
+        CourseDocTask courseDocTask = new CourseDocTask();
+        courseDocTask.setID(3);
         PageHelper.startPage(0, 5, "ID DESC");
-        List<Map<String, Object>> courseDocTasks = this.courseDocTaskDao.selectPageCourseDocTask(courseDocTaskDO);
+        List<Map<String, Object>> courseDocTasks = this.courseDocTaskDao.selectPageCourseDocTask(courseDocTask);
         PageInfo<Map<String, Object>> courseDocTaskPageInfo = new PageInfo<>(courseDocTasks);
         List<Map<String, Object>> list = courseDocTaskPageInfo.getList();
         list.forEach(System.out::println);
@@ -240,9 +240,9 @@ class EvaluateApplicationTests {
     public void testPageHelper() {
         PageHelper.startPage(0, 5);
         PageHelper.orderBy("taskID DESC");
-        List<CourseDocDetailDO> all = this.courseDocDetailDao.getAll();
-        PageInfo<CourseDocDetailDO> pageInfo = new PageInfo<CourseDocDetailDO>(all);
-        List<CourseDocDetailDO> list = pageInfo.getList();
+        List<CourseDocDetail> all = this.courseDocDetailDao.getAll();
+        PageInfo<CourseDocDetail> pageInfo = new PageInfo<CourseDocDetail>(all);
+        List<CourseDocDetail> list = pageInfo.getList();
         list.forEach(System.out::println);
         long endRow = pageInfo.getEndRow();
         System.out.println("end row:" + endRow);
@@ -254,18 +254,18 @@ class EvaluateApplicationTests {
 
     @Test
     public void testFeedbackDao() {
-//        this.feedbackDao.insert(new FeedbackDO(null, "反馈标题", "反馈内容：测试内容", new Date(), "teach"));
+//        this.feedbackDao.insert(new Feedback(null, "反馈标题", "反馈内容：测试内容", new Date(), "teach"));
 //        System.out.println(this.feedbackDao.selectByID(9));
-        FeedbackDO feedbackDO = new FeedbackDO();
+        Feedback feedback = new Feedback();
         PageHelper.startPage(0, 15, "ID ASC");
-        List<FeedbackDO> feedbackDOS = this.feedbackDao.selectByFeedback(feedbackDO);
-        PageInfo<FeedbackDO> pageInfo = new PageInfo<>(feedbackDOS);
+        List<Feedback> feedbacks = this.feedbackDao.selectByFeedback(feedback);
+        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbacks);
 //        System.out.println(pageInfo.getNextPage());
 //        pageInfo.calcByNavigatePages(2);
         pageInfo.getList().forEach(System.out::println);
         System.out.println(pageInfo.getPages());
         System.out.println(pageInfo.getTotal());
-//        System.out.println(feedbackDOS.toString());
+//        System.out.println(feedbacks.toString());
 //        System.out.println(this.feedbackDao.delete(1));
     }
 
@@ -281,8 +281,8 @@ class EvaluateApplicationTests {
 //        System.out.println(aLong);
 //        Boolean aBoolean = this.bulletinDao.deleteByID(1);
 //        System.out.println(aBoolean);
-        List<BulletinDO> bulletinDOS = this.bulletinDao.selectByBulletin(new BulletinDO(), null);
-        bulletinDOS.forEach(System.out::println);
+        List<Bulletin> bulletins = this.bulletinDao.selectByBulletin(new Bulletin(), null);
+        bulletins.forEach(System.out::println);
     }
 
     @Resource
@@ -290,7 +290,7 @@ class EvaluateApplicationTests {
 
     @Test
     public void testDocShareDao() {
-//        DocShareDO docShare = new DocShareDO();
+//        DocShare docShare = new DocShare();
 //        docShare.setTitle("文档分享标题2");
 //        docShare.setDesc("文档分享描述2");
 //        docShare.setSubmitter("admin");
@@ -303,7 +303,7 @@ class EvaluateApplicationTests {
 //        System.out.println(this.docShareDao.selectDocShare(2).toString());
 //        分页查询
         PageHelper.startPage(0, 2);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(this.docShareDao.selectPageDocShare(new DocShareDO()));
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(this.docShareDao.selectPageDocShare(new DocShare()));
         pageInfo.getList().forEach(System.out::println);
 //        修改
 //        docShare.setID(3);
@@ -319,20 +319,20 @@ class EvaluateApplicationTests {
 
     @Test
     public void testSyslog() {
-        SyslogDO syslogDO = new SyslogDO();
-        syslogDO.setOperator("admin");
-        syslogDO.setConditions("test conditions");
-        syslogDO.setModule("test module");
-        syslogDO.setAction("test action");
-        syslogDO.setLogTime(new Date());
-        syslogDO.setResult("test result");
-        syslogDO.setStatus(1);
-//        System.out.println(this.syslogDao.insertSyslog(syslogDO));
+        Syslog syslog = new Syslog();
+        syslog.setOperator("admin");
+        syslog.setConditions("test conditions");
+        syslog.setModule("test module");
+        syslog.setAction("test action");
+        syslog.setLogTime(new Date());
+        syslog.setResult("test result");
+        syslog.setStatus(1);
+//        System.out.println(this.syslogDao.insertSyslog(syslog));
 
 //        System.out.println(this.syslogDao.selectByID(1));
         System.out.println("-------------------------");
         PageHelper.startPage(0, 2);
-//        PageInfo<SyslogDO> pageInfo = new PageInfo<>(this.syslogDao.selectPageSysLog(syslogDO, null, null));
+//        PageInfo<Syslog> pageInfo = new PageInfo<>(this.syslogDao.selectPageSysLog(syslog, null, null));
 //        pageInfo.getList().forEach(System.out::println);
 //        System.out.println(this.syslogDao.deleteSyslogByID(1));
         List<Integer> list = new ArrayList<>();
@@ -374,9 +374,9 @@ class EvaluateApplicationTests {
         String fileName = "";
         // 这里默认每次会读取100条数据 然后返回过来 直接调用使用数据就行
         // 具体需要返回多少行可以在`PageReadListener`的构造函数设置
-        EasyExcel.read(fileName, CourseDO.class, new PageReadListener<CourseDO>(dataList -> {
-            for (CourseDO courseDO : dataList) {
-                log.info("读取到一条数据{}", JSON.toJSONString(courseDO));
+        EasyExcel.read(fileName, Course.class, new PageReadListener<Course>(dataList -> {
+            for (Course course : dataList) {
+                log.info("读取到一条数据{}", JSON.toJSONString(course));
             }
         })).sheet().doRead();
     }

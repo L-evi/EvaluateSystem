@@ -1,6 +1,6 @@
 package com.project.evaluate.dao;
 
-import com.project.evaluate.entity.DO.FacultyDO;
+import com.project.evaluate.entity.Faculty;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -9,15 +9,15 @@ import java.util.List;
 @Mapper
 @Repository
 public interface FacultyDao {
-    FacultyDO selectByUserID(String userID);
+    Faculty selectByUserID(String userID);
 
-    Integer insertFaculty(FacultyDO facultyDO);
+    Integer insertFaculty(Faculty faculty);
 
-    Integer updateFaculty(FacultyDO facultyDO);
+    Integer updateFaculty(Faculty faculty);
 
     Integer resetFaculty(String userID, String password);
 
-    List<FacultyDO> selectPageFaculty(FacultyDO facultyDO);
+    List<Faculty> selectPageFaculty(Faculty faculty);
 
     Integer deletePageFaculty(String userID);
 

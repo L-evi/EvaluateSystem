@@ -2,7 +2,7 @@ package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
-import com.project.evaluate.entity.DO.SyslogDO;
+import com.project.evaluate.entity.Syslog;
 import com.project.evaluate.service.SyslogService;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
@@ -36,7 +36,7 @@ public class SyslogController {
     @GetMapping("/get/page")
     @RequiresRoles(value = "1", logical = Logical.OR)
     @DataLog(modelName = "分页查询系统日志", operationType = "select")
-    ResponseResult selectPageSyslog(SyslogDO syslogDO, Integer page, Integer pageSize, String orderBy, String beforeTime, String afterTime) {
+    ResponseResult selectPageSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, String beforeTime, String afterTime) {
         if (Objects.isNull(page)) {
             page = 0;
         }
@@ -46,8 +46,8 @@ public class SyslogController {
         if (!Strings.hasText(orderBy)) {
             orderBy = "logTime DESC";
         }
-        if (Objects.isNull(syslogDO)) {
-            syslogDO = new SyslogDO();
+        if (Objects.isNull(syslog)) {
+            syslog = new Syslog();
         }
         Date before = null;
         Date after = null;
@@ -57,7 +57,7 @@ public class SyslogController {
         if (Strings.hasText(afterTime)) {
             after = new Date(Long.parseLong(afterTime));
         }
-        return this.syslogService.selectPageSyslog(syslogDO, page, pageSize, orderBy, before, after);
+        return this.syslogService.selectPageSyslog(syslog, page, pageSize, orderBy, before, after);
     }
 
 
@@ -110,7 +110,7 @@ public class SyslogController {
     @GetMapping(value = "/export")
     @RequiresRoles(value = "1", logical = Logical.OR)
     @DataLog(operationType = "select", modelName = "导出日志为EXCEL")
-    public ResponseResult exportSyslog(SyslogDO syslogDO, Integer page, Integer pageSize, String orderBy, String beforeTime, String afterTime) {
+    public ResponseResult exportSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, String beforeTime, String afterTime) {
         if (Objects.isNull(page)) {
             page = 0;
         }
@@ -120,8 +120,8 @@ public class SyslogController {
         if (!Strings.hasText(orderBy)) {
             orderBy = "logTime DESC";
         }
-        if (Objects.isNull(syslogDO)) {
-            syslogDO = new SyslogDO();
+        if (Objects.isNull(syslog)) {
+            syslog = new Syslog();
         }
         Date before = null;
         Date after = null;
@@ -131,7 +131,7 @@ public class SyslogController {
         if (Strings.hasText(afterTime)) {
             after = new Date(Long.parseLong(afterTime));
         }
-        return this.syslogService.exportSyslog(syslogDO, page, pageSize, orderBy, before, after);
+        return this.syslogService.exportSyslog(syslog, page, pageSize, orderBy, before, after);
     }
 
 }

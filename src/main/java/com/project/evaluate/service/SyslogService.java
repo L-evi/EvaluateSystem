@@ -1,13 +1,13 @@
 package com.project.evaluate.service;
 
-import com.project.evaluate.entity.DO.SyslogDO;
+import com.project.evaluate.entity.Syslog;
 import com.project.evaluate.util.response.ResponseResult;
 
 import java.util.Date;
 import java.util.List;
 
 public interface SyslogService {
-    ResponseResult selectPageSyslog(SyslogDO syslogDO, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime);
+    ResponseResult selectPageSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime);
 
     ResponseResult selectSyslog(Integer ID);
 
@@ -15,5 +15,5 @@ public interface SyslogService {
 
     ResponseResult deletePageSyslog(List<Integer> list);
 
-    ResponseResult exportSyslog(SyslogDO syslogDO, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime);
+    ResponseResult exportSyslog(Syslog syslog, Integer page, Integer pageSize, String orderBy, Date beforeTime, Date afterTime);
 }

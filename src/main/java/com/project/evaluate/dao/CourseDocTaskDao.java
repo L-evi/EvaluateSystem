@@ -1,6 +1,6 @@
 package com.project.evaluate.dao;
 
-import com.project.evaluate.entity.DO.CourseDocTaskDO;
+import com.project.evaluate.entity.CourseDocTask;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -12,15 +12,15 @@ import java.util.Map;
 @Mapper
 public interface CourseDocTaskDao {
 
-    List<Map<String, Object>> selectPageCourseDocTask(CourseDocTaskDO courseDocTaskDO);
+    List<Map<String, Object>> selectPageCourseDocTask(CourseDocTask courseDocTask);
 
     Long deleteTaskByID(int ID);
 
-    CourseDocTaskDO selectByID(int ID);
+    CourseDocTask selectByID(int ID);
 
-    List<CourseDocTaskDO> selectPageID(@Param("ids") List<Integer> ids);
+    List<CourseDocTask> selectPageID(@Param("ids") List<Integer> ids);
 
-    Boolean updateCourseDocTask(CourseDocTaskDO courseDocTaskDO);
+    Boolean updateCourseDocTask(CourseDocTask courseDocTask);
 
     Boolean updateCourseDocTaskStatus(Integer ID,Integer status);
 }

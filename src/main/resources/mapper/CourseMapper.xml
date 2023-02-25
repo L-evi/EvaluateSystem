@@ -14,7 +14,7 @@
         INSERT INTO Course(courseID, courseName, courseProperty, testType, educationType,
         courseType, credit,teamLeader, major, courseTerm)
         VALUES
-        <foreach collection="courses" item="course" separator=",">
+        <foreach collection="cours" item="course" separator=",">
             (#{course.courseID},#{course.courseName},#{course.courseProperty},#{course.testType},#{course.educationType},
             #{course.courseType},#{course.credit},#{course.teamLeader},#{course.major},#{course.courseTerm})
         </foreach>

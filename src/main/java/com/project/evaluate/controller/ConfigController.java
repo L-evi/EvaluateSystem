@@ -2,7 +2,7 @@ package com.project.evaluate.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
-import com.project.evaluate.entity.DO.ConfigDO;
+import com.project.evaluate.entity.Config;
 import com.project.evaluate.service.ConfigService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.response.ResponseResult;
@@ -32,13 +32,13 @@ public class ConfigController {
     @PostMapping(value = "/add")
     @RequiresRoles(value = "1", logical = Logical.OR)
     @DataLog(modelName = "添加系统配置", operationType = "inserts")
-    public ResponseResult insertConfig(@RequestBody ConfigDO configDO) {
+    public ResponseResult insertConfig(@RequestBody Config config) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(configDO)) {
+        if (Objects.isNull(config)) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        return configService.insertConfig(configDO);
+        return configService.insertConfig(config);
     }
 
     @GetMapping("/get/single/ID")
@@ -86,13 +86,13 @@ public class ConfigController {
     @PutMapping("/update")
     @RequiresRoles(value = "1", logical = Logical.OR)
     @DataLog(operationType = "update", modelName = "更新系统配置")
-    public ResponseResult updateConfig(@RequestBody ConfigDO configDO) {
+    public ResponseResult updateConfig(@RequestBody Config config) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(configDO) || Objects.isNull(configDO.getID())) {
+        if (Objects.isNull(config) || Objects.isNull(config.getID())) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        return configService.updateConfig(configDO);
+        return configService.updateConfig(config);
     }
 
     @DeleteMapping("/delete")

@@ -1,4 +1,4 @@
-package com.project.evaluate.entity.DO;
+package com.project.evaluate.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * (DocShareDO)实体类
+ * (DocShare)实体类
  *
  * @author makejava
  * @since 2023-01-14 09:42:31
@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DocShareDO implements Serializable {
+public class DocShare implements Serializable {
     private static final long serialVersionUID = 791804373195586987L;
     /**
      * ID
