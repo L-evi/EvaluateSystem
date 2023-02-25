@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.evaluate.dao.MajorDao">
+
+    <insert id="insertMajor" useGeneratedKeys="true" keyProperty="ID">
+        INSERT INTO major(ID, majorName)
+        VALUES (#{ID}, #{majorName})
+    </insert>
+    <select id="selectByMajorName" resultType="com.project.evaluate.entity.Major">
+        SELECT ID, majorName
+        FROM major
+        WHERE majorName = #{majorName}
+    </select>
+    <select id="selectByMajorID" resultType="com.project.evaluate.entity.Major">
+        SELECT ID, majorName
+        FROM major
+        WHERE ID = #{ID}
+    </select>
+</mapper>
