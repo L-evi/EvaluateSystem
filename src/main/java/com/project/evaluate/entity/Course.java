@@ -2,11 +2,17 @@ package com.project.evaluate.entity;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import converter.CourseCourseTypeConverter;
+import converter.CourseEducationTypeConverter;
+import converter.CourseMajorConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 
 /**
@@ -53,13 +59,13 @@ public class Course implements Serializable {
     /**
      * 大纲课程类型：外键，关联EducationType的ID
      */
-    @ExcelProperty(value = "大纲课程类型", index = 8)
+    @ExcelProperty(value = "大纲课程类型", index = 8,converter = CourseEducationTypeConverter.class)
     Integer educationType;
 
     /**
      * 课程类型：外键，关联CourseType的ID
      */
-    @ExcelProperty(value = "课程类型", index = 7)
+    @ExcelProperty(value = "课程类型", index = 7,converter = CourseCourseTypeConverter.class)
     Integer courseType;
 
     /**
@@ -77,7 +83,7 @@ public class Course implements Serializable {
     /**
      * 适用专业：外键，关联Major的ID
      */
-    @ExcelProperty(value = "适用专业", index = 3)
+    @ExcelProperty(value = "适用专业", index = 3,converter = CourseMajorConverter.class)
     Integer major;
 
     /**

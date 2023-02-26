@@ -10,7 +10,7 @@
                 #{educationType}, #{courseType}, #{credit}, #{teamLeader},
                 #{major}, #{courseTerm})
     </insert>
-    <insert id="insertPageCourse" useGeneratedKeys="true" keyProperty="ID">
+    <insert id="insertPageCourse" useGeneratedKeys="true">
         INSERT INTO Course(courseID, courseName, courseProperty, testType, educationType,
         courseType, credit,teamLeader, major, courseTerm)
         VALUES

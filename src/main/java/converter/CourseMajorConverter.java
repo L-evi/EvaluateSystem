@@ -9,28 +9,21 @@ import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.dao.MajorDao;
 import com.project.evaluate.entity.Major;
+import com.project.evaluate.util.ApplicationContextProvider;
 import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.lang.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Levi
- * @version 1.0 (created by Spring Boot)
- * @description
- * @since 2023/2/26 01:49
- */
 @Component
 public class CourseMajorConverter implements Converter<Integer> {
-
-    @Resource
-    private MajorDao majorDao;
-
-    @Resource
-    private RedisCache redisCache;
 
     @Override
     public Class<?> supportJavaTypeKey() {
@@ -45,6 +38,9 @@ public class CourseMajorConverter implements Converter<Integer> {
     @Override
     public Integer convertToJavaData(ReadConverterContext<?> context) throws Exception {
         String value = context.getReadCellData().getStringValue();
+        ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
+        RedisCache redisCache = applicationContext.getBean(RedisCache.class);
+        MajorDao majorDao = applicationContext.getBean(MajorDao.class);
         Major major = JSONObject.toJavaObject(redisCache.getCacheObject("major:" + value), Major.class);
         if (Objects.isNull(major) || Objects.isNull(major.getID())) {
             major = majorDao.selectByMajorName(value);
@@ -59,6 +55,8 @@ public class CourseMajorConverter implements Converter<Integer> {
 
     @Override
     public WriteCellData<?> convertToExcelData(WriteConverterContext<Integer> context) throws Exception {
+        RedisCache redisCache = ApplicationContextProvider.getApplicationContext().getBean(RedisCache.class);
+        MajorDao majorDao = ApplicationContextProvider.getApplicationContext().getBean(MajorDao.class);
         Major major = JSONObject.toJavaObject(redisCache.getCacheObject("major:" + context.getValue()), Major.class);
         if (Objects.isNull(major) || !Strings.hasText(major.getMajorName())) {
             major = majorDao.selectByMajorID(context.getValue());

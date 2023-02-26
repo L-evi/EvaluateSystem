@@ -1,6 +1,7 @@
 package com.project.evaluate.config;
 
 import com.project.evaluate.constant.ThreadPoolConstant;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.*;
 
@@ -8,6 +9,7 @@ import java.util.concurrent.*;
  * 线程池配置
  * 学习链接：https://blog.csdn.net/Xin_101/article/details/121567666
  */
+@Configuration
 public class ThreadPoolConfig {
     public static ExecutorService threadPoolExecutorGenerate = new ThreadPoolExecutor(
             ThreadPoolConstant.CORE_THREAD_NUM,

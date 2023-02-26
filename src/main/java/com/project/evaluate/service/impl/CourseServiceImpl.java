@@ -56,12 +56,10 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public ResponseResult importExcelCourse(String filename) {
         JSONObject jsonObject = new JSONObject();
-        filename = "D:\\levi\\EvaluateSystem\\src\\main\\resources\\static\\excel\\course_write_1676884515154.xlsx";
         if (!new File(filename).exists()) {
             jsonObject.put("msg", "参数错误，无法读取文件");
             return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
         }
-        // todo: 使用EasyExcel读取文件
         try (ExcelReader excelReader = EasyExcel.read(filename, Course.class, new CourseDataListener()).build()) {
             // 构建一个sheet可以指定名称或者no
             ReadSheet readSheet = EasyExcel.readSheet().build();

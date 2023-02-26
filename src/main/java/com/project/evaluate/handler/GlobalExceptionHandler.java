@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseResult RuntimeExceptionHandler(RuntimeException e) {
         System.out.println("RuntimeException：" + e.getMessage());
-//        e.printStackTrace();
+        e.printStackTrace();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", "Runtime Exception");
         jsonObject.put("error", e.getMessage());

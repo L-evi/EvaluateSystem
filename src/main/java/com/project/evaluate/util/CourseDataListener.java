@@ -23,8 +23,6 @@ import java.util.List;
 @Slf4j
 public class CourseDataListener implements ReadListener<Course> {
 
-    @Resource
-    private SqlSessionTemplate sqlSessionTemplate;
 
     private static final int BATCH_COUNT = 100;
 
@@ -70,6 +68,7 @@ public class CourseDataListener implements ReadListener<Course> {
     private void saveData() {
         log.info("{}条数据，开始存储数据库", cachedDataList.size());
 //        自动提交设置为false，自定义提交条数防止OOM，模式为BATCH
+        SqlSessionTemplate sqlSessionTemplate = ApplicationContextProvider.getApplicationContext().getBean(SqlSessionTemplate.class);
         SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
 //        获取Dao
         CourseDao courseDao = session.getMapper(CourseDao.class);
@@ -93,8 +92,10 @@ public class CourseDataListener implements ReadListener<Course> {
         } catch (Exception e) {
 //            异常回滚
             session.rollback();
+            throw new RuntimeException(e);
         } finally {
 //            关闭session
+            session.clearCache();
             session.close();
         }
         log.info("存储数据库完成！");

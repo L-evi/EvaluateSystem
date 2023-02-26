@@ -25,6 +25,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -379,6 +380,13 @@ class EvaluateApplicationTests {
                 log.info("读取到一条数据{}", JSON.toJSONString(course));
             }
         })).sheet().doRead();
+    }
+
+    @Test
+    public void testGenerateExcelTemplate() {
+        String fileName = "/Users/apple/Documents/Program/Java/EvaluateSystem/src/main/resources/static" + File.separator + System.currentTimeMillis() + ".xlsx";
+        List<Course> courses = courseDao.selectPageCourse(new Course());
+        EasyExcel.write(fileName, Course.class).sheet("course").doWrite(courses);
     }
 
     @Test
