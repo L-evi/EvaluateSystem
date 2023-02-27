@@ -54,7 +54,10 @@
                 loginIP = #{loginIP},
             </if>
             <if test="loginTime != null">
-                loginTime = #{loginTime}
+                loginTime = #{loginTime},
+            </if>
+            <if test="memo != null and memo != ''">
+                memo = #{memo}
             </if>
         </set>
         where userID = #{userID}
