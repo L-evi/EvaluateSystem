@@ -22,5 +22,7 @@ public interface CourseDocTaskDao {
 
     Boolean updateCourseDocTask(CourseDocTask courseDocTask);
 
-    Boolean updateCourseDocTaskStatus(Integer ID,Integer status);
+    Boolean updateCourseDocTaskStatus(Integer ID, Integer status);
+
+    Integer insertPageCourseDocTask(@Param("courseDocTasks") List<CourseDocTask> courseDocTasks);
 }

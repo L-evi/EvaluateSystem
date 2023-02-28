@@ -46,12 +46,12 @@ public class CourseDocTaskController {
         if (Strings.hasText(token)) {
             try {
                 JSONObject jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
-                String roleType = (String) jsonObject.get("roleType");
-                if (roleType.equals("0")) {
+                Integer roleType = (Integer) jsonObject.get("roleType");
+                if (roleType.equals(0)) {
                     courseDocTask.setTeacher((String) jsonObject.get("userID"));
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Parse token  错误");
+                throw new RuntimeException(e);
             }
         }
         return this.courseDocTaskService.selectPageCourseDocTask(courseDocTask, page, pageSize, orderBy);
@@ -101,7 +101,6 @@ public class CourseDocTaskController {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        courseDocTasks.forEach(System.out::println);
-        return ResponseResult.success();
+        return courseDocTaskService.insertCourseDocTask(courseDocTasks);
     }
 }

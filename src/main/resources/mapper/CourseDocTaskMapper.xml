@@ -3,6 +3,38 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.dao.CourseDocTaskDao">
+    <insert id="insertPageCourseDocTask" useGeneratedKeys="true">
+        INSERT INTO coursedoctask
+        (courseID,
+        teacher,
+        schoolStartYear,
+        schoolEndYear,
+        schoolTerm,
+        grades,
+        studentNum,
+        issueTime,
+        deadline,
+        taskStatus,
+        closeTask,
+        operator,
+        memo)
+        VALUES
+        <foreach collection="courseDocTasks" item="courseDocTask" separator=",">
+            (#{courseDocTask.courseID},
+            #{courseDocTask.teacher},
+            #{courseDocTask.schoolStartYear},
+            #{courseDocTask.schoolEndYear},
+            #{courseDocTask.schoolTerm},
+            #{courseDocTask.grades},
+            #{courseDocTask.studentNum},
+            #{courseDocTask.issueTime},
+            #{courseDocTask.deadline},
+            #{courseDocTask.taskStatus},
+            #{courseDocTask.closeTask},
+            #{courseDocTask.operator},
+            #{courseDocTask.memo})
+        </foreach>
+    </insert>
     <update id="updateCourseDocTask">
         UPDATE coursedoctask
         <set>

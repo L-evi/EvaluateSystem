@@ -17,5 +17,5 @@ public interface CourseDocTaskService {
 
     ResponseResult resetCourseDocTask(Integer ID, Integer status);
 
-    ResponseResult insertCourseDocTask(CourseDocTask courseDocTask);
+    ResponseResult insertCourseDocTask(List<CourseDocTask> courseDocTasks);
 }

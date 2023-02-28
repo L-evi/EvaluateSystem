@@ -23,7 +23,7 @@ public class CourseDocTask implements Serializable {
     /**
      * ID：自增
      */
-    @ExcelProperty("序号")
+    @ExcelIgnore
     Integer ID;
 
     /**

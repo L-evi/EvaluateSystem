@@ -17,6 +17,7 @@ import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.io.*;
@@ -138,8 +139,15 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
     }
 
     @Override
-    public ResponseResult insertCourseDocTask(CourseDocTask courseDocTask) {
-        return null;
+    public ResponseResult insertCourseDocTask(@RequestBody List<CourseDocTask> courseDocTasks) {
+        JSONObject jsonObject = new JSONObject();
+        Integer num = courseDocTaskDao.insertPageCourseDocTask(courseDocTasks);
+        if (num < 1) {
+            jsonObject.put("msg", "插入数据失败");
+            return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+        }
+        jsonObject.put("num", num);
+        jsonObject.put("msg", "插入数据成功");
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
-
 }

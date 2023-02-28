@@ -225,15 +225,19 @@ class EvaluateApplicationTests {
 //        System.out.println("---------");
 //        List<CourseDocTask> courseDocTasks = this.courseDocTaskDao.screenTeacherCourseDocTask(objectMap);
 //        courseDocTasks.forEach(System.out::println);
-        CourseDocTask courseDocTask = new CourseDocTask();
+       /* CourseDocTask courseDocTask = new CourseDocTask();
         courseDocTask.setID(3);
         PageHelper.startPage(0, 5, "ID DESC");
         List<Map<String, Object>> courseDocTasks = this.courseDocTaskDao.selectPageCourseDocTask(courseDocTask);
         PageInfo<Map<String, Object>> courseDocTaskPageInfo = new PageInfo<>(courseDocTasks);
         List<Map<String, Object>> list = courseDocTaskPageInfo.getList();
-        list.forEach(System.out::println);
-        System.out.println(courseDocTaskPageInfo.getTotal());
-        System.out.println(courseDocTaskPageInfo.getPages());
+        list.forEach(System.out::println);*/
+        List<Integer> ids = new ArrayList<>();
+        ids.add(2);
+        ids.add(3);
+        List<CourseDocTask> courseDocTasks = courseDocTaskDao.selectPageID(ids);
+//        Integer num = courseDocTaskDao.insertPageCourseDocTask(courseDocTasks);
+//        log.info("{} 条数据被插入", num);
 
     }
 
@@ -372,14 +376,14 @@ class EvaluateApplicationTests {
     public void importCourseExcel() {
         // 写法1：JDK8+ ,不用额外写一个DemoDataListener
         // since: 3.0.0-beta1
-        String fileName = "";
+//        String fileName = "";
         // 这里默认每次会读取100条数据 然后返回过来 直接调用使用数据就行
         // 具体需要返回多少行可以在`PageReadListener`的构造函数设置
-        EasyExcel.read(fileName, Course.class, new PageReadListener<Course>(dataList -> {
+/*        EasyExcel.read(fileName, Course.class, new PageReadListener<Course>(dataList -> {
             for (Course course : dataList) {
                 log.info("读取到一条数据{}", JSON.toJSONString(course));
             }
-        })).sheet().doRead();
+        })).sheet().doRead();*/
     }
 
     @Test
