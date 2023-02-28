@@ -1,6 +1,7 @@
 package com.project.evaluate.entity;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import converter.SyslogStatusConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,7 +53,7 @@ public class Syslog implements Serializable {
     /**
      * 操作成功失败
      */
-    @ExcelProperty("操作是否成功（1为成功，0为失败）")
+    @ExcelProperty(value = "操作状态", converter = SyslogStatusConverter.class)
     private Integer status;
     /**
      * 操作者
