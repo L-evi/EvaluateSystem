@@ -2,6 +2,7 @@ package com.project.evaluate.entity;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.evaluate.converter.CourseCourseTypeConverter;
 import com.project.evaluate.converter.CourseEducationTypeConverter;
 import com.project.evaluate.converter.CourseMajorConverter;
@@ -28,6 +29,7 @@ public class Course implements Serializable {
      * id：主键或者索引
      */
     @ExcelIgnore
+    @JsonProperty("ID")
     Integer ID;
 
     /**

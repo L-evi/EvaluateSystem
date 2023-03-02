@@ -1,7 +1,6 @@
 package com.project.evaluate;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -9,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.*;
 import com.project.evaluate.entity.*;
 import com.project.evaluate.util.JwtUtil;
+import com.project.evaluate.util.Pager;
 import com.project.evaluate.util.bloom.BloomFilterHelper;
 import com.project.evaluate.util.bloom.RedisBloomFilter;
 import com.project.evaluate.util.redis.RedisCache;
@@ -31,6 +31,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 @PropertySource("classpath:application.yml")
@@ -401,5 +402,27 @@ class EvaluateApplicationTests {
         log.info("插入了{}条数据",integer);*/
     }
 
+    @Test
+    public void testRedisList() {
+        List<Course> list = courseDao.selectPageCourse(new Course());
+//        list.forEach(System.out::println);
+        redisCache.deleteObject("Courses");
+        redisCache.setCacheList("Courses", list);
+        List<Object> courses = redisCache.getCacheList("Courses");
+        courses.forEach((course) -> {
+            Course course_one = JSON.parseObject(JSON.toJSONString(course), Course.class);
+            System.out.println(course_one.toString());
+        });
+    }
+
+    @Test
+    public void testPageHelperList() {
+        List<Course> courses = redisCache.getCacheList("Course:21HA2560").stream().map(obj -> JSON.parseObject(JSON.toJSONString(obj), Course.class)).collect(Collectors.toList());
+        Pager<Course> pager = new Pager<>();
+        PageInfo<Course> listPage = pager.getListPage(courses, 1, 1);
+        listPage.getList().stream().forEach(System.out::println);
+        System.out.println(listPage.getTotal());
+        System.out.println(listPage.getPages());
+    }
 }
 

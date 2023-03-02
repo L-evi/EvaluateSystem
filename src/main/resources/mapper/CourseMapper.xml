@@ -3,7 +3,8 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.dao.CourseDao">
-    <insert id="insertCourse" useGeneratedKeys="true" parameterType="com.project.evaluate.entity.Course">
+    <insert id="insertCourse" useGeneratedKeys="true" parameterType="com.project.evaluate.entity.Course"
+            keyProperty="ID">
         INSERT INTO Course(courseID, courseName, courseProperty, testType, educationType,
                            courseType, credit, teamLeader, major, courseTerm)
         VALUES (#{courseID}, #{courseName}, #{courseProperty}, #{testType},
@@ -19,6 +20,42 @@
             #{course.courseType},#{course.credit},#{course.teamLeader},#{course.major},#{course.courseTerm})
         </foreach>
     </insert>
+    <update id="updateCourse" useGeneratedKeys="true" keyProperty="ID" flushCache="true">
+        UPDATE course
+        <set>
+            <if test="courseID != null and courseID !=''">
+                courseID = #{courseID},
+            </if>
+            <if test="courseName != null and courseName !=''">
+                courseName = #{courseName},
+            </if>
+            <if test="courseProperty != null and courseProperty != ''">
+                courseProperty = #{courseProperty},
+            </if>
+            <if test="testType != null and testType != ''">
+                testType = #{testType},
+            </if>
+            <if test="educationType != null">
+                educationType = #{educationType},
+            </if>
+            <if test="courseType != null">
+                courseType = #{courseType},
+            </if>
+            <if test="credit != null">
+                credit = #{credit},
+            </if>
+            <if test="teamLeader != null and teamLeader !=''">
+                teamLeader = #{teamLeader},
+            </if>
+            <if test="major != null">
+                major = #{major},
+            </if>
+            <if test="courseTerm != null">
+                courseTerm = #{courseTerm}
+            </if>
+        </set>
+        WHERE ID = #{ID}
+</update>
     <delete id="deletaByID">
         DELETE
         FROM course
@@ -90,5 +127,20 @@
                courseType
         FROM course
         WHERE courseID = #{courseID}
+    </select>
+    <select id="selectByID" resultType="com.project.evaluate.entity.Course">
+        SELECT ID,
+               courseID,
+               courseName,
+               courseProperty,
+               testType,
+               educationType,
+               courseType,
+               credit,
+               teamLeader,
+               major,
+               courseType
+        FROM course
+        WHERE ID = #{ID}
     </select>
 </mapper>

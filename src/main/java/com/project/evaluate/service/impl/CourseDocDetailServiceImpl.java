@@ -150,7 +150,8 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
 //        从redis中获取
         Course course = JSONObject.toJavaObject(this.redisCache.getCacheObject("Course:" + courseDocTask.getCourseID()), Course.class);
         if (Objects.isNull(course)) {
-            course = this.courseDao.selectByCourseID(courseDocTask.getCourseID());
+            // todo: 修改course为List
+            course = this.courseDao.selectByCourseID(courseDocTask.getCourseID()).get(0);
             if (Objects.isNull(course)) {
                 jsonObject.put("msg", "找不到课程信息");
                 return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);

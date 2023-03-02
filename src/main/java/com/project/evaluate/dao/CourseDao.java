@@ -15,11 +15,15 @@ public interface CourseDao {
 
     Integer countCourse();
 
-    Course selectByCourseID(String courseID);
+    List<Course> selectByCourseID(String courseID);
+
+    Course selectByID(Integer ID);
 
     Integer insertCourse(Course course);
 
     Integer insertPageCourse(@Param("course") List<Course> cours);
+
+    Integer updateCourse(Course course);
 
     Boolean deletaByID(Integer ID);
 }
