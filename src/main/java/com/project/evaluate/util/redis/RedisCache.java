@@ -98,14 +98,30 @@ public class RedisCache {
 
     /**
      * 缓存List数据
+     * Redis在原有数据的基础上往后面添加
      *
      * @param key      缓存的键值
      * @param dataList 待缓存的List数据
-     * @return 缓存的对象
+     * @return 缓存的List的长度
      */
     public <T> long setCacheList(final String key, final List<T> dataList) {
         Long count = redisTemplate.opsForList().rightPushAll(key, dataList);
         return count == null ? 0 : count;
+    }
+
+    /**
+     *
+     * @param key
+     * @param dataList
+     * @param timeout
+     * @param timeUnit
+     * @return
+     * @param <T>
+     */
+    public <T> long setCacheList(final String key, final List<T> dataList, final long timeout, final TimeUnit timeUnit) {
+        Long count = redisTemplate.opsForList().rightPushAll(key,dataList);
+        redisTemplate.expire(key,timeout,timeUnit);
+        return count;
     }
 
     /**
