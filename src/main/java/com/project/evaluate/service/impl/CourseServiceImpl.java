@@ -19,7 +19,9 @@ import com.project.evaluate.util.response.ResultCode;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.DataInput;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -79,10 +81,7 @@ public class CourseServiceImpl implements CourseService {
         /**
          * 从redis中取出数据并通过流转化实体类List
          */
-        List<Course> courses = redisCache.getCacheList("Course:" + courseID)
-                .stream()
-                .map(obj -> JSON.parseObject(JSON.toJSONString(obj), Course.class))
-                .collect(Collectors.toList());
+        List<Course> courses = redisCache.getCacheList("Course:" + courseID).stream().map(obj -> JSON.parseObject(JSON.toJSONString(obj), Course.class)).collect(Collectors.toList());
         if (Objects.isNull(courses) || courses.isEmpty()) {
             courses = courseDao.selectByCourseID(courseID);
             if (Objects.isNull(courses) || courses.isEmpty()) {
@@ -94,8 +93,7 @@ public class CourseServiceImpl implements CourseService {
              * 之所以要先删除再加入，是因为redisCache中的setCacheList方法是在后面追加
              */
             courses.stream().forEach(course -> redisCache.setCacheObject("Course:" + course.getID(), course, 1, TimeUnit.DAYS));
-            redisCache.deleteObject("Course:" + courseID);
-            redisCache.setCacheList("Course:" + courseID, courses, 1, TimeUnit.DAYS);
+            redisCache.resetCacheList("Course:" + courseID, courses, 1, TimeUnit.DAYS);
         }
         /**
          * 自定义工具类分页
@@ -116,9 +114,16 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public ResponseResult insertCourse(Course course) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.nonNull(redisCache.getCacheObject("Course:" + course.getCourseID()))) {
-            jsonObject.put("msg", "数据重复");
-            return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+        /**
+         * 根据CourseID获取redis中的数据
+         * 重复则说明已经重复该数据了
+         */
+        List<Course> courses = redisCache.getCacheList("Course:" + course.getCourseID()).stream().map(obj -> JSON.parseObject(JSON.toJSONString(obj), Course.class)).collect(Collectors.toList());
+        for (Course obj : courses) {
+            if (obj.equals(course)) {
+                jsonObject.put("msg", "参数无效");
+                return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+            }
         }
         Integer num = courseDao.insertCourse(course);
         if (num < 1) {
@@ -126,7 +131,9 @@ public class CourseServiceImpl implements CourseService {
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
         redisCache.setCacheObject("Course:" + course.getID(), course, 1, TimeUnit.DAYS);
-        redisCache.setCacheObject("Course:" + course.getCourseID(), course, 1, TimeUnit.DAYS);
+        List<Course> list = new ArrayList<>();
+        list.add(course);
+        redisCache.setCacheList("Course:" + course.getCourseID(), list, 1, TimeUnit.DAYS);
         jsonObject.put("msg", "插入成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
@@ -134,23 +141,22 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public ResponseResult updateCourse(Course course) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.nonNull(course.getID())) {
-            redisCache.deleteObject("Course:" + course.getID());
-        }
-        if (Objects.nonNull(course.getCourseID())) {
-            redisCache.deleteObject("Course:" + course.getCourseID());
-        }
-        Integer num = courseDao.updateCourse(course);
-        /**
-         *
-         */
-        if (num < 1) {
+        redisCache.deleteObject("Course:" + course.getID());
+        List<Course> courses = redisCache.getCacheList("Course:" + course.getCourseID())
+                .stream()
+                .map(obj -> JSON.parseObject(JSON.toJSONString(obj), Course.class))
+                .collect(Collectors.toList());
+        final String courseID = course.getCourseID();
+        courses.removeIf(obj -> obj.getCourseID().equals(courseID));
+        Boolean isDelete = courseDao.updateCourse(course);
+        if (!isDelete) {
             jsonObject.put("msg", "更新失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
         course = courseDao.selectByID(course.getID());
         redisCache.setCacheObject("Course:" + course.getID(), course);
-        redisCache.setCacheObject("Course:" + course.getCourseID(), course);
+        courses.add(course);
+        redisCache.resetCacheList("Course:" + course.getCourseID(), courses, 1, TimeUnit.DAYS);
         jsonObject.put("msg", "更新成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
@@ -159,8 +165,13 @@ public class CourseServiceImpl implements CourseService {
     public ResponseResult deleteCourse(Integer ID, String courseID) {
         JSONObject jsonObject = new JSONObject();
         redisCache.deleteObject("Course:" + ID);
-        redisCache.deleteObject("Course:" + courseID);
-        Boolean isDelete = courseDao.deletaByID(ID);
+        List<Course> courses = redisCache.getCacheList("Course:" + courseID)
+                .stream()
+                .map(obj -> JSON.parseObject(JSON.toJSONString(obj), Course.class))
+                .collect(Collectors.toList());
+        courses.removeIf(obj -> obj.getCourseID().equals(courseID));
+        redisCache.resetCacheList("Course:" + courseID, courses, 1, TimeUnit.DAYS);
+        Boolean isDelete = courseDao.deleteByID(ID);
         if (!isDelete) {
             jsonObject.put("msg", "删除失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);

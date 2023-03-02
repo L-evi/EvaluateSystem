@@ -23,7 +23,7 @@ public interface CourseDao {
 
     Integer insertPageCourse(@Param("course") List<Course> cours);
 
-    Integer updateCourse(Course course);
+    Boolean updateCourse(Course course);
 
-    Boolean deletaByID(Integer ID);
+    Boolean deleteByID(Integer ID);
 }

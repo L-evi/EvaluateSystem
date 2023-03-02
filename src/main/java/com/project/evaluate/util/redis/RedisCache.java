@@ -124,7 +124,16 @@ public class RedisCache {
         return count;
     }
 
-    public <T> long resetCacheList(final String key,final List<T> dataList,final long timeout,final TimeUnit timeUnit){
+    /**
+     * @param key
+     * @param dataList
+     * @param timeout
+     * @param timeUnit
+     * @return
+     * @description
+     * @author Levi
+     */
+    public <T> long resetCacheList(final String key, final List<T> dataList, final long timeout, final TimeUnit timeUnit) {
         redisTemplate.delete(key);
         Long count = redisTemplate.opsForList().rightPushAll(key, dataList);
         redisTemplate.expire(key, timeout, timeUnit);

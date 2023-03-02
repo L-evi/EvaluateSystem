@@ -56,7 +56,7 @@
         </set>
         WHERE ID = #{ID}
 </update>
-    <delete id="deletaByID">
+    <delete id="deleteByID">
         DELETE
         FROM course
         WHERE ID = #{ID}
