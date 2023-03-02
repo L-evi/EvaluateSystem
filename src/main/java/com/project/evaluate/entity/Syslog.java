@@ -1,7 +1,7 @@
 package com.project.evaluate.entity;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import converter.SyslogStatusConverter;
+import com.project.evaluate.converter.SyslogStatusConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package converter;
+package com.project.evaluate.converter;
 
 import com.alibaba.excel.converters.Converter;
 import com.alibaba.excel.converters.ReadConverterContext;
@@ -9,12 +9,11 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Levi
- * @version 1.0 (created by Spring Boot)
  * @description
- * @since 2023/2/26 01:49
+ * @since 2023/2/26 01:48
  */
 @Component
-public class CourseCourseTypeConverter implements Converter<Integer> {
+public class CourseEducationTypeConverter implements Converter<Integer> {
     @Override
     public Class<?> supportJavaTypeKey() {
         return Integer.class;
@@ -30,12 +29,14 @@ public class CourseCourseTypeConverter implements Converter<Integer> {
         String value = context.getReadCellData().getStringValue();
         System.out.println(value);
         switch (value) {
-            case "理论课程":
+            case "通识教育":
                 return 0;
-            case "实验课程":
+            case "大类教育":
                 return 1;
-            case "课程项目":
+            case "专业教育":
                 return 2;
+            case "师范教育":
+                return 3;
             default:
                 // 找不到指定的课程类型返回-1
                 return -1;
@@ -47,11 +48,13 @@ public class CourseCourseTypeConverter implements Converter<Integer> {
         Integer value = context.getValue();
         switch (value) {
             case 0:
-                return new WriteCellData<>("理论课程");
+                return new WriteCellData<>("通识教育");
             case 1:
-                return new WriteCellData<>("实验课程");
+                return new WriteCellData<>("大类教育");
             case 2:
-                return new WriteCellData<>("课程项目");
+                return new WriteCellData<>("专业教育");
+            case 3:
+                return new WriteCellData<>("师范教育");
             default:
                 return new WriteCellData<>("未知");
         }

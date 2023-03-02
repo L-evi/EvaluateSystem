@@ -2,17 +2,14 @@ package com.project.evaluate.entity;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
-import converter.CourseCourseTypeConverter;
-import converter.CourseEducationTypeConverter;
-import converter.CourseMajorConverter;
+import com.project.evaluate.converter.CourseCourseTypeConverter;
+import com.project.evaluate.converter.CourseEducationTypeConverter;
+import com.project.evaluate.converter.CourseMajorConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.Serializable;
 
 /**
