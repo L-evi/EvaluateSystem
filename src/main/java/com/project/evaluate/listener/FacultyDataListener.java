@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.project.evaluate.dao.FacultyDao;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.util.ApplicationContextProvider;
+import com.project.evaluate.util.redis.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -14,6 +15,8 @@ import org.apache.shiro.crypto.hash.Md5Hash;
 import org.mybatis.spring.SqlSessionTemplate;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Levi
@@ -74,6 +77,10 @@ public class FacultyDataListener implements ReadListener<Faculty> {
          */
         FacultyDao facultyDao = sqlSession.getMapper(FacultyDao.class);
         /*
+         * 获取redisCache
+         */
+        RedisCache redisCache = ApplicationContextProvider.getApplicationContext().getBean(RedisCache.class);
+        /*
          * 开始存储数据
          */
         int size = cachedDataList.size();
@@ -89,10 +96,20 @@ public class FacultyDataListener implements ReadListener<Faculty> {
                 /*
                  * 提交并清理缓存
                  */
-                facultyDao.insertPageFaculty(cachedDataList.subList(startIndex, endIndex));
+                List<Faculty> faculties = cachedDataList.subList(startIndex, endIndex);
+                facultyDao.insertPageFaculty(faculties);
                 sqlSession.commit();
                 sqlSession.clearCache();
                 log.info("第{}次提交", i + 1);
+                /*
+                 * 存储到redis中
+                 */
+                if (Objects.nonNull(redisCache)) {
+                    faculties.stream().forEach(obj -> {
+                        obj.setPassword(null);
+                        redisCache.setCacheObject("Faculty:" + obj.getUserID(), obj, 1, TimeUnit.DAYS);
+                    });
+                }
             }
         } finally {
             /*
