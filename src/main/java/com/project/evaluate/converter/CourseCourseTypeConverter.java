@@ -28,7 +28,6 @@ public class CourseCourseTypeConverter implements Converter<Integer> {
     @Override
     public Integer convertToJavaData(ReadConverterContext<?> context) throws Exception {
         String value = context.getReadCellData().getStringValue();
-        System.out.println(value);
         switch (value) {
             case "理论课程":
                 return 0;

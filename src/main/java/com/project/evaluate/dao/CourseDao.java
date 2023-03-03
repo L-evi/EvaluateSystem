@@ -21,7 +21,7 @@ public interface CourseDao {
 
     Integer insertCourse(Course course);
 
-    Integer insertPageCourse(@Param("course") List<Course> cours);
+    Integer insertPageCourse(@Param("courses") List<Course> courses);
 
     Integer updateCourse(Course course);
 

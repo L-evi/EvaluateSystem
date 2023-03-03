@@ -1,4 +1,4 @@
-package com.project.evaluate.util;
+package com.project.evaluate.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
@@ -6,6 +6,7 @@ import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSON;
 import com.project.evaluate.dao.CourseDao;
 import com.project.evaluate.entity.Course;
+import com.project.evaluate.util.ApplicationContextProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -23,9 +24,14 @@ import java.util.List;
 @Slf4j
 public class CourseDataListener implements ReadListener<Course> {
 
-
+    /**
+     * 提交条数
+     */
     private static final int BATCH_COUNT = 100;
 
+    /**
+     * 数据List
+     */
     private List<Course> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
 
 
