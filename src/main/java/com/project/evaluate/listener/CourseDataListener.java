@@ -1,4 +1,4 @@
-package com.project.evaluate.util;
+package com.project.evaluate.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
@@ -6,13 +6,16 @@ import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSON;
 import com.project.evaluate.dao.CourseDao;
 import com.project.evaluate.entity.Course;
+import com.project.evaluate.util.ApplicationContextProvider;
+import com.project.evaluate.util.redis.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 
-import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Levi
@@ -23,9 +26,14 @@ import java.util.List;
 @Slf4j
 public class CourseDataListener implements ReadListener<Course> {
 
-
+    /**
+     * 提交条数
+     */
     private static final int BATCH_COUNT = 100;
 
+    /**
+     * 数据List
+     */
     private List<Course> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
 
 
@@ -72,6 +80,10 @@ public class CourseDataListener implements ReadListener<Course> {
         SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
 //        获取Dao
         CourseDao courseDao = session.getMapper(CourseDao.class);
+        /*
+         * 获取Redis
+         */
+        RedisCache redisCache = ApplicationContextProvider.getApplicationContext().getBean(RedisCache.class);
         int size = cachedDataList.size();
         int batchCount = 10;
         int count = size % batchCount == 0 ? size / batchCount : size / batchCount + 1;
@@ -88,6 +100,14 @@ public class CourseDataListener implements ReadListener<Course> {
                 session.commit();
                 session.clearCache();
                 log.info("第{}次提交", i + 1);
+                /*
+                 * 数据存入到redis中
+                 */
+                if (Objects.nonNull(redisCache)) {
+                    batchList.stream().forEach(obj -> {
+                        redisCache.setCacheObject("Course:" + obj.getID(), obj, 1, TimeUnit.DAYS);
+                    });
+                }
             }
         } catch (Exception e) {
 //            异常回滚

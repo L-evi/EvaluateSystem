@@ -1,5 +1,8 @@
 package com.project.evaluate.service.impl;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -7,6 +10,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.FacultyDao;
 import com.project.evaluate.entity.Faculty;
+import com.project.evaluate.listener.FacultyDataListener;
 import com.project.evaluate.service.FacultyService;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
@@ -19,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -137,6 +142,26 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
+    public ResponseResult importFaculty(String filename) {
+        JSONObject jsonObject = new JSONObject();
+        if (!new File(filename).exists()) {
+            jsonObject.put("msg", "参数错误，文件不存在");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        }
+        try (ExcelReader excelReader = EasyExcel.read(filename, Faculty.class, new FacultyDataListener()).build()) {
+            /**
+             * 构建一个sheet，可以指定名称
+             */
+            ReadSheet readSheet = EasyExcel.readSheet().build();
+            excelReader.read(readSheet);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        jsonObject.put("msg", "导入成功");
+        return new ResponseResult<>(ResultCode.SUCCESS, jsonObject);
+    }
+
+    @Override
     public ResponseResult updateFaculty(Faculty faculty) {
         JSONObject jsonObject = new JSONObject();
         int num = this.facultyDao.updateFaculty(faculty);
@@ -224,4 +249,6 @@ public class FacultyServiceImpl implements FacultyService {
         jsonObject.put("num", num);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
+
+
 }

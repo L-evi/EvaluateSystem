@@ -389,9 +389,9 @@ class EvaluateApplicationTests {
 
     @Test
     public void testGenerateExcelTemplate() {
-        String fileName = "/Users/apple/Documents/Program/Java/EvaluateSystem/src/main/resources/static" + File.separator + System.currentTimeMillis() + ".xlsx";
+        /*String fileName = "/Users/apple/Documents/Program/Java/EvaluateSystem/src/main/resources/static" + File.separator + System.currentTimeMillis() + ".xlsx";
         List<Course> courses = courseDao.selectPageCourse(new Course());
-        EasyExcel.write(fileName, Course.class).sheet("course").doWrite(courses);
+        EasyExcel.write(fileName, Course.class).sheet("course").doWrite(courses);*/
     }
 
     @Test

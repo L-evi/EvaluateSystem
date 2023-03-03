@@ -2,6 +2,7 @@ package com.project.evaluate.dao;
 
 import com.project.evaluate.entity.Faculty;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,6 +13,8 @@ public interface FacultyDao {
     Faculty selectByUserID(String userID);
 
     Integer insertFaculty(Faculty faculty);
+
+    Integer insertPageFaculty(@Param("faculties") List<Faculty> faculties);
 
     Integer updateFaculty(Faculty faculty);
 

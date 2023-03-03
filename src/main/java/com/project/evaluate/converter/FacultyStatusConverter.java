@@ -9,12 +9,11 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Levi
- * @version 1.0 (created by Spring Boot)
  * @description
- * @since 2023/2/26 01:49
+ * @since 2023/3/3
  */
 @Component
-public class CourseCourseTypeConverter implements Converter<Integer> {
+public class FacultyStatusConverter implements Converter<Integer> {
     @Override
     public Class<?> supportJavaTypeKey() {
         return Integer.class;
@@ -27,18 +26,10 @@ public class CourseCourseTypeConverter implements Converter<Integer> {
 
     @Override
     public Integer convertToJavaData(ReadConverterContext<?> context) throws Exception {
-        String value = context.getReadCellData().getStringValue();
-        switch (value) {
-            case "理论课程":
-                return 0;
-            case "实验课程":
-                return 1;
-            case "课程项目":
-                return 2;
-            default:
-                // 找不到指定的课程类型返回-1
-                return -1;
-        }
+        /*
+         * 默认启用
+         */
+        return 1;
     }
 
     @Override
@@ -46,11 +37,9 @@ public class CourseCourseTypeConverter implements Converter<Integer> {
         Integer value = context.getValue();
         switch (value) {
             case 0:
-                return new WriteCellData<>("理论课程");
+                return new WriteCellData<>("禁用");
             case 1:
-                return new WriteCellData<>("实验课程");
-            case 2:
-                return new WriteCellData<>("课程项目");
+                return new WriteCellData<>("启用");
             default:
                 return new WriteCellData<>("未知");
         }

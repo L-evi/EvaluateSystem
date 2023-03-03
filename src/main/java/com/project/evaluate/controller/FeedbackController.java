@@ -32,7 +32,6 @@ public class FeedbackController {
     private FeedbackService feedbackService;
 
     @PostMapping("/add")
-    @DataLog(modelName = "提交反馈意见", operationType = "insert")
     public ResponseResult insertFeedback(@RequestBody Feedback feedback, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(feedback)) {
@@ -52,7 +51,6 @@ public class FeedbackController {
     }
 
     @GetMapping("/get/single")
-    @DataLog(modelName = "查看反馈意见详情", operationType = "select")
     public ResponseResult getSingleFeedback(Integer ID) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(ID) || ID == 0) {
@@ -63,7 +61,6 @@ public class FeedbackController {
     }
 
     @GetMapping("/get/page")
-    @DataLog(modelName = "分页查看反馈意见", operationType = "select")
     public ResponseResult getPageFeedback(Integer page, Integer pageSize, @DefaultValue("ID ASC") String orderBy, Feedback feedback) {
         if (Objects.isNull(page)) {
             page = 0;
@@ -76,7 +73,6 @@ public class FeedbackController {
 
     @RequiresRoles(value = "1", logical = Logical.OR)
     @DeleteMapping("/delete/single")
-    @DataLog(modelName = "删除反馈意见", operationType = "delete")
     public ResponseResult deleteFeedback(Integer ID) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(ID) || ID == 0) {

@@ -10,6 +10,8 @@ public interface FacultyService {
 
     ResponseResult insertFaculty(Faculty faculty);
 
+    ResponseResult importFaculty(String filename);
+
     ResponseResult updateFaculty(Faculty faculty);
 
     ResponseResult resetFaculty(String userID);

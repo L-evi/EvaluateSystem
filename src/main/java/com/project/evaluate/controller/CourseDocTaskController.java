@@ -57,8 +57,8 @@ public class CourseDocTaskController {
         return this.courseDocTaskService.selectPageCourseDocTask(courseDocTask, page, pageSize, orderBy);
     }
 
-    //    只有文档管理员才能删除
-    @RequiresRoles("2")
+    @RequiresRoles(value = "2", logical = Logical.OR)
+    @DataLog(modelName = "删除文档上传任务", operationType = "delete")
     @DeleteMapping(value = "/delete")
     public ResponseResult deleteTeachingDocuments(Integer ID) {
         JSONObject jsonObject = new JSONObject();
@@ -71,7 +71,7 @@ public class CourseDocTaskController {
 
 
     @PutMapping("/update")
-    @RequiresRoles(value = {"2"}, logical = Logical.OR)
+    @RequiresRoles(value = "2", logical = Logical.OR)
     @DataLog(operationType = "update", modelName = "修改文档上传任务")
     public ResponseResult updateCourseDocTask(@RequestBody CourseDocTask courseDocTask) {
         JSONObject jsonObject = new JSONObject();
@@ -82,7 +82,7 @@ public class CourseDocTaskController {
         return courseDocTaskService.updateCourseDocTask(courseDocTask);
     }
 
-    @RequiresRoles(value = "2", logical = Logical.OR)
+    @RequiresRoles(value = "1", logical = Logical.OR)
     @PutMapping("/reset")
     @DataLog(modelName = "重启文档上传任务", operationType = "update")
     public ResponseResult resetCourseDocTask(Integer ID, Integer status) {
@@ -95,6 +95,8 @@ public class CourseDocTaskController {
     }
 
     @PostMapping("/add")
+    @RequiresRoles(value = "2", logical = Logical.OR)
+    @DataLog(modelName = "创建文档上传任务", operationType = "insert")
     public ResponseResult insertCourseDocTask(@RequestBody List<CourseDocTask> courseDocTasks) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(courseDocTasks) || courseDocTasks.isEmpty()) {

@@ -33,7 +33,7 @@ public class VerifyCodeController {
     @Resource
     private RedisCache redisCache;
 
-    @RequestMapping(value = "/get/code", method = RequestMethod.POST)
+    @PostMapping(value = "/get/code")
     public void getVerifyCode(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, Object> dataMap) {
         int len = Integer.parseInt((String) dataMap.get("length"));
         String weight = (String) dataMap.get("weight");
@@ -56,7 +56,7 @@ public class VerifyCodeController {
         }
     }
 
-    @RequestMapping(value = "/check/code", method = RequestMethod.POST)
+    @PostMapping(value = "/check/code")
     public ResponseResult checkVerifyCode(HttpServletRequest request) {
         String uuid = request.getHeader("uuid");
         String code = request.getHeader("code").toLowerCase(Locale.ROOT);

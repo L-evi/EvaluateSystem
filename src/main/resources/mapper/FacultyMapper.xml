@@ -22,6 +22,17 @@
         values (#{userID}, #{userName}, #{password}, #{roleType}, #{mobile}, #{email}, #{status}, #{isInitPwd},
                 #{lastLoginIP}, #{lastLoginTime}, #{loginIP}, #{loginTime})
     </insert>
+    <insert id="insertPageFaculty" useGeneratedKeys="true">
+        INSERT INTO faculty(userID, userName, password, mobile, email, status, isInitPwd, lastLoginIP, lastLoginTime,
+        loginIP, loginTime, memo)
+        VALUES
+        <foreach collection="faculties" separator="," item="faculty">
+            (#{faculty.userID}, #{faculty.userName},#{faculty.password}, #{faculty.mobile}, #{faculty.email},
+            #{faculty.status},
+            #{faculty.isInitPwd}, #{faculty.lastLoginIP},#{faculty.lastLoginTime}, #{faculty.loginIP},
+            #{faculty.loginTime}, #{faculty.memo})
+        </foreach>
+    </insert>
 
     <update id="updateFaculty" parameterType="com.project.evaluate.entity.Faculty">
         update faculty

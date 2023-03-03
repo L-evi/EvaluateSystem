@@ -1,10 +1,13 @@
 package com.project.evaluate.controller;
 
 import cn.hutool.core.date.DateTime;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
+import com.project.evaluate.util.ApplicationContextProvider;
 import com.project.evaluate.util.IPUtil;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
@@ -12,12 +15,15 @@ import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -40,7 +46,7 @@ public class FacultyController {
     private FacultyService facultyService;
 
     @DataLog(modelName = "用户登录", operationType = "login")
-    @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/login", produces = "application/json")
     public ResponseResult userLogin(@RequestBody Map<String, Object> dataMap, HttpServletRequest request) {
 //        获取其中的数据
         Faculty faculty = new Faculty();
@@ -51,18 +57,17 @@ public class FacultyController {
         return this.facultyService.userLogin(faculty);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    @GetMapping(value = "/logout")
+    @DataLog(modelName = "退出登录", operationType = "logout")
     public ResponseResult userLogout() {
         Subject subject = SecurityUtils.getSubject();
-        System.out.println("principal: " + subject.getPrincipal());
         String userID = (String) subject.getPrincipal();
-        this.redisCache.deleteObject("Faculty:" + userID);
         this.redisCache.deleteObject("token:" + userID);
         subject.logout();
         return new ResponseResult(ResultCode.SUCCESS);
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/register", produces = "application/json")
     public ResponseResult userRegister(@RequestBody Faculty faculty, HttpServletRequest request) {
         if (!Strings.hasText(faculty.getUserID()) || !Strings.hasText(faculty.getPassword())) {
             JSONObject jsonObject = new JSONObject();
@@ -78,7 +83,7 @@ public class FacultyController {
     }
 
     @PostMapping("/manage/add")
-    @RequiresRoles("1")
+    @RequiresRoles(value = "1", logical = Logical.OR)
     @DataLog(modelName = "添加用户帐号", operationType = "insert")
     public ResponseResult addFaculty(@RequestBody Faculty faculty) {
         JSONObject jsonObject = new JSONObject();
@@ -98,7 +103,7 @@ public class FacultyController {
     }
 
     @PutMapping("/manage/update")
-    @RequiresRoles("1")
+    @RequiresRoles(value = "1", logical = Logical.OR)
     @DataLog(modelName = "修改用户帐号", operationType = "update")
     public ResponseResult updateFaculty(@RequestBody Faculty faculty) {
         JSONObject jsonObject = new JSONObject();
@@ -112,7 +117,7 @@ public class FacultyController {
     }
 
     @PutMapping("/manage/reset")
-    @RequiresRoles("1")
+    @RequiresRoles(value = "1", logical = Logical.OR)
     @DataLog(modelName = "重置用户帐号", operationType = "update")
     public ResponseResult resetFaculty(String userID) {
         JSONObject jsonObject = new JSONObject();
@@ -124,8 +129,7 @@ public class FacultyController {
     }
 
     @GetMapping("/manage/get/page")
-    @RequiresRoles("1")
-    @DataLog(modelName = "分页查询用户帐号", operationType = "select")
+    @RequiresRoles(value = "1", logical = Logical.OR)
     public ResponseResult selectPageFaculty(Faculty faculty, Integer page, Integer pageSize, String orderBy) {
         if (Objects.isNull(page)) {
             page = 0;
@@ -140,7 +144,7 @@ public class FacultyController {
     }
 
     @DeleteMapping("/manage/delete")
-    @RequiresRoles("1")
+    @RequiresRoles(value = "1", logical = Logical.OR)
     @DataLog(modelName = "删除用户帐号", operationType = "delete")
     public ResponseResult deleteFaculty(String userID) {
         JSONObject jsonObject = new JSONObject();
@@ -152,7 +156,6 @@ public class FacultyController {
     }
 
     @PostMapping(value = "/personal/update")
-    @DataLog(modelName = "个人资料管理", operationType = "update")
     public ResponseResult personalMessageUpdate(@RequestBody Faculty faculty, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         String token = request.getHeader("token");
@@ -200,4 +203,40 @@ public class FacultyController {
         return this.facultyService.resetPassword(userID, oldPassword, password);
     }
 
+    @PostMapping("/excel/import")
+    @DataLog(modelName = "批量导入用户", operationType = "insert")
+    public ResponseResult importExcelFaculty(@RequestBody Map<String, Object> map) {
+        JSONObject jsonObject = new JSONObject();
+        if (!map.containsKey("filename")) {
+            jsonObject.put("msg", "参数缺失");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        String filename = (String) map.get("filename");
+        return facultyService.importFaculty(filename);
+    }
+
+    @GetMapping("/excel/template")
+    @DataLog(modelName = "获取用户表格模板", operationType = "select")
+    public ResponseResult getFacultyExcelTemplate() {
+        JSONObject jsonObject = new JSONObject();
+        String tempPreFilename = ApplicationContextProvider
+                .getApplicationContext()
+                .getEnvironment().getProperty("temp-pre-path");
+        String filename = tempPreFilename + File.separator + "User_Template.xlsx";
+        try {
+            EasyExcel.write(filename, Faculty.class)
+                    .sheet("template")
+                    .doWrite(() -> {
+                        List<Faculty> faculties = ListUtils.newArrayListWithCapacity(1);
+                        faculties.add(new Faculty());
+                        return faculties;
+                    });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        jsonObject.put("msg", "模板生成成功");
+        jsonObject.put("filename", filename);
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+    }
 }

@@ -24,14 +24,13 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping(value = "/api/config")
+@RequiresRoles(value = "1",logical = Logical.OR)
 public class ConfigController {
 
     @Resource
     private ConfigService configService;
 
     @PostMapping(value = "/add")
-    @RequiresRoles(value = "1", logical = Logical.OR)
-    @DataLog(modelName = "添加系统配置", operationType = "inserts")
     public ResponseResult insertConfig(@RequestBody Config config) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(config)) {
@@ -42,8 +41,6 @@ public class ConfigController {
     }
 
     @GetMapping("/get/single/ID")
-    @RequiresRoles(value = "1", logical = Logical.OR)
-    @DataLog(modelName = "根据ID查询系统配置", operationType = "select")
     public ResponseResult selectByID(Integer ID) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(ID) || ID == 0) {
@@ -54,7 +51,6 @@ public class ConfigController {
     }
 
     @GetMapping("/get/single/userID")
-    @DataLog(modelName = "根据UserID查询系统配置", operationType = "select")
     public ResponseResult selectByUserID(HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         String token = request.getHeader("token");
@@ -68,8 +64,6 @@ public class ConfigController {
     }
 
     @GetMapping("/get/page")
-    @DataLog(operationType = "select", modelName = "分页查询系统配置")
-    @RequiresRoles(value = "1", logical = Logical.OR)
     public ResponseResult selectPageConfig(Integer page, Integer pageSize, String orderBy) {
         if (Objects.isNull(page)) {
             page = 0;
@@ -84,8 +78,6 @@ public class ConfigController {
     }
 
     @PutMapping("/update")
-    @RequiresRoles(value = "1", logical = Logical.OR)
-    @DataLog(operationType = "update", modelName = "更新系统配置")
     public ResponseResult updateConfig(@RequestBody Config config) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(config) || Objects.isNull(config.getID())) {
@@ -96,8 +88,6 @@ public class ConfigController {
     }
 
     @DeleteMapping("/delete")
-    @RequiresRoles(value = "1", logical = Logical.OR)
-    @DataLog(modelName = "删除系统配置", operationType = "delete")
     public ResponseResult deleteConfig(Integer ID, String userID) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(ID) || ID == 0 || !Strings.hasText(userID)) {

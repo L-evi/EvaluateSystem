@@ -5,10 +5,7 @@ import com.project.evaluate.service.TokenService;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +25,7 @@ public class TokenController {
     private TokenService tokenService;
 
 
-    @RequestMapping(value = "/token/getMessage", method = RequestMethod.GET)
+    @GetMapping(value = "/token/getMessage")
     public ResponseResult getTokenMessage(HttpServletRequest request) {
         String token = request.getHeader("token");
         if (Strings.hasText(token)) {

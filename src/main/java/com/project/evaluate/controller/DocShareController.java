@@ -31,7 +31,6 @@ public class DocShareController {
 
     @PostMapping(value = "/add")
     @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
-    @DataLog(modelName = "上传共享文件资料", operationType = "insert")
     public ResponseResult insertDocShare(@RequestBody DocShare docShare, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (!Strings.hasText(docShare.getSubmitter())) {
@@ -55,7 +54,6 @@ public class DocShareController {
         return this.docShareService.addDocShare(docShare);
     }
 
-    @DataLog(modelName = "查看共享文件详情", operationType = "select")
     @GetMapping(value = "/get/single")
     public ResponseResult selectSingleDocShare(Integer ID) {
         JSONObject jsonObject = new JSONObject();
@@ -67,7 +65,6 @@ public class DocShareController {
     }
 
     @GetMapping(value = "/get/page")
-    @DataLog(modelName = "分页查看共享文件", operationType = "select")
     public ResponseResult selectPageDocShare(Integer page, Integer pageSize, String orderBy, DocShare docShare) {
         if (Objects.isNull(page)) {
             page = 0;
@@ -86,7 +83,6 @@ public class DocShareController {
 
     @PutMapping(value = "/update")
     @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
-    @DataLog(modelName = "修改共享文件资料", operationType = "update")
     public ResponseResult updateDocShare(@RequestBody DocShare docShare, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(docShare)) {
@@ -99,7 +95,6 @@ public class DocShareController {
 
     @DeleteMapping(value = "/delete")
     @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
-    @DataLog(modelName = "删除共享文件资料", operationType = "delete")
     public ResponseResult deleteDocShare(Integer id, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(id) || id == 0) {
@@ -112,7 +107,6 @@ public class DocShareController {
 
     @PostMapping("/submit")
     @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
-//    TODO 共享文件：提交上传的文档是否需要记录日志
     public ResponseResult submitDocShare(@RequestBody DocShare docShare) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(docShare)

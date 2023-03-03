@@ -33,7 +33,6 @@ public class BulletinController {
 
     @PostMapping(value = "/add")
     @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
-    @DataLog(modelName = "发布系统公告", operationType = "insert")
     public ResponseResult insertBulletin(@RequestBody Bulletin bulletin, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(bulletin)) {
@@ -57,7 +56,6 @@ public class BulletinController {
     }
 
     @GetMapping(value = "/get/single")
-    @DataLog(modelName = "查看系统公告详情", operationType = "select")
     public ResponseResult selectSingleBulletin(Integer ID) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(ID) || ID == 0) {
@@ -68,7 +66,6 @@ public class BulletinController {
     }
 
     @GetMapping(value = "/get/page")
-    @DataLog(modelName = "分页查看系统公告", operationType = "select")
     public ResponseResult selectPageBulletin(HttpServletRequest request, Integer page, Integer pageSize, @DefaultValue("issueTime DESC") String orderBy, Bulletin bulletin) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(page)) {
@@ -98,7 +95,6 @@ public class BulletinController {
 
     @PutMapping(value = "/update")
     @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
-    @DataLog(modelName = "修改系统公告", operationType = "update")
     public ResponseResult updateBulletin(@RequestBody Bulletin bulletin, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(bulletin) || Objects.isNull(bulletin.getID()) || bulletin.getID() == 0) {
@@ -118,7 +114,6 @@ public class BulletinController {
 
     @DeleteMapping(value = "/delete")
     @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
-    @DataLog(modelName = "删除系统公告", operationType = "delete")
     public ResponseResult deleteBulletin(Integer ID) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(ID) || ID == 0) {
