@@ -1,15 +1,20 @@
 package com.project.evaluate.controller;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.entity.Course;
 import com.project.evaluate.service.CourseService;
+import com.project.evaluate.util.ApplicationContextProvider;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -104,7 +109,7 @@ public class CourseController {
         return courseService.deleteCourse(course.getID(), course.getCourseID());
     }
 
-    @PostMapping("/import/excel")
+    @PostMapping("/excel/import")
     @DataLog(modelName = "批量导入课程", operationType = "insert")
     public ResponseResult importExcelCourse(@RequestBody Map<String, Object> map) {
         JSONObject jsonObject = new JSONObject();
@@ -114,5 +119,28 @@ public class CourseController {
         }
         String filename = (String) map.get("filename");
         return courseService.importExcelCourse(filename);
+    }
+
+    @GetMapping("/excel/template")
+    @DataLog(operationType = "select", modelName = "获取课程表格模板")
+    public ResponseResult getCourseExcelTemplate() {
+        JSONObject jsonObject = new JSONObject();
+        String tempPreFilename = ApplicationContextProvider
+                .getApplicationContext()
+                .getEnvironment()
+                .getProperty("temp-pre-path");
+        String filename = tempPreFilename + File.separator + "Course_Template.xlsx";
+        try {
+            EasyExcel.write(filename, Course.class).sheet("template").doWrite(() -> {
+                List<Course> courses = ListUtils.newArrayListWithCapacity(1);
+                courses.add(new Course());
+                return courses;
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        jsonObject.put("msg", "模板生成成功");
+        jsonObject.put("filename", filename);
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 }

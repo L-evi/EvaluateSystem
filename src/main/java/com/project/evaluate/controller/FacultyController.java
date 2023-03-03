@@ -217,10 +217,13 @@ public class FacultyController {
         return facultyService.importFaculty(filename);
     }
 
-    @PostMapping("/excel/template")
+    @GetMapping("/excel/template")
     @DataLog(modelName = "获取用户表格模板", operationType = "select")
     public ResponseResult getFacultyExcelTemplate() {
-        String tempPreFilename = ApplicationContextProvider.getApplicationContext().getEnvironment().getProperty("temp-pre-path");
+        JSONObject jsonObject = new JSONObject();
+        String tempPreFilename = ApplicationContextProvider
+                .getApplicationContext()
+                .getEnvironment().getProperty("temp-pre-path");
         String filename = tempPreFilename + File.separator + "User_Template.xlsx";
         try {
             EasyExcel.write(filename, Faculty.class)
@@ -233,7 +236,7 @@ public class FacultyController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        JSONObject jsonObject = new JSONObject();
+
         jsonObject.put("msg", "模板生成成功");
         jsonObject.put("filename", filename);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
