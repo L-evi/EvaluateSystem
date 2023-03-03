@@ -28,9 +28,9 @@ public class FacultyRoleTypeConverter implements Converter<Integer> {
     public Integer convertToJavaData(ReadConverterContext<?> context) throws Exception {
         String value = context.getReadCellData().getStringValue();
         switch (value) {
-            case "系统管理员":
-                return 0;
             case "教师":
+                return 0;
+            case "系统管理员":
                 return 1;
             case "文档管理员":
                 return 2;
@@ -46,9 +46,9 @@ public class FacultyRoleTypeConverter implements Converter<Integer> {
         Integer value = context.getValue();
         switch (value) {
             case 0:
-                return new WriteCellData<>("系统管理员");
-            case 1:
                 return new WriteCellData<>("教师");
+            case 1:
+                return new WriteCellData<>("系统管理员");
             case 2:
                 return new WriteCellData<>("文档管理员");
             case 3:

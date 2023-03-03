@@ -108,9 +108,7 @@ public class CourseDocDetailController {
         JSONObject jsonObject = new JSONObject();
         if (!map.containsKey("FileName") || !map.containsKey("taskID") || !map.containsKey("teachingDocRoot")) {
             jsonObject.put("msg", "参数缺失");
-            return new
-
-                    ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
         return courseDocDetailService.submitDocument(map);
     }
