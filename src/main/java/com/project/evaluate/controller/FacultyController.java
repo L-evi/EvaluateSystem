@@ -1,10 +1,13 @@
 package com.project.evaluate.controller;
 
 import cn.hutool.core.date.DateTime;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
+import com.project.evaluate.util.ApplicationContextProvider;
 import com.project.evaluate.util.IPUtil;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -200,4 +205,37 @@ public class FacultyController {
         return this.facultyService.resetPassword(userID, oldPassword, password);
     }
 
+    @PostMapping("/excel/import")
+    @DataLog(modelName = "批量导入用户", operationType = "insert")
+    public ResponseResult importExcelFaculty(@RequestBody Map<String, Object> map) {
+        JSONObject jsonObject = new JSONObject();
+        if (!map.containsKey("filename")) {
+            jsonObject.put("msg", "参数缺失");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        String filename = (String) map.get("filename");
+        return facultyService.importFaculty(filename);
+    }
+
+    @PostMapping("/excel/template")
+    @DataLog(modelName = "获取用户表格模板", operationType = "select")
+    public ResponseResult getFacultyExcelTemplate() {
+        String tempPreFilename = ApplicationContextProvider.getApplicationContext().getEnvironment().getProperty("temp-pre-path");
+        String filename = tempPreFilename + File.separator + "User_Template.xlsx";
+        try {
+            EasyExcel.write(filename, Faculty.class)
+                    .sheet("template")
+                    .doWrite(() -> {
+                        List<Faculty> faculties = ListUtils.newArrayListWithCapacity(1);
+                        faculties.add(new Faculty());
+                        return faculties;
+                    });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg", "模板生成成功");
+        jsonObject.put("filename", filename);
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+    }
 }
