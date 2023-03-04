@@ -19,7 +19,6 @@ import com.project.evaluate.util.response.ResultCode;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.crypto.hash.Md5Hash;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -38,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class FacultyServiceImpl implements FacultyService {
 
-    @Autowired()
+    @Resource
     private FacultyDao facultyDao;
 
     @Resource
@@ -202,7 +201,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public ResponseResult selectPageFaculty(Faculty faculty, Integer page, Integer pageSize, String orderBy) {
         JSONObject jsonObject = new JSONObject();
-        PageHelper.startPage(page, pageSize);
+        PageHelper.startPage(page, pageSize, orderBy);
         List<Faculty> faculties = this.facultyDao.selectPageFaculty(faculty);
         if (Objects.isNull(faculties) || faculties.isEmpty()) {
             jsonObject.put("msg", "查询结果为空");

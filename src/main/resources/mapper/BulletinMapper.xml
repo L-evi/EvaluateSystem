@@ -55,7 +55,7 @@
                 ID = #{bulletin.ID}
             </if>
             <if test="bulletin.subject != null and bulletin.subject != ''">
-                AND subject = #{bulletin.subject}
+                AND `subject` = #{bulletin.subject}
             </if>
             <if test="bulletin.content != null and bulletin.content != ''">
                 AND content = #{bulletin.content}
