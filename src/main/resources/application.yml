@@ -36,9 +36,9 @@ pagehelper:
 
 # 配置文件
 file:
-#  temp-pre-path: /root/upload/temp
+  temp-pre-path: /root/upload/temp
  # temp-pre-path: /Users/apple/Documents/Program/Java/EvaluateSystem/src/main/resources/static
-  temp-pre-path: D:/levi/EvaluateSystem/src/main/resources/static/
+#  temp-pre-path: D:/levi/EvaluateSystem/src/main/resources/static
   character-set: utf-8
   # 分片文件大小 5 * 1024 * 1024 * 1024 bit 即 5MB
   file-size-max: 5368709120

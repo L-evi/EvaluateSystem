@@ -93,8 +93,8 @@ public class FacultyController {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        if (!Strings.hasText(faculty.getUserName())) {
-            faculty.setUserName(faculty.getUserID());
+        if (!Strings.hasText(faculty.getUsername())) {
+            faculty.setUsername(faculty.getUserID());
         }
         faculty.setPassword(faculty.getUserID());
         faculty.setStatus(0);

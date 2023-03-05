@@ -1,6 +1,7 @@
 package com.project.evaluate.service.impl;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -20,8 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -91,25 +95,25 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
     }
 
     @Override
-    public ResponseResult exportTeachingDocuments(List<Integer> ids) {
+    public ResponseResult exportCourseDocTask(CourseDocTask courseDocTask) {
         JSONObject jsonObject = new JSONObject();
-        List<CourseDocTask> courseDocTasks = courseDocTaskDao.selectPageID(ids);
-        if (Objects.isNull(courseDocTasks) || courseDocTasks.isEmpty()) {
-            jsonObject.put("msg", "查询结果为空");
-            return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
-        }
-//        导出为excel
-        String filename = this.tempPrePath + File.separator + System.currentTimeMillis() + ".xlsx";
-        EasyExcel.write(filename, CourseDocTask.class).sheet("教学文档任务清单").doWrite(courseDocTasks);
-        File file = new File(filename);
-        if (file.exists()) {
-            jsonObject.put("msg", "导出成功");
-            jsonObject.put("filename", filename);
-            return new ResponseResult(ResultCode.SUCCESS, jsonObject);
-        }
-        jsonObject.put("msg", "导出失败");
-        return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        String filename = tempPrePath + File.separator + System.currentTimeMillis() + "_CourseDocTask.xlsx";
+        List<Map<String, Object>> collect = courseDocTaskDao.selectPageCourseDocTask(courseDocTask);
+        EasyExcel.write(filename).head(getExcelHead()).sheet("课程任务").doWrite(collect);
+        return null;
     }
+
+    private List<List<String>> getExcelHead() {
+        List<String> ids = ListUtils.newArrayList();
+        ids.add("id");
+        List<String> name = ListUtils.newArrayList();
+        name.add("name");
+        List<String> age = ListUtils.newArrayList();
+        name.add("age");
+        List<List<String>> head = ListUtils.newArrayList(ids, name, age);
+        return head;
+    }
+
 
     @Override
     public ResponseResult updateCourseDocTask(CourseDocTask courseDocTask) {

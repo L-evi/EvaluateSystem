@@ -44,7 +44,7 @@ public class Faculty implements Serializable {
      * 用户名
      */
     @ExcelProperty(value = "用户名", index = 2)
-    private String userName;
+    private String username;
     /**
      * 手机号码
      */

@@ -100,7 +100,7 @@ public class BulletinServiceImpl implements BulletinService {
         }
         jsonObject = JSONObject.parseObject(JSON.toJSONString(bulletin));
 //        放入操作员名称
-        jsonObject.put("username", faculty.getUserName());
+        jsonObject.put("username", faculty.getUsername());
         jsonObject.remove("operator");
         jsonObject.put("msg", "查询成功");
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);

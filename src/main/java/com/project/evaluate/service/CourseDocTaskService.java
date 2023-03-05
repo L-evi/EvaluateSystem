@@ -11,7 +11,7 @@ public interface CourseDocTaskService {
 
     ResponseResult deleteTeachingDocuments(Integer ID);
 
-    ResponseResult exportTeachingDocuments(List<Integer> ids);
+    ResponseResult exportCourseDocTask(CourseDocTask courseDocTask);
 
     ResponseResult updateCourseDocTask(CourseDocTask courseDocTask);
 
