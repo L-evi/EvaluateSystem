@@ -25,10 +25,16 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
 import javax.annotation.Resource;
+import javax.swing.text.DateFormatter;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -392,6 +398,8 @@ class EvaluateApplicationTests {
         /*String fileName = "/Users/apple/Documents/Program/Java/EvaluateSystem/src/main/resources/static" + File.separator + System.currentTimeMillis() + ".xlsx";
         List<Course> courses = courseDao.selectPageCourse(new Course());
         EasyExcel.write(fileName, Course.class).sheet("course").doWrite(courses);*/
+        System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmm")));
+        System.out.println(SimpleDateFormat.getDateTimeInstance().format(new Date()).replaceAll(" ", ""));
     }
 
     @Test
