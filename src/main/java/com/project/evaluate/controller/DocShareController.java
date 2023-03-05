@@ -24,6 +24,7 @@ import java.util.Objects;
  * @since 2023/1/14 10:05
  */
 @RestController
+@CrossOrigin("*")
 @RequestMapping(value = "/api/doc-share")
 public class DocShareController {
     @Resource

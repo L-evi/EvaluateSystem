@@ -25,6 +25,7 @@ import java.util.Objects;
  * @since 2023/1/10 14:09
  */
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/bulletin")
 public class BulletinController {
 

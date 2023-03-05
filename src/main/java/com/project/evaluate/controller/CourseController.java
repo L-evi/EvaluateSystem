@@ -26,6 +26,7 @@ import java.util.Objects;
  * @since 2023/1/2 22:07
  */
 @RestController
+@CrossOrigin("*")
 @RequestMapping(value = "/api/course")
 public class CourseController {
 
