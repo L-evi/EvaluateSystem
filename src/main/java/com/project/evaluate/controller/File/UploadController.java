@@ -2,6 +2,7 @@ package com.project.evaluate.controller.File;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.project.evaluate.annotation.RateLimiter;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
@@ -53,6 +54,7 @@ class UploadController {
 
     @RequestMapping(value = "/upload")
     @ResponseBody
+    @RateLimiter(value = 100, timeout = 1000)
     public ResponseResult upload(HttpServletResponse response, HttpServletRequest request) {
 //        System.out.println("文件上传开始");
 //        初始化参数
