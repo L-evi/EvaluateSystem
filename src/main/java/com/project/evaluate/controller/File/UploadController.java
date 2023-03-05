@@ -1,6 +1,7 @@
 package com.project.evaluate.controller.File;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.RateLimiter;
 import com.project.evaluate.util.response.ResponseResult;
@@ -14,11 +15,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Levi
@@ -215,5 +222,38 @@ class UploadController {
                 file.delete();
             }
         }
+    }
+
+    @PostMapping("/upload/single")
+    @ResponseBody
+    @RateLimiter(value = 10, timeout = 100)
+    public ResponseResult uploadSingleFile(@RequestPart(value = "file", required = true) MultipartFile multipartFile,
+                                           @RequestParam(value = "filename", required = false) String filename) {
+        JSONObject jsonObject = new JSONObject();
+        if (Objects.isNull(multipartFile) || multipartFile.isEmpty()) {
+            jsonObject.put("msg", "文件为空");
+            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        StringBuilder filePath = new StringBuilder(tempPrePath).append(File.separator);
+        String originalFilename = multipartFile.getOriginalFilename();
+        if (Strings.hasText(filename)) {
+            String[] originalFilenames = originalFilename.split("\\.");
+            filePath.append(filename).append(".").append(originalFilenames[originalFilenames.length - 1]);
+        } else {
+            filePath.append(originalFilename);
+        }
+        try {
+            File file = new File(filePath.toString());
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            multipartFile.transferTo(file);
+        } catch (IOException e) {
+            jsonObject.put("msg", "文件上传失败");
+            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        }
+        jsonObject.put("filaname", filePath);
+        jsonObject.put("msg", "文件上传成功");
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 }
