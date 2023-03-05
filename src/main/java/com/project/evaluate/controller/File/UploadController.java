@@ -52,7 +52,7 @@ class UploadController {
     @Value("${file.request-size-max}")
     private String requestSizeMax;
 
-    @RequestMapping(value = "/upload")
+    @RequestMapping(value = "/upload/page")
     @ResponseBody
     @RateLimiter(value = 100, timeout = 1000)
     public ResponseResult upload(HttpServletResponse response, HttpServletRequest request) {
