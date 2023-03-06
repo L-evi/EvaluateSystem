@@ -7,6 +7,7 @@ import com.project.evaluate.annotation.RateLimiter;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -38,6 +39,7 @@ import java.util.Objects;
 @Controller
 @CrossOrigin("*")
 @PropertySource("classpath:application.yml")
+@Slf4j
 class UploadController {
     //    编码格式
     @Value("${file.character-set}")
@@ -63,29 +65,33 @@ class UploadController {
     @ResponseBody
     @RateLimiter(value = 100, timeout = 1000)
     public ResponseResult upload(HttpServletResponse response, HttpServletRequest request) {
-//        System.out.println("文件上传开始");
 //        初始化参数
         this.init();
 //        设置编码格式
         response.setCharacterEncoding(this.character);
+        log.info("文件上传开始：初始化参数以及设置编码格式：{}", this.character);
 //        初始化变量
         Integer schunk = null; // 当前分片编号
         Integer schunks = null; // 总分片数
-        String name = null; // 文件名
+        String filename = null; // 文件名
         String filePath = this.tempPrePath; // 文件前缀路径
         BufferedOutputStream os = null; // 输出流
+        log.info("初始化变量：filaPath:{}", filePath);
         try {
 //            用于处理接受到的文件类
             DiskFileItemFactory factory = new DiskFileItemFactory();
             factory.setSizeThreshold(Integer.parseInt(this.sizeThreshold)); // 文件缓冲区大小
             factory.setRepository(new File(filePath)); // 设置文件缓冲区路径
+            log.info("处理接收到的文件类、设置文件缓冲区大小、设置文件缓冲区路径");
 //            解析request中的文件信息
             ServletFileUpload upload = new ServletFileUpload(factory);
             upload.setFileSizeMax(Long.parseLong(this.fileSizeMax));
             upload.setSizeMax(Long.parseLong(this.requestSizeMax));
+            log.info("解析request中的文件信息，设置参数：fileSizeMax-{}，requestSizeMax-{}", fileSizeMax, requestSizeMax);
 //            解析这个文件
             List<FileItem> items = upload.parseRequest(request);
 //            取出文件信息
+            log.info("---------------------------------------------------------------------------------------------");
             for (FileItem item : items) {
                 if (item.isFormField()) {
 //                    获取当前分片序号
@@ -97,22 +103,24 @@ class UploadController {
                         schunks = Integer.parseInt(item.getString(this.character));
                     }
 //                    获取文件名
-                    if ("name".equals(item.getFieldName())) {
-                        name = item.getString(this.character);
+                    if ("filename".equals(item.getFieldName())) {
+                        filename = item.getString(this.character);
                     }
+                    log.info("分片序号：{}，总分片数：{}，文件名：{}", schunk, schunk, filename);
                 }
             }
+            log.info("---------------------------------------------------------------------------------------------");
 //            System.out.println("上传文件：文件解析完成");
 //            取出文件
             for (FileItem item : items) {
                 if (!item.isFormField()) {
 //                    缓存文件名，如果没有分片，则缓存文件名就是文件名
-                    String tempFileName = name;
+                    String tempFileName = filename;
 //                    如果文件名存在，且含有分片，则说明可以存储下来
-                    if (name != null) {
+                    if (filename != null) {
                         if (schunk != null) {
 //                            缓存文件名字：分片序号_文件名
-                            tempFileName = schunk + '_' + name;
+                            tempFileName = schunk + '_' + filename;
                         }
                         File file = new File(this.tempPrePath, tempFileName);
 //                        如果文件不存在则需要存下来
@@ -122,23 +130,25 @@ class UploadController {
                     }
                 }
             }
-//            System.out.println("上传文件：分片文件存储完成");
-//            合并文件：有分片并且已经到了最后一个分片才需要合并
+            log.info("文件上传完成，开始合并文件");
+            //            合并文件：有分片并且已经到了最后一个分片才需要合并
             if (schunks != null && schunk.intValue() == schunks.intValue() - 1) {
 //                合并文件之后的路径
-                File tempFile = new File(filePath, name);
+                File tempFile = new File(filePath, filename);
+                log.info("文件合并之后的路径：{}", tempFile.getAbsolutePath());
                 os = new BufferedOutputStream(new FileOutputStream(tempFile));
 //                是否能够找到分片文件的标记
                 boolean isExist = true;
 //                找出所有的分片
                 for (int i = 0; i < schunks; i++) {
-                    File file = new File(filePath, i + '_' + name);
+                    File file = new File(filePath, i + '_' + filename);
                     int j = 0;
                     while (!file.exists()) {
+                        log.info("等待文件，第{}次等待", j);
                         Thread.sleep(100);
 //                        如果超过了一定时间还没有找到那些分片，就跳出来，并且将前面所有的分片删除
                         if (j == schunks) {
-                            UploadController.deleteFile(i, name, filePath);
+                            UploadController.deleteFile(i, filename, filePath);
                             isExist = false;
                             break;
                         }
@@ -159,6 +169,7 @@ class UploadController {
                 os.flush();
                 if (isExist == false) {
 //                    返回失败信息
+                    log.info("上传失败");
                     response.setHeader("msg", "file upload fail");
                     response.setHeader("status", "0");
                     JSONObject jsonObject = new JSONObject();
@@ -166,19 +177,26 @@ class UploadController {
                     jsonObject.put("error", "文件上传失败，分片丢失");
                     return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
                 } else {
+                    log.info("上传成功：filename：{}", filename);
                     //                返回成功信息
                     response.setHeader("msg", "file upload success");
-                    response.setHeader("filename", name);
+                    response.setHeader("filename", filename);
+                    System.out.println("response filename : " + filename);
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("msg", "file upload success");
-                    jsonObject.put("filename", name);
+                    jsonObject.put("filename", filename);
                     return new ResponseResult(ResultCode.SUCCESS, jsonObject);
                 }
+            } else {
+                log.info("不合并文件，文件未保存");
             }
+
         } catch (Exception e) {
-//            System.out.println("upload模块 失败");
             throw new RuntimeException("upload 模块 失败");
         } finally {
+            /*
+             关闭流
+             */
             if (os != null) {
                 try {
                     os.close();
@@ -188,9 +206,10 @@ class UploadController {
                 }
             }
         }
+        log.info("不可到达区域");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", "file upload success");
-        jsonObject.put("FileName", name);
+        jsonObject.put("filename", filename);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
@@ -227,8 +246,7 @@ class UploadController {
     @PostMapping("/upload/single")
     @ResponseBody
     @RateLimiter(value = 10, timeout = 100)
-    public ResponseResult uploadSingleFile(@RequestPart(value = "file", required = true) MultipartFile multipartFile,
-                                           @RequestParam(value = "filename", required = false) String filename) {
+    public ResponseResult uploadSingleFile(@RequestPart(value = "file", required = true) MultipartFile multipartFile, @RequestParam(value = "filename", required = false) String filename) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(multipartFile) || multipartFile.isEmpty()) {
             jsonObject.put("msg", "文件为空");
