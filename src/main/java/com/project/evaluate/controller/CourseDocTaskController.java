@@ -105,4 +105,9 @@ public class CourseDocTaskController {
         }
         return courseDocTaskService.insertCourseDocTask(courseDocTasks);
     }
+
+    @GetMapping("/excel/export")
+    public ResponseResult exportCourseDocTask(@RequestBody(required = false) CourseDocTask courseDocTask) {
+        return courseDocTaskService.exportCourseDocTask(courseDocTask);
+    }
 }

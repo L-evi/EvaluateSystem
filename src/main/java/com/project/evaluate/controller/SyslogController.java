@@ -9,10 +9,7 @@ import com.project.evaluate.util.response.ResultCode;
 import io.jsonwebtoken.lang.Strings;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -27,6 +24,7 @@ import java.util.Objects;
  * @since 2023/1/25 22:59
  */
 @RestController
+@CrossOrigin("*")
 @RequestMapping(value = "/api/syslog")
 public class SyslogController {
 

@@ -17,17 +17,17 @@
 
     <insert id="insertFaculty"
             parameterType="com.project.evaluate.entity.Faculty">
-        insert into faculty(userID, userName, password, roleType, mobile, email, status, isInitPwd, lastLoginIP,
+        insert into faculty(userID, username, password, roleType, mobile, email, status, isInitPwd, lastLoginIP,
                             lastLoginTime, loginIP, loginTime)
-        values (#{userID}, #{userName}, #{password}, #{roleType}, #{mobile}, #{email}, #{status}, #{isInitPwd},
+        values (#{userID}, #{username}, #{password}, #{roleType}, #{mobile}, #{email}, #{status}, #{isInitPwd},
                 #{lastLoginIP}, #{lastLoginTime}, #{loginIP}, #{loginTime})
     </insert>
     <insert id="insertPageFaculty" useGeneratedKeys="true">
-        INSERT INTO faculty(userID, userName, password, mobile, email, status, isInitPwd, lastLoginIP, lastLoginTime,
+        INSERT INTO faculty(userID, username, password, mobile, email, status, isInitPwd, lastLoginIP, lastLoginTime,
         loginIP, loginTime, memo)
         VALUES
         <foreach collection="faculties" separator="," item="faculty">
-            (#{faculty.userID}, #{faculty.userName},#{faculty.password}, #{faculty.mobile}, #{faculty.email},
+            (#{faculty.userID}, #{faculty.username},#{faculty.password}, #{faculty.mobile}, #{faculty.email},
             #{faculty.status},
             #{faculty.isInitPwd}, #{faculty.lastLoginIP},#{faculty.lastLoginTime}, #{faculty.loginIP},
             #{faculty.loginTime}, #{faculty.memo})
@@ -37,8 +37,8 @@
     <update id="updateFaculty" parameterType="com.project.evaluate.entity.Faculty">
         update faculty
         <set>
-            <if test="userName != null and userName != ''">
-                userName = #{userName},
+            <if test="username != null and username != ''">
+                username = #{username},
             </if>
             <if test="roleType != null">
                 roleType = #{roleType},
@@ -82,7 +82,7 @@
 
     <select id="selectPageFaculty" resultType="com.project.evaluate.entity.Faculty">
         SELECT USERID,
-        USERNAME,
+        username,
         ROLETYPE,
         MOBILE,
         EMAIL,
@@ -95,8 +95,8 @@
         MEMO
         FROM faculty
         <where>
-            <if test="userName != null and userName != ''">
-                userName = #{userName}
+            <if test="username != null and username != ''">
+                username = #{username}
             </if>
             <if test="roleType != null">
                 AND roleType = #{roleType}
@@ -108,7 +108,7 @@
                 AND email = #{email}
             </if>
             <if test="status != null">
-                AND status = #{status}
+                AND `status` = #{status}
             </if>
             <if test="isInitPwd != null">
                 AND isInitPwd = #{isInitPwd}

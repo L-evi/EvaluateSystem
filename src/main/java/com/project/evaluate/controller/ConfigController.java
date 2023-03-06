@@ -24,6 +24,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping(value = "/api/config")
+@CrossOrigin("*")
 @RequiresRoles(value = "1",logical = Logical.OR)
 public class ConfigController {
 

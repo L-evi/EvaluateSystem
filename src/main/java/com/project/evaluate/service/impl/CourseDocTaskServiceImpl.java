@@ -12,6 +12,7 @@ import com.project.evaluate.dao.CourseDocTaskDao;
 import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.entity.CourseDocTask;
 import com.project.evaluate.service.CourseDocTaskService;
+import com.project.evaluate.handler.MapExcelHandler;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
@@ -20,7 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
-import java.io.*;
+import java.io.File;
+import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -90,26 +94,45 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
         return new ResponseResult(ResultCode.DATABASE_ERROR, jsonObject);
     }
 
+
+    private static final Map<String, String> COLUMN_NAME_MAP = new HashMap<>();
+
+    static {
+        COLUMN_NAME_MAP.put("ID", "编号");
+        COLUMN_NAME_MAP.put("courseID", "课程ID");
+        COLUMN_NAME_MAP.put("courseName", "课程名称");
+        COLUMN_NAME_MAP.put("operator", "操作者");
+        COLUMN_NAME_MAP.put("teacher", "授课老师");
+        COLUMN_NAME_MAP.put("studentNum", "学生数量");
+        COLUMN_NAME_MAP.put("taskStatus", "任务状态");
+        COLUMN_NAME_MAP.put("closeTask", "是否关闭任务");
+        COLUMN_NAME_MAP.put("schoolStartYear", "开始学年");
+        COLUMN_NAME_MAP.put("schoolEndYear", "结束学年");
+        COLUMN_NAME_MAP.put("grades", "年级专业");
+        COLUMN_NAME_MAP.put("schoolTerm", "学期");
+        COLUMN_NAME_MAP.put("issueTime", "开始时间");
+        COLUMN_NAME_MAP.put("deadline", "结束时间");
+    }
+
     @Override
-    public ResponseResult exportTeachingDocuments(List<Integer> ids) {
+    public ResponseResult exportCourseDocTask(CourseDocTask courseDocTask) {
         JSONObject jsonObject = new JSONObject();
-        List<CourseDocTask> courseDocTasks = courseDocTaskDao.selectPageID(ids);
+        String filename = tempPrePath + File.separator
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmm"))
+                + "_CourseDocTask.xlsx";
+        List<Map<String, Object>> courseDocTasks = courseDocTaskDao.selectPageCourseDocTask(courseDocTask);
         if (Objects.isNull(courseDocTasks) || courseDocTasks.isEmpty()) {
             jsonObject.put("msg", "查询结果为空");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-//        导出为excel
-        String filename = this.tempPrePath + File.separator + System.currentTimeMillis() + ".xlsx";
-        EasyExcel.write(filename, CourseDocTask.class).sheet("教学文档任务清单").doWrite(courseDocTasks);
-        File file = new File(filename);
-        if (file.exists()) {
-            jsonObject.put("msg", "导出成功");
-            jsonObject.put("filename", filename);
-            return new ResponseResult(ResultCode.SUCCESS, jsonObject);
-        }
-        jsonObject.put("msg", "导出失败");
-        return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        EasyExcel.write(filename).head(MapExcelHandler.getExcelHead(courseDocTasks.get(0), COLUMN_NAME_MAP))
+                .sheet("test")
+                .doWrite(MapExcelHandler.getExcelData(courseDocTasks));
+        jsonObject.put("filename", filename);
+        jsonObject.put("msg", "导出成功");
+        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
+
 
     @Override
     public ResponseResult updateCourseDocTask(CourseDocTask courseDocTask) {
