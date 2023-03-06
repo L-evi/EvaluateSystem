@@ -97,11 +97,30 @@ public class CourseDocTaskController {
     @PostMapping("/add")
     @RequiresRoles(value = "2", logical = Logical.OR)
     @DataLog(modelName = "创建文档上传任务", operationType = "insert")
-    public ResponseResult insertCourseDocTask(@RequestBody List<CourseDocTask> courseDocTasks) {
+    public ResponseResult insertCourseDocTask(@RequestBody List<CourseDocTask> courseDocTasks, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(courseDocTasks) || courseDocTasks.isEmpty()) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
+        }
+        /*
+            根据需要填充操作人
+         */
+        String token = request.getHeader("token");
+        String userID = null;
+        try {
+            JSONObject object = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
+            userID = (String) object.get("userID");
+        } catch (Exception e) {
+            throw new RuntimeException("token解析错误");
+        }
+        if (Strings.hasText(userID)) {
+            String operator = userID;
+            courseDocTasks.stream().forEach(courseDocTask -> {
+                if (!Strings.hasText(courseDocTask.getOperator())) {
+                    courseDocTask.setOperator(operator);
+                }
+            });
         }
         return courseDocTaskService.insertCourseDocTask(courseDocTasks);
     }
