@@ -139,7 +139,8 @@
                credit,
                teamLeader,
                major,
-               courseType
+               courseType,
+               courseTerm
         FROM course
         WHERE ID = #{ID}
     </select>
