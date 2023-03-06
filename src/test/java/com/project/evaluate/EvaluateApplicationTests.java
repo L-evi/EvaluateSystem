@@ -1,13 +1,14 @@
 package com.project.evaluate;
 
-import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.*;
 import com.project.evaluate.entity.*;
+import com.project.evaluate.util.FileSizeFormatter;
 import com.project.evaluate.util.JwtUtil;
+import com.project.evaluate.util.MemoryUnit;
 import com.project.evaluate.util.Pager;
 import com.project.evaluate.util.bloom.BloomFilterHelper;
 import com.project.evaluate.util.bloom.RedisBloomFilter;
@@ -25,14 +26,11 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
 import javax.annotation.Resource;
-import javax.swing.text.DateFormatter;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -431,6 +429,15 @@ class EvaluateApplicationTests {
         listPage.getList().stream().forEach(System.out::println);
         System.out.println(listPage.getTotal());
         System.out.println(listPage.getPages());
+    }
+
+    @Test
+    public void testFileSizeFormatter() {
+        File file = new File("D:\\levi\\EvaluateSystem\\target\\evaluate-1.1.0-SNAPSHOT.jar");
+        if (file.exists()) {
+            long length = file.length();
+            System.out.println(FileSizeFormatter.formatFileSize(length, MemoryUnit.B, MemoryUnit.MB));
+        }
     }
 }
 

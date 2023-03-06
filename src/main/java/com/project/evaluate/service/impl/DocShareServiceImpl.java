@@ -8,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.DocShareDao;
 import com.project.evaluate.entity.DocShare;
 import com.project.evaluate.service.DocShareService;
+import com.project.evaluate.util.FileSizeFormatter;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
@@ -51,8 +52,17 @@ public class DocShareServiceImpl implements DocShareService {
 
     @Override
     public ResponseResult addDocShare(DocShare docShare) {
-        Long num = this.docShareDao.insertDocShare(docShare);
         JSONObject jsonObject = new JSONObject();
+        File file = new File(docShare.getDocPath());
+        if (!file.exists()) {
+            jsonObject.put("msg", "文件路径错误，文件不存在");
+            return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+        }
+        /*
+         * 获取文件大小并且转化
+         */
+        docShare.setDocSize(FileSizeFormatter.formatFileSizeString(String.valueOf(file.length())));
+        Long num = this.docShareDao.insertDocShare(docShare);
         if (num < 1) {
             jsonObject.put("msg", "插入数据失败");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);

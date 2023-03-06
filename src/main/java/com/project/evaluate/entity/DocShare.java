@@ -37,7 +37,7 @@ public class DocShare implements Serializable {
     /**
      * 文档大小
      */
-    private Integer docSize;
+    private String docSize;
     /**
      * 提交时间
      */
