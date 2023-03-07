@@ -221,7 +221,13 @@ public class FacultyController {
         JSONObject jsonObject = new JSONObject();
         String tempPreFilename = ApplicationContextProvider
                 .getApplicationContext()
-                .getEnvironment().getProperty("temp-pre-path");
+                .getEnvironment().getProperty("file.temp-pre-path");
+        /*
+            如果从配置文件中获取不到临时路径，就放在项目运行文件夹下面
+         */
+        if (!Strings.hasText(tempPreFilename)) {
+            tempPreFilename = System.getProperty("user.dir");
+        }
         String filename = tempPreFilename + File.separator + "User_Template.xlsx";
         try {
             EasyExcel.write(filename, Faculty.class)

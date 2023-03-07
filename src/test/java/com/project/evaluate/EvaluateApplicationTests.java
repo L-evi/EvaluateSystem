@@ -6,10 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.*;
 import com.project.evaluate.entity.*;
-import com.project.evaluate.util.FileSizeFormatter;
-import com.project.evaluate.util.JwtUtil;
-import com.project.evaluate.util.MemoryUnit;
-import com.project.evaluate.util.Pager;
+import com.project.evaluate.util.*;
 import com.project.evaluate.util.bloom.BloomFilterHelper;
 import com.project.evaluate.util.bloom.RedisBloomFilter;
 import com.project.evaluate.util.redis.RedisCache;
@@ -120,12 +117,17 @@ class EvaluateApplicationTests {
     @Value("${file.request-size-max}")
     private String requestSizeMax;
 
+    @Value("${file.temp-pre-path}")
+    private String tempPrePath;
+
     @Test
     void testGetValue() {
-        System.out.println("character:" + this.character);
-//        System.out.println(this.sizeThreshold);
-        System.out.println("file-size-max:" + Long.parseLong(this.fileSizeMax));
-        System.out.println("request-size-max:" + Long.parseLong(this.requestSizeMax));
+        System.out.println("character: " + this.character);
+        System.out.println("file-size-max: " + Long.parseLong(this.fileSizeMax));
+        System.out.println("request-size-max: " + Long.parseLong(this.requestSizeMax));
+        System.out.println("temp-file-pre-path: " + this.tempPrePath);
+        System.out.println(ApplicationContextProvider.getApplicationContext().getEnvironment().getProperty("file.temp-pre-path"));
+        System.out.println(System.getProperty("user.dir"));
     }
 
     //    测试redis
