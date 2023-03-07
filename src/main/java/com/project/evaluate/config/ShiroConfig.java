@@ -38,7 +38,8 @@ public class ShiroConfig {
         map.put("/api/faculty/register", "anon");
         map.put("/api/verify/**", "anon");
         map.put("/test/**", "anon");
-        map.put("/**", "jwt");
+        map.put("/**", "anon");
+//        map.put("/**", "jwt");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
         return shiroFilterFactoryBean;
     }

@@ -1,7 +1,6 @@
 package com.project.evaluate.controller.File;
 
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.RateLimiter;
 import com.project.evaluate.util.response.ResponseResult;
@@ -17,14 +16,11 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,9 +31,8 @@ import java.util.Objects;
  * @since 2022/12/16 15:22
  */
 @RequestMapping("/api/common/file")
-@ResponseBody
 @Controller
-@CrossOrigin("*")
+//@CrossOrigin("*")
 @PropertySource("classpath:application.yml")
 @Slf4j
 class UploadController {
@@ -63,12 +58,13 @@ class UploadController {
 
     @RequestMapping(value = "/upload/page")
     @ResponseBody
-    @RateLimiter(value = 100, timeout = 1000)
-    public ResponseResult upload(HttpServletResponse response, HttpServletRequest request) {
+//    @RateLimiter(value = 100, timeout = 1000)
+    public ResponseResult upload(HttpServletResponse response, HttpServletRequest request) throws UnsupportedEncodingException {
 //        初始化参数
         this.init();
 //        设置编码格式
         response.setCharacterEncoding(this.character);
+        System.out.println(request.getContentType());
         log.info("文件上传开始：初始化参数以及设置编码格式：{}", this.character);
 //        初始化变量
         Integer schunk = null; // 当前分片编号
@@ -190,13 +186,12 @@ class UploadController {
             } else {
                 log.info("不合并文件，文件未保存");
             }
-
         } catch (Exception e) {
             throw new RuntimeException("upload 模块 失败");
         } finally {
             /*
-             关闭流
-             */
+            关闭流
+                    */
             if (os != null) {
                 try {
                     os.close();
