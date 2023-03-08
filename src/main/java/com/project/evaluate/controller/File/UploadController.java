@@ -59,6 +59,7 @@ class UploadController {
     @ResponseBody
 //    @RateLimiter(value = 100, timeout = 1000)
     public ResponseResult upload(HttpServletResponse response, HttpServletRequest request) throws UnsupportedEncodingException {
+        JSONObject jsonObject = new JSONObject();
 //        初始化参数
         this.init();
 //        设置编码格式
@@ -125,7 +126,7 @@ class UploadController {
                 }
             }
             log.info("文件上传完成，开始合并文件");
-            //            合并文件：有分片并且已经到了最后一个分片才需要合并
+            //            合并文件：有分片并且已经到了最后一个分片才需要合并 todo:没有分片的时候应该处理一下
             if (schunks != null && schunk.intValue() == schunks.intValue() - 1) {
 //                合并文件之后的路径
                 File tempFile = new File(filePath, filename);
@@ -139,13 +140,13 @@ class UploadController {
                     int j = 0;
                     while (!file.exists()) {
                         log.info("等待文件，第{}次等待", j);
-                        Thread.sleep(100);
+                        Thread.sleep(1000);
 //                        如果超过了一定时间还没有找到那些分片，就跳出来，并且将前面所有的分片删除
-                        if (j == schunks) {
+/*                        if (j == schunks) {
                             UploadController.deleteFile(i, filename, filePath);
                             isExist = false;
                             break;
-                        }
+                        }*/
                         j++;
                     }
 //                    如果读不到分片文件，则跳出循环
@@ -161,24 +162,17 @@ class UploadController {
                     file.delete();
                 }
                 os.flush();
-                if (isExist == false) {
+                if (!isExist) {
 //                    返回失败信息
                     log.info("上传失败");
-                    response.setHeader("msg", "file upload fail");
-                    response.setHeader("status", "0");
-                    JSONObject jsonObject = new JSONObject();
                     jsonObject.put("msg", "file upload fail");
                     jsonObject.put("error", "文件上传失败，分片丢失");
                     return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
                 } else {
                     log.info("上传成功：filename：{}", filename);
                     //                返回成功信息
-                    response.setHeader("msg", "file upload success");
-                    response.setHeader("filename", filename);
-                    System.out.println("response filename : " + filename);
-                    JSONObject jsonObject = new JSONObject();
                     jsonObject.put("msg", "file upload success");
-                    jsonObject.put("filename", filename);
+                    jsonObject.put("filename", tempFile.getAbsoluteFile());
                     return new ResponseResult(ResultCode.SUCCESS, jsonObject);
                 }
             } else {
@@ -200,9 +194,8 @@ class UploadController {
             }
         }
         log.info("不可到达区域");
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("msg", "file upload success");
-        jsonObject.put("filename", filename);
+        jsonObject.put("msg", "file upload failed");
+        jsonObject.put("filename", null);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 
