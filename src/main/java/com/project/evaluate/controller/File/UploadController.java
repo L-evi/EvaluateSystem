@@ -14,20 +14,19 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Levi
  * @version 1.0 (created by Spring Boot)
- * @description
+ * @description 文件上传模块，必须保证servlet.multipart.enabled=false，否则无法获取到文件域
  * @since 2022/12/16 15:22
  */
 @RequestMapping("/api/common/file")
@@ -64,7 +63,6 @@ class UploadController {
         this.init();
 //        设置编码格式
         response.setCharacterEncoding(this.character);
-        System.out.println(request.getContentType());
         log.info("文件上传开始：初始化参数以及设置编码格式：{}", this.character);
 //        初始化变量
         Integer schunk = null; // 当前分片编号
@@ -99,7 +97,7 @@ class UploadController {
                         schunks = Integer.parseInt(item.getString(this.character));
                     }
 //                    获取文件名
-                    if ("filename".equals(item.getFieldName())) {
+                    if ("name".equals(item.getFieldName())) {
                         filename = item.getString(this.character);
                     }
                     log.info("分片序号：{}，总分片数：{}，文件名：{}", schunk, schunk, filename);
@@ -211,21 +209,26 @@ class UploadController {
     private void init() {
         //        初始化参数
         if (!Strings.hasText(this.character)) {
-            this.character = "utf8";
+            this.character = "UTF-8";
         }
         if (!Strings.hasText(this.sizeThreshold)) {
             this.sizeThreshold = "1024";
         }
         if (!Strings.hasText(this.fileSizeMax)) {
-            Long number = 5L * 1024L * 1024L * 1024L;
+            Long number = 10L * 1024L * 1024L * 1024L;
             this.fileSizeMax = String.valueOf(number);
         }
         if (!Strings.hasText(this.requestSizeMax)) {
-            Long number = 10L * 1024L * 1024L * 1024L;
+            Long number = 4000L * 1024L * 1024L * 1024L;
             this.requestSizeMax = String.valueOf(number);
         }
+        // 如果临时路径为空，则建立在运行文件下面的temp文件夹中
         if (!Strings.hasText(this.tempPrePath)) {
-            this.tempPrePath = "~";
+            this.tempPrePath = System.getProperty("user.dir") + File.separator + "temp";
+        }
+        File file = new File(tempPrePath);
+        if (!file.exists()) {
+            file.mkdirs();
         }
     }
 
@@ -241,32 +244,42 @@ class UploadController {
     @PostMapping("/upload/single")
     @ResponseBody
     @RateLimiter(value = 10, timeout = 100)
-    public ResponseResult uploadSingleFile(@RequestPart(value = "file", required = true) MultipartFile multipartFile, @RequestParam(value = "filename", required = false) String filename) {
+    public ResponseResult uploadSingle(HttpServletResponse response, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(multipartFile) || multipartFile.isEmpty()) {
-            jsonObject.put("msg", "文件为空");
-            return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
-        }
-        StringBuilder filePath = new StringBuilder(tempPrePath).append(File.separator);
-        String originalFilename = multipartFile.getOriginalFilename();
-        if (Strings.hasText(filename)) {
-            String[] originalFilenames = originalFilename.split("\\.");
-            filePath.append(filename).append(".").append(originalFilenames[originalFilenames.length - 1]);
-        } else {
-            filePath.append(originalFilename);
-        }
+        // 初始化参数
+        init();
+        response.setCharacterEncoding(this.character);
+        String filePath = this.tempPrePath;
+        // 存储：文件名-文件绝对路径
+        JSONObject files = new JSONObject();
+        DiskFileItemFactory factory = new DiskFileItemFactory();
         try {
-            File file = new File(filePath.toString());
-            if (!file.exists()) {
-                file.mkdirs();
+            // 给文件管理工厂设置缓冲区位置以及大小
+            factory.setSizeThreshold(Integer.parseInt(this.sizeThreshold));
+            factory.setRepository(new File(filePath));
+            // 设置upload的单个文件大小、总请求大小
+            ServletFileUpload servletFileUpload = new ServletFileUpload(factory);
+            servletFileUpload.setFileSizeMax(Long.parseLong(this.fileSizeMax));
+            servletFileUpload.setSizeMax(Long.parseLong(this.requestSizeMax));
+            // 获取表单
+            List<FileItem> fileItems = servletFileUpload.parseRequest(request);
+            for (FileItem item : fileItems) {
+                // 复杂表单域说明上传的是文件，简单表单域说明是其他参数
+                if (!item.isFormField()) {
+                    String filename = item.getName();
+                    File file = new File(this.tempPrePath, filename);
+                    // 文件写入 todo：后续可以使用Hash减少文件重复上传的次数
+                    item.write(file);
+                    files.put(filename, file.getAbsolutePath());
+                    // 删除临时文件
+                    item.delete();
+                }
             }
-            multipartFile.transferTo(file);
-        } catch (IOException e) {
-            jsonObject.put("msg", "文件上传失败");
-            return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        jsonObject.put("filaname", filePath);
-        jsonObject.put("msg", "文件上传成功");
+        jsonObject.put("msg", "上传成功");
+        jsonObject.put("array", files);
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 }

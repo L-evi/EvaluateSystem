@@ -7,9 +7,7 @@ spring:
     # 配置扫描
   servlet:
     multipart:
-      enabled: true
-      max-request-size: 500MB
-      max-file-size: 100MB
+      enabled: false
   redis:
     host: localhost
     port: 6379
