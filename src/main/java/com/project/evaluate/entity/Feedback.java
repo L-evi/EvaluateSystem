@@ -1,5 +1,6 @@
 package com.project.evaluate.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,22 +22,27 @@ public class Feedback implements Serializable {
     /**
      * ID
      */
+    @JsonProperty("ID")
     private Integer ID;
     /**
      * 反馈标题
      */
+    @JsonProperty("title")
     private String title;
     /**
      * 反馈内容
      */
+    @JsonProperty("content")
     private String content;
     /**
      * 反馈时间
      */
+    @JsonProperty("feedBackTime")
     private Date feedBackTime;
     /**
      * 作者
      */
+    @JsonProperty("userID")
     private String userID;
 }
 
