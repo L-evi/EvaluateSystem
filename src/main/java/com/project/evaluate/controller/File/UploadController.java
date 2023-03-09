@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Levi
@@ -141,12 +142,12 @@ class UploadController {
                     while (!file.exists()) {
                         log.info("等待文件，第{}次等待", j);
                         Thread.sleep(1000);
-//                        如果超过了一定时间还没有找到那些分片，就跳出来，并且将前面所有的分片删除
-/*                        if (j == schunks) {
+//                        如果超过了60秒还没有找到那些分片，就跳出来，并且将前面所有的分片删除
+                        if (j == 60) {
                             UploadController.deleteFile(i, filename, filePath);
                             isExist = false;
                             break;
-                        }*/
+                        }
                         j++;
                     }
 //                    如果读不到分片文件，则跳出循环
@@ -176,14 +177,22 @@ class UploadController {
                     return new ResponseResult(ResultCode.SUCCESS, jsonObject);
                 }
             } else {
-                log.info("不合并文件，文件未保存");
+                // 小文件上传完成
+                if (Objects.nonNull(filename)) {
+                    File file = new File(tempPrePath, filename);
+                    if (file.exists()) {
+                        jsonObject.put("msg", "上传成功");
+                        jsonObject.put("filename", file.getAbsolutePath());
+                        return new ResponseResult(ResultCode.SUCCESS, jsonObject);
+                    }
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException("upload 模块 失败");
         } finally {
             /*
-            关闭流
-                    */
+                关闭流
+            */
             if (os != null) {
                 try {
                     os.close();
