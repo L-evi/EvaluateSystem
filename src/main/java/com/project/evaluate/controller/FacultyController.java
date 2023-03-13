@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.project.evaluate.annotation.DataLog;
 import com.project.evaluate.entity.Faculty;
 import com.project.evaluate.service.FacultyService;
-import com.project.evaluate.util.ApplicationContextProvider;
 import com.project.evaluate.util.IPUtil;
 import com.project.evaluate.util.JwtUtil;
 import com.project.evaluate.util.redis.RedisCache;
@@ -18,15 +17,13 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * @author Levi
@@ -215,22 +212,22 @@ public class FacultyController {
         return facultyService.importFaculty(filename);
     }
 
+    @Value("${file.temp-pre-path}")
+    private String tempPrePath;
+
     @GetMapping("/excel/template")
     @DataLog(modelName = "获取用户表格模板", operationType = "select")
     public ResponseResult getFacultyExcelTemplate() {
         JSONObject jsonObject = new JSONObject();
-        String tempPreFilename = ApplicationContextProvider
-                .getApplicationContext()
-                .getEnvironment().getProperty("file.temp-pre-path");
-        /*
-            如果从配置文件中获取不到临时路径，就放在项目运行文件夹下面
-         */
-        if (!Strings.hasText(tempPreFilename)) {
-            tempPreFilename = System.getProperty("user.dir");
-        }
-        String filename = tempPreFilename + File.separator + "User_Template.xlsx";
+        String filename = tempPrePath + File.separator + "User_Template.xlsx";
         try {
+//         排除一些字段
+            Set<Integer> excludeColumnIndex = new HashSet<>();
+            for (int i = 6; i <= 11; i++) {
+                excludeColumnIndex.add(i);
+            }
             EasyExcel.write(filename, Faculty.class)
+                    .excludeColumnIndexes(excludeColumnIndex)
                     .sheet("template")
                     .doWrite(() -> {
                         List<Faculty> faculties = ListUtils.newArrayListWithCapacity(1);

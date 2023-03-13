@@ -62,46 +62,48 @@ public class Faculty implements Serializable {
     @ExcelProperty(value = "电子邮箱", index = 4)
     @JsonProperty("email")
     private String email;
+
+    /**
+     * 备注
+     */
+    @ExcelProperty(value = "备注", index = 5)
+    @JsonProperty("memo")
+    private String memo;
     /**
      * 账户状态：0-禁用，1-正常
      */
-    @ExcelProperty(value = "账户状态", index = 5, converter = FacultyStatusConverter.class)
+    @ExcelProperty(value = "账户状态", index = 6, converter = FacultyStatusConverter.class)
     @JsonProperty("status")
     private Integer status;
     /**
      * 是否为初始密码：0-不是，1-是
      */
-    @ExcelProperty(value = "初始密码状态", index = 6, converter = FacultyIsInitPwdConverter.class)
+    @ExcelProperty(value = "初始密码状态", index = 7, converter = FacultyIsInitPwdConverter.class)
     @JsonProperty("isInitPwd")
     private Integer isInitPwd;
     /**
      * 上一次登录的IP地址
      */
-    @ExcelProperty(value = "上次登录IP", index = 7)
+    @ExcelProperty(value = "上次登录IP", index = 8)
     @JsonProperty("lastLoginIP")
     private String lastLoginIP;
     /**
      * 上一次登录时间
      */
-    @ExcelProperty(value = "上一次登录时间", index = 8)
+    @ExcelProperty(value = "上一次登录时间", index = 9)
     @JsonProperty("lastLoginTime")
     private Date lastLoginTime;
     /**
      * 本次登录IP
      */
-    @ExcelProperty(value = "本次登录IP", index = 9)
+    @ExcelProperty(value = "本次登录IP", index = 10)
     @JsonProperty("loginIP")
     private String loginIP;
     /**
      * 本次登录时间
      */
-    @ExcelProperty(value = "本次登录时间", index = 10)
+    @ExcelProperty(value = "本次登录时间", index = 11)
     @JsonProperty("loginTime")
     private Date loginTime;
-    /**
-     * 备注
-     */
-    @ExcelProperty(value = "备注", index = 11)
-    @JsonProperty("memo")
-    private String memo;
+
 }
