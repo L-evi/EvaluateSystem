@@ -1,5 +1,6 @@
 package com.project.evaluate.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,8 +18,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class Major implements Serializable {
-
+    @JsonProperty("ID")
     Integer ID;
-
+    @JsonProperty("majorName")
     String majorName;
 }

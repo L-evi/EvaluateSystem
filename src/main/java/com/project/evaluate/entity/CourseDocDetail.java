@@ -1,6 +1,7 @@
 package com.project.evaluate.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,26 +35,32 @@ public class CourseDocDetail {
     /**
      * 文件标识：自增
      */
+    @JsonProperty("ID")
     private Integer ID;
     /**
      * 文档所属的提交任务
      */
+    @JsonProperty("taskID")
     private Integer taskID;
     /**
      * 文件类型ID
      */
+    @JsonProperty("docTypeID")
     private Integer docTypeID;
     /**
      * 文件存储位置
      */
+    @JsonProperty("docPath")
     private String docPath;
     /**
      * 文件提交时间
      */
+    @JsonProperty("uploadTime")
     private Date uploadTime;
     /**
      * 文档提交人
      */
+    @JsonProperty("submitter")
     private String submitter;
 
 
