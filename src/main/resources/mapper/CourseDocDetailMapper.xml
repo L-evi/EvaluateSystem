@@ -3,6 +3,24 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.evaluate.dao.CourseDocDetailDao">
+    <update id="updateByID">
+        UPDATE coursedocdetail
+        <set>
+            <if test="docTypeID != null">
+                docTypeID = #{docTypeID},
+            </if>
+            <if test="docPath != null">
+                docPath = #{docPath},
+            </if>
+            <if test="uploadTime != null">
+                uploadTime = #{uploadTime},
+            </if>
+            <if test="submitter != null">
+                submitter = #{submitter},
+            </if>
+        </set>
+        WHERE ID = #{ID}
+    </update>
     <delete id="deleteByTaskID">
         DELETE
         FROM coursedocdetail
@@ -61,6 +79,17 @@
         FROM coursedocdetail
         WHERE taskID = #{taskID}
         LIMIT 1
+    </select>
+    <select id="selectByTaskIDAndSubmitter" resultType="com.project.evaluate.entity.CourseDocDetail">
+        SELECT ID,
+               taskID,
+               docTypeID,
+               docPath,
+               uploadTime,
+               submitter
+        FROM coursedocdetail
+        WHERE taskID = #{taskID}
+          AND submitter = #{submitter}
     </select>
 
     <insert id="insertCourseDocDetail"

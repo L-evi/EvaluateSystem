@@ -191,7 +191,17 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
             return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
         }
         courseDocDetail.setDocPath(file.getAbsolutePath());
-        Long num = courseDocDetailDao.insertCourseDocDetail(courseDocDetail);
+        //        先看看是否已经提交了
+        CourseDocDetail docDetail = courseDocDetailDao.selectByTaskIDAndSubmitter(courseDocDetail.getTaskID(), courseDocDetail.getSubmitter());
+        Long count = 0L;
+        if (Objects.nonNull(docDetail)) {
+            courseDocDetail.setID(docDetail.getID());
+            count = courseDocDetailDao.updateByID(courseDocDetail);
+        } else {
+            count = courseDocDetailDao.insertCourseDocDetail(courseDocDetail);
+        }
+//        放入到redis中
+        redisCache.setCacheObject("CourseDocDetail:" + courseDocDetail.getID(), courseDocDetail, 1, TimeUnit.DAYS);
         jsonObject = JSONObject.parseObject(JSON.toJSONString(courseDocDetail));
         jsonObject.put("msg", "提交成功");
         jsonObject.put("count", "num");

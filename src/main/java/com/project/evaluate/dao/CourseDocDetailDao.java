@@ -19,6 +19,9 @@ public interface CourseDocDetailDao {
     //    根据taskID查询单个数据
     CourseDocDetail selectOneByTaskID(Integer taskID);
 
+    //    根据taskID和submitter查询数据
+    CourseDocDetail selectByTaskIDAndSubmitter(Integer taskID, String submitter);
+
     List<CourseDocDetail> getAll();
 
     //    插入数据
@@ -26,6 +29,9 @@ public interface CourseDocDetailDao {
 
     //   根据ID删除
     Long deleteByID(int ID, String userID);
+
+    // 根据ID更新
+    Long updateByID(CourseDocDetail courseDocDetail);
 
     //    根据ID查询
     CourseDocDetail selectByID(int ID);
