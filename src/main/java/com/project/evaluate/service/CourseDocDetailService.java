@@ -1,8 +1,7 @@
 package com.project.evaluate.service;
 
+import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.util.response.ResponseResult;
-
-import java.util.Map;
 
 public interface CourseDocDetailService {
 
@@ -12,5 +11,5 @@ public interface CourseDocDetailService {
 
     ResponseResult selectByTaskID(Integer taskID, Integer page, Integer pageSize, String orderBy);
 
-    ResponseResult submitDocument(Map<String, Object> map);
+    ResponseResult submitDocument(CourseDocDetail courseDocDetail);
 }

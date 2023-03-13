@@ -40,7 +40,7 @@ file:
   #  temp-pre-path: D:/levi/EvaluateSystem/src/main/resources/static
   #  temp-pre-path: G:/Programing/Java/Evaluate/src/main/resources/upload
   character-set: utf-8
-    # 分片文件大小 10 * 1024 * 1024 * 1024 bit 即 10MB
+  # 分片文件大小 10 * 1024 * 1024 * 1024 bit 即 10MB
   #  file-size-max: 10737418240
   file-size-max: 5368709120
   #  请求的最大大小 4000 * 1024 * 1024 * 1024 bit 即 4000MB
@@ -49,3 +49,5 @@ file:
   threshold-size: 1024
   # 共享文件文件架
   share-pre-path: /root/upload/share
+  # 教学文档存放路径
+  teach-root-path: /root/upload/teach

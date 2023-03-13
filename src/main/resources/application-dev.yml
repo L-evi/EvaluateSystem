@@ -47,3 +47,6 @@ file:
   threshold-size: 1024
   # 共享文件文件架
   share-pre-path: /root/upload/share
+  # 教学文档存放路径
+  #  teach-root-path: /root/upload/teach
+  teach-root-path: G:/Programing/Java/Evaluate/src/main/resources/upload/teach

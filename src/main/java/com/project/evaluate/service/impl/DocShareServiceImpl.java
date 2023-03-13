@@ -165,13 +165,13 @@ public class DocShareServiceImpl implements DocShareService {
     public ResponseResult submitDocument(DocShare docShare) {
         JSONObject jsonObject = new JSONObject();
 //        根据文件路径去找临时文件是否存在
-        File tempShareFile = new File(this.tempPrePath + File.separator, docShare.getDocPath());
+        File tempShareFile = new File(this.tempPrePath, docShare.getDocPath());
         if (!tempShareFile.exists()) {
             jsonObject.put("msg", "文件不存在");
             return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
         }
 //        把文件放入share文件夹中
-        File file = new File(this.sharePrePath + File.separator, docShare.getDocPath());
+        File file = new File(this.sharePrePath, docShare.getDocPath());
         try (InputStream inputStream = new FileInputStream(tempShareFile);
              OutputStream outputStream = new FileOutputStream(file)) {
             byte[] bytes = new byte[1024];
@@ -186,7 +186,7 @@ public class DocShareServiceImpl implements DocShareService {
             jsonObject.put("msg", "IO操作错误");
             return new ResponseResult(ResultCode.IO_OPERATION_ERROR, jsonObject);
         }
-        jsonObject.put("DocPath", this.sharePrePath + File.separator + docShare.getDocPath());
+        jsonObject.put("DocPath", file.getAbsolutePath());
         return new ResponseResult(ResultCode.SUCCESS, jsonObject);
     }
 }

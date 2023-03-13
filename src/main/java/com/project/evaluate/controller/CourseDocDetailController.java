@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Map;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -104,13 +104,32 @@ public class CourseDocDetailController {
 
     @PostMapping(value = "/submit")
     @DataLog(operationType = "insert", modelName = "提交文档上传任务")
-    public ResponseResult submit(@RequestBody Map<String, Object> map) throws IOException {
+    public ResponseResult submit(@RequestBody CourseDocDetail courseDocDetail, HttpServletRequest request) throws IOException {
         JSONObject jsonObject = new JSONObject();
-        if (!map.containsKey("FileName") || !map.containsKey("taskID") || !map.containsKey("teachingDocRoot")) {
+        if (Objects.isNull(courseDocDetail)
+                || Objects.isNull(courseDocDetail.getDocPath())
+                || Objects.isNull(courseDocDetail.getTaskID())
+                || Objects.isNull(courseDocDetail.getDocTypeID())) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        return courseDocDetailService.submitDocument(map);
+        if (Objects.isNull(courseDocDetail.getSubmitter())) {
+            String token = request.getHeader("token");
+            try {
+                jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
+                if (jsonObject.containsKey("userID")) {
+                    courseDocDetail.setSubmitter((String) jsonObject.get("userID"));
+                } else {
+                    throw new RuntimeException("token parse 错误");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (Objects.isNull(courseDocDetail.getUploadTime())) {
+            courseDocDetail.setUploadTime(new Date());
+        }
+        return courseDocDetailService.submitDocument(courseDocDetail);
     }
 
 }
