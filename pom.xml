@@ -18,6 +18,8 @@
     <description>evaluate</description>
     <properties>
         <java.version>1.8</java.version>
+        <!-- 自己将elasticsearch版本改成与计算机上的一致 -->
+        <elasticsearch.version>7.6.1</elasticsearch.version>
     </properties>
 
     <dependencies>
@@ -141,11 +143,11 @@
             <artifactId>easyexcel</artifactId>
             <version>3.2.1</version>
         </dependency>
-        <!-- Quartz定时任务 -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-quartz</artifactId>-->
-<!--        </dependency>-->
+        <!-- ES搜索 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
