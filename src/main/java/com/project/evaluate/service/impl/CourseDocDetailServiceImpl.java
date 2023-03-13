@@ -69,7 +69,11 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
     @Override
     public ResponseResult deleteByID(Integer ID, Integer roleType, String userID) {
         JSONObject jsonObject = new JSONObject();
-        CourseDocDetail courseDocDetail = this.courseDocDetailDao.selectByID(ID);
+        CourseDocDetail courseDocDetail = courseDocDetailDao.selectByID(ID);
+        if (Objects.isNull(courseDocDetail)) {
+            jsonObject.put("msg", "文档详情不存在");
+            return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
+        }
         CourseDocTask courseDocTask = courseDocTaskDao.selectByID(courseDocDetail.getTaskID());
         if (!Objects.isNull(courseDocTask) && (courseDocTask.getCloseTask() == 1 || courseDocTask.getDeadline().before(new Date()))) {
             jsonObject.put("msg", "删除失败，任务已关闭或已过期");

@@ -34,7 +34,7 @@ public class CourseDocDetailController {
     @DeleteMapping(value = "/delete/taskID")
     @RequiresRoles(value = {"0", "2"}, logical = Logical.OR)
     @DataLog(modelName = "根据任务ID删除课程文档", operationType = "delete")
-    public ResponseResult deleteByTaskID(@RequestBody CourseDocDetail courseDocDetail, HttpServletRequest request) {
+    public ResponseResult deleteByTaskID(Integer taskID, HttpServletRequest request) {
         String token = request.getHeader("token");
         String userID = null;
 //        判断是否为教师，如果为教师则只能删除自己的
@@ -46,8 +46,8 @@ public class CourseDocDetailController {
         } catch (Exception e) {
             throw new RuntimeException("token parse 错误");
         }
-        if (courseDocDetail.getTaskID() != 0) {
-            return this.courseDocDetailService.deleteByTaskID(courseDocDetail.getTaskID(), userID);
+        if (taskID != 0) {
+            return this.courseDocDetailService.deleteByTaskID(taskID, userID);
         } else {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("msg", "TaskID缺失，无法删除");
@@ -106,10 +106,7 @@ public class CourseDocDetailController {
     @DataLog(operationType = "insert", modelName = "提交文档上传任务")
     public ResponseResult submit(@RequestBody CourseDocDetail courseDocDetail, HttpServletRequest request) throws IOException {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(courseDocDetail)
-                || Objects.isNull(courseDocDetail.getDocPath())
-                || Objects.isNull(courseDocDetail.getTaskID())
-                || Objects.isNull(courseDocDetail.getDocTypeID())) {
+        if (Objects.isNull(courseDocDetail) || Objects.isNull(courseDocDetail.getDocPath()) || Objects.isNull(courseDocDetail.getTaskID()) || Objects.isNull(courseDocDetail.getDocTypeID())) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }

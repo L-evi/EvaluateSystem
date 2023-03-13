@@ -96,14 +96,14 @@ public class DocShareController {
 
     @DeleteMapping(value = "/delete")
     @RequiresRoles(value = {"1", "2"}, logical = Logical.OR)
-    public ResponseResult deleteDocShare(Integer id, HttpServletRequest request) {
+    public ResponseResult deleteDocShare(Integer ID, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
-        if (Objects.isNull(id) || id == 0) {
+        if (Objects.isNull(ID) || ID == 0) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
         String token = request.getHeader("token");
-        return this.docShareService.deleteDocShare(id, token);
+        return this.docShareService.deleteDocShare(ID, token);
     }
 
     @PostMapping("/submit")

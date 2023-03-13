@@ -11,8 +11,8 @@ import com.project.evaluate.dao.CourseDocDetailDao;
 import com.project.evaluate.dao.CourseDocTaskDao;
 import com.project.evaluate.entity.CourseDocDetail;
 import com.project.evaluate.entity.CourseDocTask;
-import com.project.evaluate.service.CourseDocTaskService;
 import com.project.evaluate.handler.MapExcelHandler;
+import com.project.evaluate.service.CourseDocTaskService;
 import com.project.evaluate.util.redis.RedisCache;
 import com.project.evaluate.util.response.ResponseResult;
 import com.project.evaluate.util.response.ResultCode;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -79,7 +78,7 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
         }
         CourseDocTask courseDocTask = this.courseDocTaskDao.selectByID(ID);
 //        如果任务超时 或者 任务已经关闭了
-        if (courseDocTask.getDeadline().before(new Date()) || courseDocTask.getCloseTask() == 1) {
+        if (Objects.isNull(courseDocTask) || courseDocTask.getDeadline().before(new Date()) || courseDocTask.getCloseTask() == 1) {
             jsonObject.put("msg", "任务已经过期或已经关闭，无法删除");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
