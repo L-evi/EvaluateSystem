@@ -1,10 +1,7 @@
 package com.project.evaluate.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.project.evaluate.dao.CourseDao;
 import com.project.evaluate.dao.CourseDocDetailDao;
 import com.project.evaluate.dao.CourseDocTaskDao;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -112,20 +108,15 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
     }
 
     @Override
-    public ResponseResult selectByTaskID(Integer taskID, Integer page, Integer pageSize, String orderBy) {
+    public ResponseResult selectByTaskID(Integer taskID, String userID) {
         JSONObject jsonObject = new JSONObject();
-        PageHelper.startPage(page, pageSize, orderBy);
-        List<CourseDocDetail> courseDocDetails = this.courseDocDetailDao.selectByTaskID(taskID);
-        if (Objects.isNull(courseDocDetails) || courseDocDetails.isEmpty()) {
+        CourseDocDetail courseDocDetail = this.courseDocDetailDao.selectByTaskID(taskID, userID);
+        if (Objects.isNull(courseDocDetail)) {
             jsonObject.put("msg", "暂无数据");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);
         }
-        PageInfo<CourseDocDetail> pageInfo = new PageInfo<>(courseDocDetails);
-        JSONArray jsonArray = JSONArray.parseArray(JSON.toJSONString(pageInfo.getList()));
+        jsonObject = JSONObject.parseObject(JSON.toJSONString(courseDocDetail));
         jsonObject.put("msg", "查询成功");
-        jsonObject.put("total", pageInfo.getTotal());
-        jsonObject.put("array", jsonArray);
-        jsonObject.put("pages", pageInfo.getPages());
         return new ResponseResult<>(ResultCode.SUCCESS, jsonObject);
     }
 

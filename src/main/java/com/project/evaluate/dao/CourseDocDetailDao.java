@@ -14,7 +14,7 @@ public interface CourseDocDetailDao {
     Long deleteByTaskID(int taskID, String userID);
 
     //    根据taskID查询
-    List<CourseDocDetail> selectByTaskID(Integer taskID);
+    CourseDocDetail selectByTaskID(Integer taskID, String userID);
 
     //    根据taskID查询单个数据
     CourseDocDetail selectOneByTaskID(Integer taskID);

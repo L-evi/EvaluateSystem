@@ -44,16 +44,20 @@
         </where>
     </delete>
 
-    <select id="selectByTaskID" resultType="com.project.evaluate.entity.CourseDocDetail"
-            parameterType="java.util.Map">
+    <select id="selectByTaskID" resultType="com.project.evaluate.entity.CourseDocDetail">
         SELECT ID,
-               taskID,
-               docTypeID,
-               docPath,
-               uploadTime,
-               submitter
+        taskID,
+        docTypeID,
+        docPath,
+        uploadTime,
+        submitter
         FROM coursedocdetail
-        WHERE taskID = #{taskID}
+        <where>
+            taskID = #{taskID}
+            <if test="userID != null and userID != ''">
+                AND submitter = #{userID}
+            </if>
+        </where>
     </select>
     <select id="getAll" resultType="com.project.evaluate.entity.CourseDocDetail">
         select *

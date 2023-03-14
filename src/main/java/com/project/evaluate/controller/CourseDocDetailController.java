@@ -82,24 +82,26 @@ public class CourseDocDetailController {
         return this.courseDocDetailService.deleteByID(ID, roleType, userID);
     }
 
-    @GetMapping(value = "/search/task-id")
+    @GetMapping(value = "/get/taskID")
     @DataLog(modelName = "根据任务ID查询课程文档", operationType = "select")
-    public ResponseResult selectByTaskID(Integer taskID, Integer page, Integer pageSize, String orderBy) {
+    public ResponseResult selectByTaskID(Integer taskID, HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         if (Objects.isNull(taskID)) {
             jsonObject.put("msg", "参数缺失");
             return new ResponseResult(ResultCode.MISSING_PATAMETER, jsonObject);
         }
-        if (Objects.isNull(page)) {
-            page = 0;
+        String token = request.getHeader("token");
+        String userID = null;
+        try {
+            jsonObject = JSONObject.parseObject(JwtUtil.parseJwt(token).getSubject());
+            // 教师只能看到自己的
+            if (jsonObject.get("roleType").equals("0")) {
+                userID = (String) jsonObject.get("userID");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        if (Objects.isNull(pageSize) || pageSize == 0) {
-            pageSize = 10;
-        }
-        if (Objects.isNull(orderBy)) {
-            orderBy = "ID ASC";
-        }
-        return this.courseDocDetailService.selectByTaskID(taskID, page, pageSize, orderBy);
+        return this.courseDocDetailService.selectByTaskID(taskID, userID);
     }
 
     @PostMapping(value = "/submit")
