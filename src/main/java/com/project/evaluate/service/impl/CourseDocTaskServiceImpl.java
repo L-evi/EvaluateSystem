@@ -71,7 +71,7 @@ public class CourseDocTaskServiceImpl implements CourseDocTaskService {
     @Override
     public ResponseResult deleteTeachingDocuments(Integer ID) {
         JSONObject jsonObject = new JSONObject();
-        CourseDocDetail courseDocDetail = this.courseDocDetailDao.selectOneByTaskID(ID);
+        CourseDocDetail courseDocDetail = this.courseDocDetailDao.selectByTaskID(ID, null);
         if (Objects.nonNull(courseDocDetail)) {
             jsonObject.put("msg", "该任务已经提交了文档，无法删除");
             return new ResponseResult(ResultCode.INVALID_PARAMETER, jsonObject);

@@ -187,7 +187,7 @@ public class CourseDocDetailServiceImpl implements CourseDocDetailService {
         }
         courseDocDetail.setDocPath(file.getAbsolutePath());
         //        先看看是否已经提交了
-        CourseDocDetail docDetail = courseDocDetailDao.selectByTaskIDAndSubmitter(courseDocDetail.getTaskID(), courseDocDetail.getSubmitter());
+        CourseDocDetail docDetail = courseDocDetailDao.selectByTaskID(courseDocDetail.getTaskID(), courseDocDetail.getSubmitter());
         Long count = 0L;
         if (Objects.nonNull(docDetail)) {
             courseDocDetail.setID(docDetail.getID());

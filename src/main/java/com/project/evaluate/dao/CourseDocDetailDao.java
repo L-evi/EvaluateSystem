@@ -16,14 +16,6 @@ public interface CourseDocDetailDao {
     //    根据taskID查询
     CourseDocDetail selectByTaskID(Integer taskID, String userID);
 
-    //    根据taskID查询单个数据
-    CourseDocDetail selectOneByTaskID(Integer taskID);
-
-    //    根据taskID和submitter查询数据
-    CourseDocDetail selectByTaskIDAndSubmitter(Integer taskID, String submitter);
-
-    List<CourseDocDetail> getAll();
-
     //    插入数据
     Long insertCourseDocDetail(CourseDocDetail courseDocDetail);
 

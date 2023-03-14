@@ -59,10 +59,6 @@
             </if>
         </where>
     </select>
-    <select id="getAll" resultType="com.project.evaluate.entity.CourseDocDetail">
-        select *
-        FROM coursedocdetail
-    </select>
     <select id="selectByID" resultType="com.project.evaluate.entity.CourseDocDetail">
         SELECT ID,
                taskID,
@@ -73,29 +69,6 @@
         FROM coursedocdetail
         WHERE ID = #{ID}
     </select>
-    <select id="selectOneByTaskID" resultType="com.project.evaluate.entity.CourseDocDetail">
-        SELECT ID,
-               taskID,
-               docTypeID,
-               docPath,
-               uploadTime,
-               submitter
-        FROM coursedocdetail
-        WHERE taskID = #{taskID}
-        LIMIT 1
-    </select>
-    <select id="selectByTaskIDAndSubmitter" resultType="com.project.evaluate.entity.CourseDocDetail">
-        SELECT ID,
-               taskID,
-               docTypeID,
-               docPath,
-               uploadTime,
-               submitter
-        FROM coursedocdetail
-        WHERE taskID = #{taskID}
-          AND submitter = #{submitter}
-    </select>
-
     <insert id="insertCourseDocDetail"
             parameterType="com.project.evaluate.entity.CourseDocDetail"
             useGeneratedKeys="true"
