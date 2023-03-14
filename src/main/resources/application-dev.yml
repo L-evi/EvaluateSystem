@@ -19,6 +19,12 @@ spring:
   #        开启aop
   aop:
     auto: true
+  data:
+    elasticsearch:
+      cluster-name: localhost:9200
+      cluster-nodes: elasearch
+      repositories:
+        enabled: true
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 server:

@@ -48,7 +48,7 @@
     <select id="selectByBulletin"
             resultType="com.project.evaluate.entity.Bulletin"
             parameterType="com.project.evaluate.entity.Bulletin">
-        SELECT ID, subject, content, createTime, issueTime, expiredTime, operator
+        SELECT ID, `subject`, content, createTime, issueTime, expiredTime, operator
         FROM bulletin
         <where>
             <if test="bulletin.ID != null and bulletin.ID != 0">

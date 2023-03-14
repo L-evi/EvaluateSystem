@@ -1,10 +1,13 @@
 package com.project.evaluate.entity;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -18,22 +21,26 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Document(indexName = "bulletin")
 public class Bulletin implements Serializable {
     private static final long serialVersionUID = -39987790457267163L;
     /**
      * ID
      */
     @JsonProperty("ID")
+    @Id
     private Integer ID;
     /**
      * 公告主题
      */
     @JsonProperty("subject")
+    @Field(analyzer = "ik_smart", type = FieldType.Text, searchAnalyzer = "ik_max_word")
     private String subject;
     /**
      * 公告内容
      */
     @JsonProperty("content")
+    @Field(analyzer = "ik_smart", type = FieldType.Text, searchAnalyzer = "ik_max_word")
     private String content;
     /**
      * 公告的时间

@@ -1,5 +1,6 @@
 package com.project.evaluate;
 
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -13,6 +14,20 @@ import com.project.evaluate.util.redis.RedisCache;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.crypto.hash.Md5Hash;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.CreateIndexResponse;
+import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.common.unit.Fuzziness;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +39,7 @@ import org.springframework.core.env.Environment;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -439,6 +455,44 @@ class EvaluateApplicationTests {
         if (file.exists()) {
             long length = file.length();
             System.out.println(FileSizeFormatter.formatFileSize(length, MemoryUnit.B, MemoryUnit.MB));
+        }
+    }
+
+    @Resource
+    private RestHighLevelClient restHighLevelClient;
+
+    @Test
+    public void addBulletin() throws IOException {
+        GetIndexRequest getIndexRequest = new GetIndexRequest("evaluate_bulletin");
+        boolean exists = restHighLevelClient.indices().exists(getIndexRequest, RequestOptions.DEFAULT);
+        log.info("索引是否存在：{}", exists);
+        if (!exists) {
+            CreateIndexRequest createIndexRequest = new CreateIndexRequest("evaluate_bulletin");
+            CreateIndexResponse response = restHighLevelClient.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+            log.info("创建索引：{}，创建结果：{}", response.index(), response.isAcknowledged());
+        }
+        bulletinDao.selectByBulletin(new Bulletin(), null).forEach(bulletin -> {
+            IndexRequest indexRequest = new IndexRequest("evaluate_bulletin");
+            indexRequest.id(String.valueOf(bulletin.getID()));
+            indexRequest.source(JSON.toJSONString(bulletin), XContentType.JSON);
+            try {
+                IndexResponse response = restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
+                log.info("加入数据：{}，加入结果：{}", response.getIndex(), response.status());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        SearchRequest searchRequest = new SearchRequest("evaluate_bulletin");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.fuzzyQuery("content", "").fuzziness(Fuzziness.ONE));
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest.source(searchSourceBuilder), RequestOptions.DEFAULT);
+        SearchHit[] hits = searchResponse.getHits().getHits();
+
+        log.info("查询到的数据数量：{}", hits.length);
+        for (SearchHit hit : hits) {
+            Bulletin bulletin = JSONObject.toJavaObject(JSON.parseObject(hit.getSourceAsString()), Bulletin.class);
+            log.info("分数：{}", hit.getScore());
+            log.info("查询结果：{}，\n转化为JSON：{}", hit.getSourceAsString(), bulletin.getContent());
         }
     }
 }
